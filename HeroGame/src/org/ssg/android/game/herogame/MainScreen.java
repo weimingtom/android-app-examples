@@ -18,8 +18,10 @@ public class MainScreen extends Screen {
     public static final int WIDTH = 320;
     public static final int HEIGHT = 480;
     public static final int CS = 32;
-    private Map map;
-    private Hero role;
+    private Level level;
+    private int levelNo;
+    private BackGroundMap map;
+    private Hero hero;
 
     private Hero fightingHero;
     private Enemy fightingEnemy;
@@ -40,60 +42,81 @@ public class MainScreen extends Screen {
     private int lostHP = -1;
     private int HPx, HPy, step1 = MainScreen.CS / 10;
     private Enemy enemyRef;
+    private boolean initDone = false;
 
     public MainScreen() {
+        levelNo = 1;
         init();
     }
 
     private void init() {
-        goLeftKey = new ActionKey();
-        goRightKey = new ActionKey();
-        goUpKey = new ActionKey();
-        goDownKey = new ActionKey();
-        map = new Map();
-        role = new Hero("assets/hero.png", 1, 1, 20, 32, map);
-        sprites = new LinkedList<Sprite>();
+        initDone = false;
+        fightingHero = null;
+        fightingEnemy = null;
+        if (goLeftKey == null)
+            goLeftKey = new ActionKey();
+        else
+            goLeftKey.reset();
+        if (goRightKey == null)
+            goRightKey = new ActionKey();
+        else
+            goRightKey.reset();
+        if (goUpKey == null)
+            goUpKey = new ActionKey();
+        else
+            goUpKey.reset();
+        if (goDownKey == null)
+            goDownKey = new ActionKey();
+        else
+            goDownKey.reset();
+        level = new Level(levelNo);
+        map = level.getBackGroundMap();
+        if (hero == null || isDead) {
+            hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
+            isDead = false;
+        } else {
+            hero.setMap(map);
+        }
+        hero.setXs(level.heroPos[0]);
+        hero.setYs(level.heroPos[1]);
+        sprites = level.getSprites();
         fightingSprite = new LinkedList<Sprite>();
-
-        sprites.add(new Enemy("assets/skeleon.png", 2, 2, 28, 32, map));
-
-        sprites.add(new Enemy("assets/skeleon.png", 3, 2, 28, 32, map));
-        sprites.add(new Enemy("assets/skeleon.png", 4, 2, 28, 32, map));
-        sprites.add(new Enemy("assets/skeleon.png", 5, 2, 28, 32, map));
-        sprites.add(new Enemy("assets/skeleon.png", 2, 3, 28, 32, map));
-
+        initDone = true;
         // delay = new LTimer(50);
 
     }
 
     @Override
     public void draw(LGraphics g) {
-        int offsetX = WIDTH / 2 - role.getXs() * CS;
+        if (!initDone)
+            return;
+        int offsetX = WIDTH / 2 - hero.getXs() * CS;
         offsetX = Math.min(offsetX, 0);
-        offsetX = Math.max(offsetX, WIDTH - Map.WIDTH);
+        offsetX = Math.max(offsetX, WIDTH - map.getWidth());
 
-        int offsetY = HEIGHT / 2 - role.getYs() * CS;
+        int offsetY = HEIGHT / 2 - hero.getYs() * CS;
         offsetY = Math.min(offsetY, 0);
-        offsetY = Math.max(offsetY, HEIGHT - Map.HEIGHT);
+        offsetY = Math.max(offsetY, HEIGHT - map.getHeight());
         map.draw(g, offsetX, offsetY);
 
-        role.draw(g, offsetX, offsetY);
+        hero.draw(g, offsetX, offsetY);
 
         for (Iterator<Sprite> it = sprites.iterator(); it.hasNext();) {
             Sprite sprite = it.next();
             int x = sprite.getXs();
             int y = sprite.getYs();
-            if (x > map.firstTileX && x < map.lastTileX && y > map.firstTileY
-                    && y < map.lastTileY)
+            if (x > level.firstTileX && x < level.lastTileX && y > level.firstTileY
+                    && y < level.lastTileY)
                 sprite.draw(g, offsetX, offsetY);
         }
 
         g.setColor(Color.WHITE);
         g.setAntiAlias(true);
-        g.drawString("Hero HP: " + role.getHp(), 5, 20);
+        g.drawString("Hero HP: " + hero.getHp(), 5, 20);
         if (enemyRef != null) {
             g.drawString("Enemy HP: " + enemyRef.getHp(), 100, 20);
         }
+        g.drawString("Level: " + levelNo, 5, HEIGHT - 10);
         g.setAntiAlias(false);
 
         if (fightingHero != null && heroFighting) {
@@ -112,11 +135,9 @@ public class MainScreen extends Screen {
         }
 
         if (isDead) {
-            g.setAlpha(0.1f);
             g.setColor(Color.BLACK);
             g.fillRect(0, 160, 320, 160);
             g.setColor(Color.WHITE);
-            g.setAlpha(1.0f);
             g.drawString("死了！！！", 150, 240);
         }
     }
@@ -137,16 +158,21 @@ public class MainScreen extends Screen {
         // role.update(timer.getTimeSinceLastUpdate());
 
         if (fightingHero != null) {
-            fight(role, enemyRef);
+            fight(hero, enemyRef);
         } else {
             if (goRightKey.isPressed()) {
-                role.move(Hero.RIGHT);
+                hero.move(Hero.RIGHT);
             } else if (goLeftKey.isPressed()) {
-                role.move(Hero.LEFT);
+                hero.move(Hero.LEFT);
             } else if (goUpKey.isPressed()) {
-                role.move(Hero.UP);
+                hero.move(Hero.UP);
             } else if (goDownKey.isPressed()) {
-                role.move(Hero.DOWN);
+                hero.move(Hero.DOWN);
+            }
+            
+            if (map.isDoor(hero.getXs(), hero.getYs())) {
+                levelNo++;
+                init();
             }
         }
 
@@ -156,22 +182,21 @@ public class MainScreen extends Screen {
             // 更新所有精灵状态
             sprite.updateStatus(timer.getTimeSinceLastUpdate());
 
-            if ((fightingHero == null) && role.isCollision(sprite)
+            if ((fightingHero == null) && hero.isCollision(sprite)
                     && (sprite instanceof Enemy)) {
                 Enemy enemy = (Enemy) sprite;
-                Hero hero = role;
                 enemyRef = enemy;
 
                 if (fightingHero == null) {
-                    fightingHero = new Hero("assets/anim_herofight.png", role.getXs(),
-                            role.getYs(), 30, 32, map);
+                    fightingHero = new Hero("assets/images/anim_herofight.png", hero.getXs(),
+                            hero.getYs(), 30, 32, map);
                     fightingHero.setDir(0);
                     heroFighting = true;
                 } else {
                 }
                 if (fightingEnemy == null) {
-                    fightingEnemy = new Enemy("assets/anim_skeleonfight.png", role
-                            .getXs() + 1, role.getYs(), 32, 32, map);
+                    fightingEnemy = new Enemy("assets/images/anim_skeleonfight.png", hero
+                            .getXs() + 1, hero.getYs(), 32, 32, map);
                     fightingEnemy.setDir(0);
                 } else {
                 }
@@ -242,13 +267,13 @@ public class MainScreen extends Screen {
     }
 
     public boolean onKeyDown(int arg0, KeyEvent arg1) {
+        if (arg0 == KeyEvent.KEYCODE_ENTER && isDead) {
+            init();
+            return false;
+        }
+
         if (fightingHero != null)
             return false;
-
-        if (arg0 == KeyEvent.KEYCODE_ENTER && isDead) {
-            isDead = false;
-            init();
-        }
 
         switch (arg0) {
             case KeyEvent.KEYCODE_DPAD_LEFT:

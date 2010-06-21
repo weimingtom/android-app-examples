@@ -1,50 +1,40 @@
 package org.ssg.android.game.herogame;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
+import org.loon.framework.android.game.core.resource.Resources;
 import org.loon.framework.android.game.utils.GraphicsUtils;
 
 /**
- * 
  * @author chenpeng
- * @email  ceponline@yahoo.com.cn
- * 
- * Loon Framework in Game 
- *
+ * @email ceponline@yahoo.com.cn Loon Framework in Game
  */
-public class Map{
+public class CreaturesMap {
 
     private static final int ROW = 15;
     private static final int COL = 10;
-    
+
     public static final int WIDTH = COL * MainScreen.CS;
     public static final int HEIGHT = ROW * MainScreen.CS;
 
-    private int[][] map = {
-            {1,1,1,1,1,1,1,1,1,1},
-            {1,0,0,1,1,1,1,0,0,1},
-            {1,0,0,0,0,0,0,0,0,1},
-            {1,0,0,1,1,1,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,0,1},
-            {1,0,0,0,0,0,1,0,2,1},
-            {1,1,1,1,1,1,1,1,1,1}};
+    private char[][] map;
 
     private LImage floorImage;
     private LImage wallImage;
     private LImage doorImage;
 
-    public Map() {
-        floorImage = GraphicsUtils.loadImage("assets/floor.gif");
-        wallImage = GraphicsUtils.loadImage("assets/wall.gif");
-        doorImage = GraphicsUtils.loadImage("assets/door.png");
+    public CreaturesMap(char[][] map) {
+        this.map = map;
+        floorImage = GraphicsUtils.loadImage("assets/images/floor.gif");
+        wallImage = GraphicsUtils.loadImage("assets/images/wall.gif");
+        doorImage = GraphicsUtils.loadImage("assets/images/door.png");
     }
 
     public static int pixelsToTiles(double pixels) {
@@ -74,15 +64,15 @@ public class Map{
         for (int i = firstTileY; i < lastTileY; i++) {
             for (int j = firstTileX; j < lastTileX; j++) {
                 switch (map[i][j]) {
-                    case 0:
+                    case '0':
                         g.drawImage(floorImage, tilesToPixels(j) + offsetX,
                                 tilesToPixels(i) + offsetY);
                         break;
-                    case 1:
+                    case '1':
                         g.drawImage(wallImage, tilesToPixels(j) + offsetX,
                                 tilesToPixels(i) + offsetY);
                         break;
-                    case 2:
+                    case '2':
                         g.drawImage(doorImage, tilesToPixels(j) + offsetX,
                                 tilesToPixels(i) + offsetY);
                         break;

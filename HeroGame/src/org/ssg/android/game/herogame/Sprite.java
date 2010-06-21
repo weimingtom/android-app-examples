@@ -35,6 +35,14 @@ public abstract class Sprite extends
 
     protected int x, y;
 
+    public void setXs(int x) {
+        this.x = x;
+    }
+
+    public void setYs(int y) {
+        this.y = y;
+    }
+
     protected int width, height;
 
     protected LImage image;
@@ -43,13 +51,21 @@ public abstract class Sprite extends
 
     private boolean isShow = true; // 是否显示
 
-    protected Map map;
+    protected BackGroundMap map;
+
+    public BackGroundMap getMap() {
+        return map;
+    }
+
+    public void setMap(BackGroundMap map) {
+        this.map = map;
+    }
 
     public LTimer timer;
 
     private int fixX, fixY;
 
-    public Sprite(String fileName, int x, int y, int w, int h, Map map) {
+    public Sprite(String fileName, int x, int y, int w, int h, BackGroundMap map) {
         this.x = x;
         this.y = y;
         this.map = map;
@@ -65,7 +81,6 @@ public abstract class Sprite extends
             fixX = 0;
         if (fixY < 0)
             fixY = 0;
-        Log.e("aaa", "" + fixX + "/" + fixY);
     }
 
     /**
@@ -75,11 +90,6 @@ public abstract class Sprite extends
      */
     public void updateStatus(long elapsedTime) {
         if (timer.action(elapsedTime)) {
-            // if (count == 0) {
-            // count = 1;
-            // } else if (count == 1) {
-            // count = 0;
-            // }
             if (count == 4) {
                 count = 0;
             } else {

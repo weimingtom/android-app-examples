@@ -22,8 +22,8 @@ public class Enemy extends Role {
     public int ANIM_OFFSET_X = MainScreen.CS * 3 / 4;
     public int ANIM_OFFSET_Y = 1;
 
-    public Enemy(String filename, int x, int y, int w, int h, Map map) {
-        super(filename, x, y, w, h, map, 50, 5, 0);
+    public Enemy(String filename, int x, int y, int w, int h, BackGroundMap map) {
+        super(filename, x, y, w, h, map, 20, 5, 0);
     }
 
     @Override

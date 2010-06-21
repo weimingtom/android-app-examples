@@ -18,8 +18,8 @@ public class Hero extends Role {
     public int ANIM_OFFSET_Y = 0;
     private boolean isAnimating = false;
 
-    public Hero(String filename, int x, int y, int w, int h, Map map) {
-        super(filename, x, y, w, h, map, 100, 5, 0);
+    public Hero(String filename, int x, int y, int w, int h, BackGroundMap map) {
+        super(filename, x, y, w, h, map, 100, 10, 0);
         dir = DOWN;
     }
 

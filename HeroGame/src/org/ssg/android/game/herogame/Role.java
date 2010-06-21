@@ -30,7 +30,7 @@ public abstract class Role extends Sprite {
     private int attack; // 攻击力
     private int defence;// 防御力
 
-    public Role(String fileName, int x, int y, int w, int h, Map map, int hp,
+    public Role(String fileName, int x, int y, int w, int h, BackGroundMap map, int hp,
             int attack, int defence) {
         super(fileName, x, y, w, h, map);
         this.hp = hp;
