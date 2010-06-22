@@ -105,8 +105,8 @@ public class MainScreen extends Screen {
             Sprite sprite = it.next();
             int x = sprite.getXs();
             int y = sprite.getYs();
-            if (x > level.firstTileX && x < level.lastTileX && y > level.firstTileY
-                    && y < level.lastTileY)
+            if (x > level.firstTileX && x < level.lastTileX
+                    && y > level.firstTileY && y < level.lastTileY)
                 sprite.draw(g, offsetX, offsetY);
         }
 
@@ -169,7 +169,7 @@ public class MainScreen extends Screen {
             } else if (goDownKey.isPressed()) {
                 hero.move(Hero.DOWN);
             }
-            
+
             if (map.isDoor(hero.getXs(), hero.getYs())) {
                 levelNo++;
                 init();
@@ -183,20 +183,29 @@ public class MainScreen extends Screen {
             sprite.updateStatus(timer.getTimeSinceLastUpdate());
 
             if ((fightingHero == null) && hero.isCollision(sprite)
-                    && (sprite instanceof Enemy)) {
+                    && (sprite instanceof Enemy) && !isDead) {
                 Enemy enemy = (Enemy) sprite;
                 enemyRef = enemy;
 
                 if (fightingHero == null) {
-                    fightingHero = new Hero("assets/images/anim_herofight.png", hero.getXs(),
-                            hero.getYs(), 30, 32, map);
+                    fightingHero = new Hero("assets/images/anim_herofight.png",
+                            hero.getXs(), hero.getYs(), 30, 32, map);
                     fightingHero.setDir(0);
                     heroFighting = true;
+                    enemyFighting = false;
                 } else {
                 }
                 if (fightingEnemy == null) {
-                    fightingEnemy = new Enemy("assets/images/anim_skeleonfight.png", hero
-                            .getXs() + 1, hero.getYs(), 32, 32, map);
+                    if (enemy.getFileName().endsWith("assets/images/mage.png")) {
+                        fightingEnemy = new Enemy(
+                                "assets/images/anim_magefight.png", hero
+                                        .getXs() + 1, hero.getYs(), 41, 32, map);
+                        fightingEnemy.ANIM_OFFSET_X = CS;
+                    } else {
+                        fightingEnemy = new Enemy(
+                                "assets/images/anim_skeleonfight.png", hero
+                                        .getXs() + 1, hero.getYs(), 32, 32, map);
+                    }
                     fightingEnemy.setDir(0);
                 } else {
                 }
@@ -221,9 +230,9 @@ public class MainScreen extends Screen {
             if (fightingHero.getCount() == 9) {
                 lostHP = hero.getAttack() - enemy.getDefence();
                 enemy.setHp(enemy.getHp() - lostHP);
-                HPx = fightingEnemy.getXs() * MainScreen.CS + MainScreen.CS / 4
+                HPx = fightingEnemy.getXs() * CS + enemy.getWidth() / 2
                         - fightingEnemy.ANIM_OFFSET_X;
-                HPy = fightingEnemy.getYs() * MainScreen.CS + MainScreen.CS / 2;
+                HPy = fightingEnemy.getYs() * CS + CS / 2;
             }
             if (fightingHero.getCount() == 19) {
                 lostHP = -1;
@@ -233,6 +242,8 @@ public class MainScreen extends Screen {
                     fightingHero = null;
                     fightingEnemy = null;
                     enemyRef = null;
+                    heroFighting = false;
+                    enemyFighting = false;
                 } else {
                     heroFighting = false;
                     enemyFighting = true;
@@ -243,20 +254,22 @@ public class MainScreen extends Screen {
                 if (fightingEnemy.getCount() == 9) {
                     lostHP = enemy.getAttack() - hero.getDefence();
                     hero.setHp(hero.getHp() - lostHP);
-                    HPx = fightingHero.getXs() * MainScreen.CS + MainScreen.CS
+                    HPx = fightingHero.getXs() * CS + CS
                             / 2 - fightingHero.ANIM_OFFSET_X;
-                    HPy = fightingHero.getYs() * MainScreen.CS + MainScreen.CS
+                    HPy = fightingHero.getYs() * CS + CS
                             / 2;
                 }
                 if (fightingEnemy.getCount() == 19) {
                     lostHP = -1;
                     if (hero.getHp() <= 0) {
-                        hero.setShow(true);
+                        hero.setShow(false);
                         enemy.setShow(true);
                         isDead = true;
                         fightingHero = null;
                         fightingEnemy = null;
                         enemyRef = null;
+                        heroFighting = false;
+                        enemyFighting = false;
                     } else {
                         heroFighting = true;
                         enemyFighting = false;

@@ -31,6 +31,7 @@ public class Level {
     
     private static final String LEVEL_FILE_NAME = "assets/maps/floor";
     private static final String SKELEON_IMAGE = "assets/images/skeleon.png";
+    private static final String MAGE_IMAGE = "assets/images/mage.png";
     
     public int getLevelNo() {
         return levelNo;
@@ -63,7 +64,10 @@ public class Level {
                 
                 switch (creaturesArray[i][j]) {
                     case 's':
-                        sprites.add(new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap));
+                        sprites.add(new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap, 50, 5, 1));
+                        break;
+                    case 'm':
+                        sprites.add(new Enemy(MAGE_IMAGE, j, i, 32, 32, backGroundMap, 40, 10, 0));
                         break;
                     case 'h':
                         heroPos[0] = j;
