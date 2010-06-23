@@ -23,7 +23,16 @@ public class Enemy extends Role {
     public int ANIM_OFFSET_Y = 1;
 
     private String fileName;
+    private int exp = 10;
     
+    public int getExp() {
+        return exp;
+    }
+
+    public void setExp(int exp) {
+        this.exp = exp;
+    }
+
     public String getFileName() {
         return fileName;
     }

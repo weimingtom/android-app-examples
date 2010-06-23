@@ -6,8 +6,6 @@ import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.timer.LTimer;
 import org.loon.framework.android.game.utils.GraphicsUtils;
 
-import android.util.Log;
-
 /**
  * Copyright 2008 - 2009 Licensed under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the License.
@@ -46,6 +44,14 @@ public abstract class Sprite extends
     protected int width, height;
 
     protected LImage image;
+
+    public LImage getImg() {
+        return image;
+    }
+
+    public void getImg(LImage image) {
+        this.image = image;
+    }
 
     protected int count;
 

@@ -3,13 +3,16 @@ package org.ssg.android.game.herogame;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.loon.framework.android.game.action.sprite.StatusBar;
+import org.loon.framework.android.game.core.graphics.LColor;
 import org.loon.framework.android.game.core.graphics.LGraphics;
+import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.graphics.Screen;
 import org.loon.framework.android.game.core.timer.LTimer;
 import org.loon.framework.android.game.core.timer.LTimerContext;
+import org.loon.framework.android.game.utils.GraphicsUtils;
 
 import android.graphics.Color;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -22,11 +25,16 @@ public class MainScreen extends Screen {
     private int levelNo;
     private BackGroundMap map;
     private Hero hero;
+    private StatusBar heroHPBar;
+    private StatusBar heroEXPBar;
+    private LImage heroBarBg;
+    private StatusBar enemyHPBar;
+    private LImage enemyIcon;
+    private LImage enemyHPBg;
 
     private Hero fightingHero;
     private Enemy fightingEnemy;
 
-    public LinkedList<Sprite> fightingSprite; // 打斗中的精灵
     public LinkedList<Sprite> sprites; // 精灵
 
     private ActionKey goLeftKey;
@@ -53,6 +61,8 @@ public class MainScreen extends Screen {
         initDone = false;
         fightingHero = null;
         fightingEnemy = null;
+        if (isDead)
+            levelNo = 1;
         if (goLeftKey == null)
             goLeftKey = new ActionKey();
         else
@@ -79,8 +89,17 @@ public class MainScreen extends Screen {
         }
         hero.setXs(level.heroPos[0]);
         hero.setYs(level.heroPos[1]);
+        
+        heroBarBg = GraphicsUtils.loadImage("assets/images/herobarbg.png");
+        heroHPBar = new StatusBar(hero.getHp(), hero.getMaxHP(), 34, 10, 100, 5);
+        heroHPBar.setShowHP(true);
+        heroEXPBar = new StatusBar(0, hero.getEXPtoNextLevel(), 34, 25, 100, 4);
+        heroEXPBar.setShowHP(true);
+        heroEXPBar.setColor(LColor.yellow);
+        
+        enemyHPBg = GraphicsUtils.loadImage("assets/images/enemybarbg.png");
+        
         sprites = level.getSprites();
-        fightingSprite = new LinkedList<Sprite>();
         initDone = true;
         // delay = new LTimer(50);
 
@@ -112,9 +131,24 @@ public class MainScreen extends Screen {
 
         g.setColor(Color.WHITE);
         g.setAntiAlias(true);
-        g.drawString("Hero HP: " + hero.getHp(), 5, 20);
+        
+        g.drawImage(heroBarBg, 0, 0, 137, 32, 0, 0, 150, 35);
+        heroHPBar.setValue(hero.getHp());
+        heroHPBar.setUpdate(hero.getHp());
+        heroHPBar.createUI(g);
+        heroEXPBar.setValue(hero.getExp());
+        heroEXPBar.setUpdate(hero.getExp());
+        heroEXPBar.createUI(g);
+        
         if (enemyRef != null) {
-            g.drawString("Enemy HP: " + enemyRef.getHp(), 100, 20);
+//            g.drawString("Enemy HP: " + enemyRef.getHp(), 200, 20);
+
+            g.drawImage(enemyIcon, 150, 0, 150 + enemyIcon.getWidth() / 4, 32,
+                    0, 0, enemyIcon.getWidth() / 4, 32);
+            g.drawImage(enemyHPBg, 190, 10, 190 + 111, 17, 0, 0, 111, 7);
+            enemyHPBar.setValue(enemyRef.getHp());
+            enemyHPBar.setUpdate(enemyRef.getHp());
+            enemyHPBar.createUI(g);
         }
         g.drawString("Level: " + levelNo, 5, HEIGHT - 10);
         g.setAntiAlias(false);
@@ -193,7 +227,6 @@ public class MainScreen extends Screen {
                     fightingHero.setDir(0);
                     heroFighting = true;
                     enemyFighting = false;
-                } else {
                 }
                 if (fightingEnemy == null) {
                     if (enemy.getFileName().endsWith("assets/images/mage.png")) {
@@ -207,9 +240,13 @@ public class MainScreen extends Screen {
                                         .getXs() + 1, hero.getYs(), 32, 32, map);
                     }
                     fightingEnemy.setDir(0);
-                } else {
                 }
 
+                
+                enemyIcon = enemy.getImg();
+                enemyHPBar = new StatusBar(enemy.getHp(), enemy.getMaxHP(), 200, 11, 100, 5);
+                enemyHPBar.setShowHP(true);
+                
                 hero.setShow(false);
                 enemy.setShow(false);
 
@@ -238,6 +275,7 @@ public class MainScreen extends Screen {
                 lostHP = -1;
                 if (enemy.getHp() <= 0) {
                     hero.setShow(true);
+                    hero.addExp(enemy.getExp());
                     sprites.remove(enemy);
                     fightingHero = null;
                     fightingEnemy = null;

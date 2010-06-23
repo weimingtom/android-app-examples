@@ -126,6 +126,7 @@ public class StatusBar extends LObject implements ISprite {
 
 	public void createUI(LGraphics g) {
 		if (visible) {
+		        drawBar(g, we, w, width, x(), y());
 			if (showValue) {
 				hpString = "" + value;
 				g.setColor(LColor.white);
@@ -134,7 +135,6 @@ public class StatusBar extends LObject implements ISprite {
 				g.drawString("" + value, (x() + width / 2 - w / 2) + 2, (y()
 						+ height / 2 + h / 2));
 			}
-			drawBar(g, we, w, width, x(), y());
 		}
 	}
 

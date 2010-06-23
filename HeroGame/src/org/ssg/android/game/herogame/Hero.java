@@ -17,10 +17,39 @@ public class Hero extends Role {
     public int ANIM_OFFSET_X = MainScreen.CS / 2;
     public int ANIM_OFFSET_Y = 0;
     private boolean isAnimating = false;
+    private int level, exp;
+    private static final int EXP_TO_LEVEL = 100;
+
+    public int getEXPtoNextLevel() {
+        return EXP_TO_LEVEL;
+    }
+    
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public int getExp() {
+        return exp;
+    }
+
+    public void addExp(int exp) {
+        if (this.exp + exp > getEXPtoNextLevel()) {
+            this.exp = this.exp + exp - getEXPtoNextLevel();
+            level++;
+        } else {
+            this.exp += exp;
+        }
+    }
 
     public Hero(String filename, int x, int y, int w, int h, BackGroundMap map) {
         super(filename, x, y, w, h, map, 100, 10, 0);
         dir = DOWN;
+        level = 1;
+        exp = 0;
     }
 
     public void move(int direction) {
