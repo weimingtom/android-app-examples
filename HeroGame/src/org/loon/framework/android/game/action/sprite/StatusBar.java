@@ -128,11 +128,11 @@ public class StatusBar extends LObject implements ISprite {
 		if (visible) {
 		        drawBar(g, we, w, width, x(), y());
 			if (showValue) {
-				hpString = "" + value;
+				hpString = Integer.toString(value);
 				g.setColor(LColor.white);
 				int w = g.getFont().stringWidth(hpString);
 				int h = g.getFont().getSize();
-				g.drawString("" + value, (x() + width / 2 - w / 2) + 2, (y()
+				g.drawString(hpString, (x() + width / 2 - w / 2) + 2, (y()
 						+ height / 2 + h / 2));
 			}
 		}

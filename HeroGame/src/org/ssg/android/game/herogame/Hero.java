@@ -46,7 +46,7 @@ public class Hero extends Role {
     }
 
     public Hero(String filename, int x, int y, int w, int h, BackGroundMap map) {
-        super(filename, x, y, w, h, map, 100, 10, 0);
+        super(filename, x, y, w, h, map, 100, 10, 9);
         dir = DOWN;
         level = 1;
         exp = 0;

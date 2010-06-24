@@ -90,14 +90,14 @@ public class MainScreen extends Screen {
         hero.setXs(level.heroPos[0]);
         hero.setYs(level.heroPos[1]);
         
-        heroBarBg = GraphicsUtils.loadImage("assets/images/herobarbg.png");
-        heroHPBar = new StatusBar(hero.getHp(), hero.getMaxHP(), 34, 10, 100, 5);
+//        heroBarBg = GraphicsUtils.loadImage("assets/images/herobarbg.png");
+        heroHPBar = new TitledAndBorderedStatusBar(hero.getHp(), hero.getMaxHP(), 34, 7, 80, 5, "HP");
         heroHPBar.setShowHP(true);
-        heroEXPBar = new StatusBar(0, hero.getEXPtoNextLevel(), 34, 25, 100, 4);
+        heroEXPBar = new TitledAndBorderedStatusBar(0, hero.getEXPtoNextLevel(), 34, 22, 80, 4, "EXP");
         heroEXPBar.setShowHP(true);
         heroEXPBar.setColor(LColor.yellow);
         
-        enemyHPBg = GraphicsUtils.loadImage("assets/images/enemybarbg.png");
+//        enemyHPBg = GraphicsUtils.loadImage("assets/images/enemybarbg.png");
         
         sprites = level.getSprites();
         initDone = true;
@@ -132,25 +132,33 @@ public class MainScreen extends Screen {
         g.setColor(Color.WHITE);
         g.setAntiAlias(true);
         
-        g.drawImage(heroBarBg, 0, 0, 137, 32, 0, 0, 150, 35);
+//        g.drawImage(heroBarBg, 0, 0, 137, 32, 0, 0, 150, 35);
+        g.drawImage(hero.getImg(), (CS - hero.getWidth()) / 2, (CS - hero
+                .getHeight()) / 2,
+                (CS - hero.getWidth()) / 2 + hero.getWidth(), (CS - hero
+                        .getHeight())
+                        / 2 + hero.getHeight(), 0, 0, hero.getWidth(), hero
+                        .getHeight());
         heroHPBar.setValue(hero.getHp());
         heroHPBar.setUpdate(hero.getHp());
         heroHPBar.createUI(g);
         heroEXPBar.setValue(hero.getExp());
         heroEXPBar.setUpdate(hero.getExp());
         heroEXPBar.createUI(g);
-        
+
         if (enemyRef != null) {
 //            g.drawString("Enemy HP: " + enemyRef.getHp(), 200, 20);
 
             g.drawImage(enemyIcon, 150, 0, 150 + enemyIcon.getWidth() / 4, 32,
                     0, 0, enemyIcon.getWidth() / 4, 32);
-            g.drawImage(enemyHPBg, 190, 10, 190 + 111, 17, 0, 0, 111, 7);
+//            g.drawImage(enemyHPBg, 190, 10, 190 + 111, 17, 0, 0, 111, 7);
             enemyHPBar.setValue(enemyRef.getHp());
             enemyHPBar.setUpdate(enemyRef.getHp());
             enemyHPBar.createUI(g);
         }
-        g.drawString("Level: " + levelNo, 5, HEIGHT - 10);
+        g.drawString("Level: ", 5, HEIGHT - 10);
+        g.drawString(Integer.toString(levelNo), 40, HEIGHT - 10);
+//        g.drawRect(100 - 1,HEIGHT - 50, 150 + 2, HEIGHT - 20);
         g.setAntiAlias(false);
 
         if (fightingHero != null && heroFighting) {
@@ -244,7 +252,7 @@ public class MainScreen extends Screen {
 
                 
                 enemyIcon = enemy.getImg();
-                enemyHPBar = new StatusBar(enemy.getHp(), enemy.getMaxHP(), 200, 11, 100, 5);
+                enemyHPBar = new TitledAndBorderedStatusBar(enemy.getHp(), enemy.getMaxHP(), 180, 13, 80, 5, "HP");
                 enemyHPBar.setShowHP(true);
                 
                 hero.setShow(false);
@@ -266,6 +274,8 @@ public class MainScreen extends Screen {
         if (heroFighting) {
             if (fightingHero.getCount() == 9) {
                 lostHP = hero.getAttack() - enemy.getDefence();
+                if (lostHP < 0)
+                	lostHP = 0;
                 enemy.setHp(enemy.getHp() - lostHP);
                 HPx = fightingEnemy.getXs() * CS + enemy.getWidth() / 2
                         - fightingEnemy.ANIM_OFFSET_X;
@@ -291,6 +301,8 @@ public class MainScreen extends Screen {
             if (enemyFighting) {
                 if (fightingEnemy.getCount() == 9) {
                     lostHP = enemy.getAttack() - hero.getDefence();
+                    if (lostHP < 0)
+                    	lostHP = 0;
                     hero.setHp(hero.getHp() - lostHP);
                     HPx = fightingHero.getXs() * CS + CS
                             / 2 - fightingHero.ANIM_OFFSET_X;
