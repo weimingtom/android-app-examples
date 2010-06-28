@@ -3,6 +3,7 @@ package org.ssg.android.game.herogame.activity;
 import org.loon.framework.android.game.LGameActivity;
 import org.ssg.android.game.herogame.MainScreen;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 

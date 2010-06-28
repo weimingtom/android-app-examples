@@ -233,7 +233,7 @@ public class LImage {
 
 	public int[] getPixels(int x, int y, int w, int h) {
 		int[] pixels = new int[w * h];
-		bitmap.getPixels(pixels, 0, width, x, y, width, height);
+		bitmap.getPixels(pixels, 0, w, x, y, w, h);
 		return pixels;
 	}
 

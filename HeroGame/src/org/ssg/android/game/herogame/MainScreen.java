@@ -10,6 +10,7 @@ import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.graphics.Screen;
 import org.loon.framework.android.game.core.timer.LTimer;
 import org.loon.framework.android.game.core.timer.LTimerContext;
+import org.loon.framework.android.game.extend.DrawButton;
 import org.loon.framework.android.game.utils.GraphicsUtils;
 
 import android.graphics.Color;
@@ -53,6 +54,10 @@ public class MainScreen extends Screen {
     private boolean initDone = false;
 
     private InfoBox infoBox;
+    
+    private Dialog dialog;
+    
+    private DrawButton[] buttons;
 
     public MainScreen() {
         levelNo = 1;
@@ -109,6 +114,16 @@ public class MainScreen extends Screen {
 
         infoBox = new InfoBox();
 
+        dialog = new Dialog("assets/images/window.9.png", 300, 460);
+        dialog.setShown(false);
+        
+        buttons = new DrawButton[1];
+        LImage checked = GraphicsUtils.loadImage("assets/images/button.png");
+        DrawButton.initialize(this, buttons, 0, checked, null);
+        buttons[0].setDrawXY(230, 450);
+        buttons[0].setName("Status");
+        buttons[0].setComplete(false);
+        
         initDone = true;
         // delay = new LTimer(50);
 
@@ -199,6 +214,11 @@ public class MainScreen extends Screen {
             drawLostHP(g);
         }
 
+
+        infoBox.draw(g);
+        dialog.draw(g);
+        buttons[0].draw(g);
+        
         if (isDead) {
             g.setColor(Color.BLACK);
             g.fillRect(0, 160, 320, 160);
@@ -206,7 +226,6 @@ public class MainScreen extends Screen {
             g.drawString("死了！！！", 150, 240);
         }
 
-        infoBox.draw(g);
     }
 
     private void drawLostHP(LGraphics g) {
@@ -223,7 +242,7 @@ public class MainScreen extends Screen {
             return;
 
         // role.update(timer.getTimeSinceLastUpdate());
-
+        
         if (fightingHero != null) {
             fight(hero, enemyRef);
         } else {
@@ -424,17 +443,33 @@ public class MainScreen extends Screen {
 
     @Override
     public boolean onTouchDown(MotionEvent arg0) {
-        int curX, curY;
-        curX = getTouchX() / 32;
-        curY = getTouchY() / 32;
-        if (infoBox.getCurX() == curX && infoBox.getCurY() == curY
-                && infoBox.isVisible()) {
-            infoBox.setVisible(false);
-        } else {
-            infoBox.setCurX(curX);
-            infoBox.setCurY(curY);
-            infoBox.setVisible(true);
-        }
+    	if (buttons[0].checkComplete()) {
+            if (buttons[0].checkClick() != -1) {
+            	 if (!dialog.isShown()) {
+            		 dialog.setShown(true);
+            		 buttons[0].setComplete(true);
+            	 } else {
+            		 dialog.setShown(false);
+            		 buttons[0].setComplete(false);
+            	 }
+            }
+    	} else {
+    		if (!dialog.isShown()) {
+    			int curX, curY;
+    			curX = getTouchX() / 32;
+    			curY = getTouchY() / 32;
+    			if (infoBox.getCurX() == curX && infoBox.getCurY() == curY
+    					&& infoBox.isVisible()) {
+    				infoBox.setVisible(false);
+    			} else {
+    				infoBox.setCurX(curX);
+    				infoBox.setCurY(curY);
+    				infoBox.setVisible(true);
+    			}
+    		} else {
+    			buttons[0].setComplete(true);
+    		}
+    	}
 
         return false;
     }
@@ -446,6 +481,9 @@ public class MainScreen extends Screen {
 
     @Override
     public boolean onTouchUp(MotionEvent arg0) {
+//    	if (buttons[0].isComplete()) {
+//    		buttons[0].setComplete(false);
+//    	}
         return false;
     }
 
