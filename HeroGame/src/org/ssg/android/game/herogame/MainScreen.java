@@ -52,6 +52,8 @@ public class MainScreen extends Screen {
     private Enemy enemyRef;
     private boolean initDone = false;
 
+    private InfoBox infoBox;
+
     public MainScreen() {
         levelNo = 1;
         init();
@@ -89,17 +91,24 @@ public class MainScreen extends Screen {
         }
         hero.setXs(level.heroPos[0]);
         hero.setYs(level.heroPos[1]);
-        
-//        heroBarBg = GraphicsUtils.loadImage("assets/images/herobarbg.png");
-        heroHPBar = new TitledAndBorderedStatusBar(hero.getHp(), hero.getMaxHP(), 34, 7, 80, 5, "HP");
+
+        // heroBarBg = GraphicsUtils.loadImage("assets/images/herobarbg.png");
+        heroHPBar = new TitledAndBorderedStatusBar(hero.getHp(), hero
+                .getMaxHP(), 34, 7, 80, 5, "HP");
         heroHPBar.setShowHP(true);
-        heroEXPBar = new TitledAndBorderedStatusBar(0, hero.getEXPtoNextLevel(), 34, 22, 80, 4, "EXP");
+        heroEXPBar = new TitledAndBorderedStatusBar(0,
+                hero.getEXPtoNextLevel(), 34, 22, 80, 4, "EXP");
         heroEXPBar.setShowHP(true);
         heroEXPBar.setColor(LColor.yellow);
-        
-//        enemyHPBg = GraphicsUtils.loadImage("assets/images/enemybarbg.png");
-        
+
+        // enemyHPBg = GraphicsUtils.loadImage("assets/images/enemybarbg.png");
+        enemyHPBar = new TitledAndBorderedStatusBar(1, 1, 180, 13, 80, 5, "HP");
+        enemyHPBar.setShowHP(true);
+
         sprites = level.getSprites();
+
+        infoBox = new InfoBox();
+
         initDone = true;
         // delay = new LTimer(50);
 
@@ -125,14 +134,28 @@ public class MainScreen extends Screen {
             int x = sprite.getXs();
             int y = sprite.getYs();
             if (x > level.firstTileX && x < level.lastTileX
-                    && y > level.firstTileY && y < level.lastTileY)
+                    && y > level.firstTileY && y < level.lastTileY) {
                 sprite.draw(g, offsetX, offsetY);
+
+                if (fightingHero == null && x == infoBox.getCurX()
+                        && y == infoBox.getCurY() && sprite instanceof Enemy
+                        && infoBox.isVisible()) {
+                    g.drawImage(sprite.getImg(), 150, 0, 150 + sprite.getImg()
+                            .getWidth() / 4, 32, 0, 0, sprite.getImg()
+                            .getWidth() / 4, 32);
+
+                    enemyHPBar.setMaxValue(((Enemy) sprite).getMaxHP());
+                    enemyHPBar.setValue(((Enemy) sprite).getHp());
+                    enemyHPBar.setUpdate(((Enemy) sprite).getHp());
+                    enemyHPBar.createUI(g);
+                }
+            }
         }
 
         g.setColor(Color.WHITE);
         g.setAntiAlias(true);
-        
-//        g.drawImage(heroBarBg, 0, 0, 137, 32, 0, 0, 150, 35);
+
+        // g.drawImage(heroBarBg, 0, 0, 137, 32, 0, 0, 150, 35);
         g.drawImage(hero.getImg(), (CS - hero.getWidth()) / 2, (CS - hero
                 .getHeight()) / 2,
                 (CS - hero.getWidth()) / 2 + hero.getWidth(), (CS - hero
@@ -147,18 +170,18 @@ public class MainScreen extends Screen {
         heroEXPBar.createUI(g);
 
         if (enemyRef != null) {
-//            g.drawString("Enemy HP: " + enemyRef.getHp(), 200, 20);
+            // g.drawString("Enemy HP: " + enemyRef.getHp(), 200, 20);
 
             g.drawImage(enemyIcon, 150, 0, 150 + enemyIcon.getWidth() / 4, 32,
                     0, 0, enemyIcon.getWidth() / 4, 32);
-//            g.drawImage(enemyHPBg, 190, 10, 190 + 111, 17, 0, 0, 111, 7);
+            // g.drawImage(enemyHPBg, 190, 10, 190 + 111, 17, 0, 0, 111, 7);
             enemyHPBar.setValue(enemyRef.getHp());
             enemyHPBar.setUpdate(enemyRef.getHp());
             enemyHPBar.createUI(g);
         }
         g.drawString("Level: ", 5, HEIGHT - 10);
         g.drawString(Integer.toString(levelNo), 40, HEIGHT - 10);
-//        g.drawRect(100 - 1,HEIGHT - 50, 150 + 2, HEIGHT - 20);
+        // g.drawRect(100 - 1,HEIGHT - 50, 150 + 2, HEIGHT - 20);
         g.setAntiAlias(false);
 
         if (fightingHero != null && heroFighting) {
@@ -182,6 +205,8 @@ public class MainScreen extends Screen {
             g.setColor(Color.WHITE);
             g.drawString("死了！！！", 150, 240);
         }
+
+        infoBox.draw(g);
     }
 
     private void drawLostHP(LGraphics g) {
@@ -250,11 +275,10 @@ public class MainScreen extends Screen {
                     fightingEnemy.setDir(0);
                 }
 
-                
                 enemyIcon = enemy.getImg();
-                enemyHPBar = new TitledAndBorderedStatusBar(enemy.getHp(), enemy.getMaxHP(), 180, 13, 80, 5, "HP");
-                enemyHPBar.setShowHP(true);
-                
+                enemyHPBar.setValue(enemy.getHp());
+                enemyHPBar.setMaxValue(enemy.getMaxHP());
+
                 hero.setShow(false);
                 enemy.setShow(false);
 
@@ -275,7 +299,7 @@ public class MainScreen extends Screen {
             if (fightingHero.getCount() == 9) {
                 lostHP = hero.getAttack() - enemy.getDefence();
                 if (lostHP < 0)
-                	lostHP = 0;
+                    lostHP = 0;
                 enemy.setHp(enemy.getHp() - lostHP);
                 HPx = fightingEnemy.getXs() * CS + enemy.getWidth() / 2
                         - fightingEnemy.ANIM_OFFSET_X;
@@ -302,12 +326,11 @@ public class MainScreen extends Screen {
                 if (fightingEnemy.getCount() == 9) {
                     lostHP = enemy.getAttack() - hero.getDefence();
                     if (lostHP < 0)
-                    	lostHP = 0;
+                        lostHP = 0;
                     hero.setHp(hero.getHp() - lostHP);
-                    HPx = fightingHero.getXs() * CS + CS
-                            / 2 - fightingHero.ANIM_OFFSET_X;
-                    HPy = fightingHero.getYs() * CS + CS
-                            / 2;
+                    HPx = fightingHero.getXs() * CS + CS / 2
+                            - fightingHero.ANIM_OFFSET_X;
+                    HPy = fightingHero.getYs() * CS + CS / 2;
                 }
                 if (fightingEnemy.getCount() == 19) {
                     lostHP = -1;
@@ -401,6 +424,18 @@ public class MainScreen extends Screen {
 
     @Override
     public boolean onTouchDown(MotionEvent arg0) {
+        int curX, curY;
+        curX = getTouchX() / 32;
+        curY = getTouchY() / 32;
+        if (infoBox.getCurX() == curX && infoBox.getCurY() == curY
+                && infoBox.isVisible()) {
+            infoBox.setVisible(false);
+        } else {
+            infoBox.setCurX(curX);
+            infoBox.setCurY(curY);
+            infoBox.setVisible(true);
+        }
+
         return false;
     }
 

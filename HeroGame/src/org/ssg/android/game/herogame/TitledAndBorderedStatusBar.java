@@ -35,10 +35,12 @@ public class TitledAndBorderedStatusBar extends StatusBar {
 
 	@Override
 	public void createUI(LGraphics g) {
+		g.setAntiAlias(true);
 		super.createUI(g);
 		g.setFont(LFont.SIZE_SMALL + 2);
 		int h = g.getFont().getSize();
 		g.drawString(title, xx, yy + h / 2 + 1);
 		g.drawRect(x() - 2, y() - 2, getWidth() + 4, getHeight() + 4);
+		g.setAntiAlias(false);
 	}
 }
