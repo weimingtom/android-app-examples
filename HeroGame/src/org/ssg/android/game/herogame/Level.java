@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 import org.loon.framework.android.game.core.resource.Resources;
+import org.ssg.android.game.herogame.control.BackGroundMap;
 
 public class Level {
     
@@ -59,15 +60,20 @@ public class Level {
     
     public void init() {
         calcTileXY(0, 0);
+        Enemy enemy;
         for (int i = firstTileY; i < lastTileY; i++) {
             for (int j = firstTileX; j < lastTileX; j++) {
                 
                 switch (creaturesArray[i][j]) {
                     case 's':
-                        sprites.add(new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap, 50, 5, 1));
+                    	enemy = new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap, 50, 5, 1);
+                    	enemy.setExp(30);
+                        sprites.add(enemy);
                         break;
                     case 'm':
-                        sprites.add(new Enemy(MAGE_IMAGE, j, i, 32, 32, backGroundMap, 40, 10, 0));
+                    	enemy = new Enemy(MAGE_IMAGE, j, i, 32, 32, backGroundMap, 40, 10, 0);
+                    	enemy.setExp(40);
+                        sprites.add(enemy);
                         break;
                     case 'h':
                         heroPos[0] = j;

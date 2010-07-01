@@ -12,6 +12,11 @@ import org.loon.framework.android.game.core.timer.LTimer;
 import org.loon.framework.android.game.core.timer.LTimerContext;
 import org.loon.framework.android.game.extend.DrawButton;
 import org.loon.framework.android.game.utils.GraphicsUtils;
+import org.ssg.android.game.herogame.control.BackGroundMap;
+import org.ssg.android.game.herogame.control.Dialog;
+import org.ssg.android.game.herogame.control.HeroStatusDialog;
+import org.ssg.android.game.herogame.control.InfoBox;
+import org.ssg.android.game.herogame.control.TitledAndBorderedStatusBar;
 
 import android.graphics.Color;
 import android.view.KeyEvent;
@@ -114,7 +119,7 @@ public class MainScreen extends Screen {
 
         infoBox = new InfoBox();
 
-        dialog = new Dialog("assets/images/window.9.png", 300, 460);
+        dialog = new HeroStatusDialog(hero);
         dialog.setShown(false);
         
         buttons = new DrawButton[1];

@@ -1,4 +1,4 @@
-package org.ssg.android.game.herogame;
+package org.ssg.android.game.herogame.control;
 
 import org.loon.framework.android.game.core.graphics.LGraphics;
 

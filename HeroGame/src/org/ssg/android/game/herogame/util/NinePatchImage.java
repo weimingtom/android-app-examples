@@ -36,7 +36,7 @@
  */
 
 
-package org.ssg.android.game.herogame;
+package org.ssg.android.game.herogame.util;
 
 import java.util.ArrayList;
 import java.util.List;

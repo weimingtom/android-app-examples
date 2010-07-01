@@ -1,6 +1,7 @@
 package org.ssg.android.game.herogame;
 
 import org.loon.framework.android.game.core.graphics.LGraphics;
+import org.ssg.android.game.herogame.control.BackGroundMap;
 
 /**
  * Copyright 2008 - 2009 Licensed under the Apache License, Version 2.0 (the

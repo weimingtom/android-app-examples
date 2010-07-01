@@ -1,5 +1,7 @@
 package org.ssg.android.game.herogame;
 
+import org.ssg.android.game.herogame.control.BackGroundMap;
+
 public abstract class Role extends Sprite {
 
     public int getHp() {

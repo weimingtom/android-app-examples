@@ -1,14 +1,16 @@
-package org.ssg.android.game.herogame;
+package org.ssg.android.game.herogame.control;
 
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
+import org.ssg.android.game.herogame.MainScreen;
+import org.ssg.android.game.herogame.util.NinePatchImage;
 
 public class Dialog {
 
 	private NinePatchImage ninePatchImg;
 	private LImage img;
 	private int scaledWidth, scaledHeight;
-	private int x, y;
+	protected int x, y;
 	private boolean isShown;
 
 	public boolean isShown() {
@@ -38,5 +40,7 @@ public class Dialog {
 			return;
 		g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
 				scaledWidth, scaledHeight);
+		
+		
 	}
 }

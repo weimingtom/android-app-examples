@@ -1,4 +1,4 @@
-package org.ssg.android.game.herogame;
+package org.ssg.android.game.herogame.control;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,6 +11,7 @@ import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.resource.Resources;
 import org.loon.framework.android.game.utils.GraphicsUtils;
+import org.ssg.android.game.herogame.MainScreen;
 
 /**
  * @author chenpeng

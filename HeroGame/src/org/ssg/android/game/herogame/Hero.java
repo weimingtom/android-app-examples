@@ -3,6 +3,7 @@ package org.ssg.android.game.herogame;
 import org.loon.framework.android.game.action.map.RectBox;
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.timer.LTimer;
+import org.ssg.android.game.herogame.control.BackGroundMap;
 
 /**
  * @author chenpeng
@@ -18,10 +19,19 @@ public class Hero extends Role {
     public int ANIM_OFFSET_Y = 0;
     private boolean isAnimating = false;
     private int level, exp;
-    private static final int EXP_TO_LEVEL = 100;
+    private static final int[] EXP_TO_LEVEL = {-1, 50, 60, 70, 80, 90};
+    private int availablePoints;
 
-    public int getEXPtoNextLevel() {
-        return EXP_TO_LEVEL;
+    public int getAvailablePoints() {
+		return availablePoints;
+	}
+
+	public void setAvailablePoints(int availablePoints) {
+		this.availablePoints = availablePoints;
+	}
+
+	public int getEXPtoNextLevel() {
+        return EXP_TO_LEVEL[level];
     }
     
     public int getLevel() {
@@ -37,9 +47,10 @@ public class Hero extends Role {
     }
 
     public void addExp(int exp) {
-        if (this.exp + exp > getEXPtoNextLevel()) {
+        if (this.exp + exp >= getEXPtoNextLevel()) {
             this.exp = this.exp + exp - getEXPtoNextLevel();
             level++;
+            availablePoints += 4;
         } else {
             this.exp += exp;
         }
@@ -50,6 +61,7 @@ public class Hero extends Role {
         dir = DOWN;
         level = 1;
         exp = 0;
+        availablePoints = 0;
     }
 
     public void move(int direction) {
