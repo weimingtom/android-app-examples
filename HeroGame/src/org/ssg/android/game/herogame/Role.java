@@ -4,6 +4,36 @@ import org.ssg.android.game.herogame.control.BackGroundMap;
 
 public abstract class Role extends Sprite {
 
+
+    public int hp; // 生命力
+    public int attack; // 攻击力
+    public int defence;// 防御力
+    public int maxHP;
+    
+    public int hit;
+	public int strength;
+	public int element_set;
+	public boolean critical;
+	public int dex;
+	public int agi;
+	public boolean guarding;
+	
+    public int getHit() {
+		return hit;
+	}
+
+	public void setHit(int hit) {
+		this.hit = hit;
+	}
+
+	public int getStrength() {
+		return strength;
+	}
+
+	public void setStrength(int strength) {
+		this.strength = strength;
+	}
+    
     public int getHp() {
         return hp;
     }
@@ -30,12 +60,6 @@ public abstract class Role extends Sprite {
     public void setDefence(int defence) {
         this.defence = defence;
     }
-
-    private int hp; // 生命力
-    private int attack; // 攻击力
-    private int defence;// 防御力
-
-    private int maxHP;
 
     public int getMaxHP() {
         return maxHP;

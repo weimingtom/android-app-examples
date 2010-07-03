@@ -1,11 +1,8 @@
 package org.ssg.android.game.herogame.control;
 
 import org.loon.framework.android.game.action.sprite.StatusBar;
-import org.loon.framework.android.game.core.graphics.LColor;
 import org.loon.framework.android.game.core.graphics.LFont;
 import org.loon.framework.android.game.core.graphics.LGraphics;
-
-import android.util.Log;
 
 public class TitledAndBorderedStatusBar extends StatusBar {
 

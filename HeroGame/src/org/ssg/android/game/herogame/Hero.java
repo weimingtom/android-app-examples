@@ -19,7 +19,7 @@ public class Hero extends Role {
     public int ANIM_OFFSET_Y = 0;
     private boolean isAnimating = false;
     private int level, exp;
-    private static final int[] EXP_TO_LEVEL = {-1, 50, 60, 70, 80, 90};
+    private static final int[] EXP_TO_LEVEL = {-1, 50, 60, 70, 80, 90, 100, 110, 120};
     private int availablePoints;
 
     public int getAvailablePoints() {
