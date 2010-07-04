@@ -20,7 +20,6 @@ import org.ssg.android.game.herogame.control.ToolBar;
 import org.ssg.android.game.herogame.control.Touchable;
 
 import android.graphics.Color;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -35,10 +34,8 @@ public class MainScreen extends Screen {
 	private Hero hero;
 	private StatusBar heroHPBar;
 	private StatusBar heroEXPBar;
-	private LImage heroBarBg;
 	private StatusBar enemyHPBar;
 	private LImage enemyIcon;
-	private LImage enemyHPBg;
 
 	private Hero fightingHero;
 	private Enemy fightingEnemy;
@@ -50,13 +47,10 @@ public class MainScreen extends Screen {
 	private ActionKey goUpKey;
 	private ActionKey goDownKey;
 
-	private LTimer delay;
-
 	private boolean isDead = false;
 	private boolean heroFighting = false;
 	private boolean enemyFighting = false;
-	private int lostHP = -1;
-	private int HPx, HPy, step1 = MainScreen.CS / 10;
+	private int step1 = MainScreen.CS / 10;
 	private Enemy enemyRef;
 	private boolean initDone = false;
 
@@ -69,10 +63,10 @@ public class MainScreen extends Screen {
 	private LinkedList<Touchable> touchables;
 
 	public static MainScreen instance;
-	
-	private String archivingId;	//存档ID
-//	private String archivingName;//存档名称
-	
+
+	private String archivingId; // 存档ID
+	// private String archivingName;//存档名称
+
 	public String getArchivingId() {
 		return archivingId;
 	}
@@ -81,13 +75,13 @@ public class MainScreen extends Screen {
 		this.archivingId = archivingId;
 	}
 
-//	public String getArchivingName() {
-//		return archivingName;
-//	}
-//
-//	public void setArchivingName(String archivingName) {
-//		this.archivingName = archivingName;
-//	}
+	// public String getArchivingName() {
+	// return archivingName;
+	// }
+	//
+	// public void setArchivingName(String archivingName) {
+	// this.archivingName = archivingName;
+	// }
 
 	public MainScreen() {
 		levelNo = 1;
@@ -97,6 +91,9 @@ public class MainScreen extends Screen {
 
 	private void init() {
 		initDone = false;
+
+		levelInit();
+
 		fightingHero = null;
 		fightingEnemy = null;
 		if (isDead)
@@ -117,15 +114,7 @@ public class MainScreen extends Screen {
 			goDownKey = new ActionKey();
 		else
 			goDownKey.reset();
-		
-		level = new Level(archivingId,levelNo);
-		map = level.getBackGroundMap();
-		
-		hero = level.getHero();
 
-		isDead = false;
-
-		// heroBarBg = GraphicsUtils.loadImage("assets/images/herobarbg.png");
 		heroHPBar = new TitledAndBorderedStatusBar(hero.getHp(), hero
 				.getMaxHP(), 34, 7, 80, 5, "HP");
 		heroHPBar.setShowHP(true);
@@ -134,11 +123,8 @@ public class MainScreen extends Screen {
 		heroEXPBar.setShowHP(true);
 		heroEXPBar.setColor(LColor.yellow);
 
-		// enemyHPBg = GraphicsUtils.loadImage("assets/images/enemybarbg.png");
 		enemyHPBar = new TitledAndBorderedStatusBar(1, 1, 180, 13, 80, 5, "HP");
 		enemyHPBar.setShowHP(true);
-
-		sprites = level.getSprites();
 
 		infoBox = new InfoBox();
 
@@ -152,8 +138,22 @@ public class MainScreen extends Screen {
 		addTouchable(toolbar);
 
 		initDone = true;
-		// delay = new LTimer(50);
+	}
 
+	private void levelInit() {
+		level = new Level(archivingId, levelNo);
+		map = level.getBackGroundMap();
+
+		if (hero == null || isDead) {
+			hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
+			isDead = false;
+		} else {
+			hero.setMap(map);
+		}
+		hero.setXs(level.heroPos[0]);
+		hero.setYs(level.heroPos[1]);
+
+		sprites = level.getSprites();
 	}
 
 	@Override
@@ -196,8 +196,6 @@ public class MainScreen extends Screen {
 
 		g.setColor(Color.WHITE);
 		g.setAntiAlias(true);
-
-		// g.drawImage(heroBarBg, 0, 0, 137, 32, 0, 0, 150, 35);
 		g.drawImage(hero.getImg(), (CS - hero.getWidth()) / 2, (CS - hero
 				.getHeight()) / 2,
 				(CS - hero.getWidth()) / 2 + hero.getWidth(), (CS - hero
@@ -214,36 +212,24 @@ public class MainScreen extends Screen {
 		heroEXPBar.createUI(g);
 
 		if (enemyRef != null) {
-			// g.drawString("Enemy HP: " + enemyRef.getHp(), 200, 20);
-
 			g.drawImage(enemyIcon, 150, 0, 150 + enemyIcon.getWidth() / 4, 32,
 					0, 0, enemyIcon.getWidth() / 4, 32);
-			// g.drawImage(enemyHPBg, 190, 10, 190 + 111, 17, 0, 0, 111, 7);
 			enemyHPBar.setValue(enemyRef.getHp());
 			enemyHPBar.setUpdate(enemyRef.getHp());
 			enemyHPBar.createUI(g);
 		}
 		g.drawString("Level: ", 5, HEIGHT - 10);
 		g.drawString(Integer.toString(levelNo), 40, HEIGHT - 10);
-		// g.drawRect(100 - 1,HEIGHT - 50, 150 + 2, HEIGHT - 20);
 		g.setAntiAlias(false);
 
 		if (fightingHero != null && heroFighting) {
 			fightingHero.drawFightingAnim(g, offsetX, offsetY);
 			drawLostHP(g, fightingHero);
-//			fightingEnemy.setCount(0);
-//			fightingEnemy.drawAnimation(g, offsetX, offsetY, 0);
 		}
 		if (fightingEnemy != null && enemyFighting) {
 			fightingEnemy.drawFightingAnim(g, offsetX, offsetY);
 			drawLostHP(g, fightingEnemy);
-//			fightingHero.setCount(0);
-//			fightingHero.drawAnimation(g, offsetX, offsetY, 0);
 		}
-
-//		if (lostHP != -1) {
-//			drawLostHP(g);
-//		}
 
 		infoBox.draw(g);
 		dialog.draw(g);
@@ -261,7 +247,7 @@ public class MainScreen extends Screen {
 	private void drawLostHP(LGraphics g, Role role) {
 		if (role == null || role.damage == -1 || role.frameNo == 10)
 			return;
-		
+
 		g.setColor(Color.WHITE);
 		g.setAntiAlias(true);
 		g.drawString(role.damage + "", role.HPx, role.HPy);
@@ -271,21 +257,11 @@ public class MainScreen extends Screen {
 	}
 
 	public void alter(LTimerContext timer) {
-		// if (delay.action(timer.getTimeSinceLastUpdate())) {
 		if (isDead)
 			return;
 
-		// role.update(timer.getTimeSinceLastUpdate());
-
 		if (heroFighting || enemyFighting) {
-			boolean updateFight = fightingHero.updateFightingAnim(timer
-					.getTimeSinceLastUpdate());
-			updateFight = fightingEnemy.updateFightingAnim(timer
-					.getTimeSinceLastUpdate())
-					|| updateFight;
-			if (updateFight) {
-				fight(hero, enemyRef);
-			}
+			fight(hero, enemyRef, timer.getTimeSinceLastUpdate());
 		} else {
 			if (goRightKey.isPressed()) {
 				hero.move(Hero.RIGHT);
@@ -299,7 +275,7 @@ public class MainScreen extends Screen {
 
 			if (map.isDoor(hero.getXs(), hero.getYs())) {
 				levelNo++;
-				init();
+				levelInit();
 			}
 		}
 
@@ -343,8 +319,6 @@ public class MainScreen extends Screen {
 				hero.setShow(false);
 				enemy.setShow(false);
 
-				fight(hero, enemy);
-
 				goRightKey.reset();
 				goLeftKey.reset();
 				goUpKey.reset();
@@ -355,8 +329,8 @@ public class MainScreen extends Screen {
 
 	}
 
-	private void fight(Hero hero, Enemy enemy) {
-		if (heroFighting) {
+	private void fight(Hero hero, Enemy enemy, long elapsedTime) {
+		if (fightingHero.updateFightingAnim(elapsedTime)) {
 			if (fightingHero.getCount() == Hero.ANIM_HIT_FRAME) {
 				fightingEnemy.damage = hero.getAttack() - enemy.getDefence();
 				if (fightingEnemy.damage < 0)
@@ -379,7 +353,7 @@ public class MainScreen extends Screen {
 				}
 			}
 		}
-		if (enemyFighting) {
+		if (fightingEnemy.updateFightingAnim(elapsedTime)) {
 			if (fightingEnemy.getCount() == Enemy.ANIM_HIT_FRAME) {
 				fightingHero.damage = enemy.getAttack() - hero.getDefence();
 				if (fightingHero.damage < 0)
@@ -484,12 +458,11 @@ public class MainScreen extends Screen {
 				flag = flag | touchable.isTouched();
 				if (touchable instanceof Dialog)
 					flag = true;
-//				if (touchable.isTouched()) {
-					for (OnTouchListener listener : touchable
-							.getOnTouchListener()) {
-						listener.onTouchDown(arg0);
-					}
-//				}
+				// if (touchable.isTouched()) {
+				for (OnTouchListener listener : touchable.getOnTouchListener()) {
+					listener.onTouchDown(arg0);
+				}
+				// }
 			}
 			if (flag)
 				return false;
@@ -520,12 +493,11 @@ public class MainScreen extends Screen {
 				flag = flag | touchable.isTouched();
 				if (touchable instanceof Dialog)
 					flag = true;
-//				if (touchable.isTouched()) {
-					for (OnTouchListener listener : touchable
-							.getOnTouchListener()) {
-						listener.onTouchMove(arg0);
-					}
-//				}
+				// if (touchable.isTouched()) {
+				for (OnTouchListener listener : touchable.getOnTouchListener()) {
+					listener.onTouchMove(arg0);
+				}
+				// }
 			}
 			if (flag)
 				return false;
@@ -543,26 +515,17 @@ public class MainScreen extends Screen {
 				flag = flag | touchable.isTouched();
 				if (touchable instanceof Dialog)
 					flag = true;
-//				if (touchable.isTouched()) {
-					for (OnTouchListener listener : touchable
-							.getOnTouchListener()) {
-						listener.onTouchUp(arg0);
-					}
-//				}
+				// if (touchable.isTouched()) {
+				for (OnTouchListener listener : touchable.getOnTouchListener()) {
+					listener.onTouchUp(arg0);
+				}
+				// }
 			}
 			if (flag)
 				return false;
 		}
 		return false;
 	}
-
-	//
-	// @Override
-	// public boolean onTouchEvent(MotionEvent e) {
-	// super.onTouchEvent(e);
-	//		
-	// return false;
-	// }
 
 	class ActionKey {
 
