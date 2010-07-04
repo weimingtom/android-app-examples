@@ -2,6 +2,7 @@ package org.ssg.android.game.herogame.db;
 
 import org.ssg.android.game.herogame.Enemy;
 import org.ssg.android.game.herogame.Hero;
+import org.ssg.android.game.herogame.activity.bean.ArchivingBean;
 
 public class DBManager {
 	/**
@@ -105,7 +106,7 @@ public class DBManager {
 	 */
 	public static void changeAutoSaveArchivingToAnthorArchiving(
 			String anthorArchivingName) {
-		ArchivingManager.changeArchivingToAnthorArchiving(
+		ArchivingManager.getInstance().changeArchivingToAnthorArchiving(
 				ConstantUtil.autoSaveArchivingName, anthorArchivingName);
 	}
 
@@ -115,7 +116,7 @@ public class DBManager {
 	 * @param archivingName
 	 */
 	public static void deleteArchiving(String archivingName) {
-		ArchivingManager.deleteArchiving(archivingName);
+		ArchivingManager.getInstance().deleteArchiving(archivingName);
 	}
 
 	/**
@@ -124,7 +125,17 @@ public class DBManager {
 	 * @return
 	 */
 	public static String[] getArchivings() {
-		return ArchivingManager.getArchivings();
+		return ArchivingManager.getInstance().getArchivings();
+	}
+
+	/**
+	 * 根据index获取ArchivingBean
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public static ArchivingBean getArchivingBeanByIndex(int index) {
+		return ArchivingManager.getInstance().getArchivingBeanByIndex(index);
 	}
 
 }
