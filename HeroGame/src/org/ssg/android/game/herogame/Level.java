@@ -8,6 +8,7 @@ import java.util.LinkedList;
 
 import org.loon.framework.android.game.core.resource.Resources;
 import org.ssg.android.game.herogame.control.BackGroundMap;
+import org.ssg.android.game.herogame.db.DBManager;
 
 public class Level {
     
@@ -48,32 +49,56 @@ public class Level {
     }
 
     private char[][] backGroundArray, creaturesArray;
-    
-    public Level(String archivingId,int levelNo) {
+
+    public Level(int levelNo) {		//自动存档的Level，需要按照地图初始化
         this.levelNo = levelNo;
         loadLevel(LEVEL_FILE_NAME + levelNo);
         
         backGroundMap = new BackGroundMap(backGroundArray, col, row);
         sprites = new LinkedList<Sprite>();
-        init();
+       
+        initSpriteFromMap();//从地图内获取英雄、怪等信息
     }
     
-    public void init() {
+    public Level(String archivingName,int levelNo) {	//肯定不是自动存档的Level
+        this.levelNo = levelNo;
+        loadLevel(LEVEL_FILE_NAME + levelNo);
+        
+        backGroundMap = new BackGroundMap(backGroundArray, col, row);
+        sprites = new LinkedList<Sprite>();
+        
+        //从存档内获取英雄、怪等信息
+        initSpriteFromArchiving(archivingName);
+    }
+    
+    private void initSpriteFromArchiving(String archivingName) {	//初始化英雄、怪等信息
         calcTileXY(0, 0);
-        Enemy enemy;
+        Hero hero = DBManager.loadHero(archivingName);
+        Enemy[] enemys = DBManager.loadEnemys(levelNo, archivingName);
+        
+        for(int i=0;i<enemys.length;i++){
+        	sprites.add(enemys[i]);	
+        }
+        
+        heroPos[0] = hero.x;
+        heroPos[1] = hero.y;
+    }
+    
+    private void initSpriteFromMap() {	//初始化英雄、怪等信息
+        calcTileXY(0, 0);
         for (int i = firstTileY; i < lastTileY; i++) {
             for (int j = firstTileX; j < lastTileX; j++) {
                 
                 switch (creaturesArray[i][j]) {
                     case 's':
-                    	enemy = new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap, 50, 5, 1);
-                    	enemy.setExp(30);
-                        sprites.add(enemy);
+                    	Enemy enemy_s = new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap, 50, 5, 1);
+                    	enemy_s.setExp(30);
+                        sprites.add(enemy_s);
                         break;
                     case 'm':
-                    	enemy = new Enemy(MAGE_IMAGE, j, i, 32, 32, backGroundMap, 40, 10, 0);
-                    	enemy.setExp(40);
-                        sprites.add(enemy);
+                    	Enemy enemy_m = new Enemy(MAGE_IMAGE, j, i, 32, 32, backGroundMap, 40, 10, 0);
+                    	enemy_m.setExp(40);
+                        sprites.add(enemy_m);
                         break;
                     case 'h':
                         heroPos[0] = j;
@@ -82,10 +107,10 @@ public class Level {
                 }
             }
         }
-        
     }
     
-    public void loadLevel(final String fileName){
+    //包括地图、英雄、怪等信息
+    private void loadLevel(final String fileName){
         InputStream in = Resources.getResourceAsStream(fileName);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String result = null;
