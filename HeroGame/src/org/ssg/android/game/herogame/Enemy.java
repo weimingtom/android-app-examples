@@ -1,7 +1,10 @@
 package org.ssg.android.game.herogame;
 
 import org.loon.framework.android.game.core.graphics.LGraphics;
+import org.loon.framework.android.game.core.timer.LTimer;
 import org.ssg.android.game.herogame.control.BackGroundMap;
+
+import android.util.Log;
 
 /**
  * Copyright 2008 - 2009 Licensed under the Apache License, Version 2.0 (the
@@ -22,6 +25,8 @@ public class Enemy extends Role {
 
 	public int ANIM_OFFSET_X = MainScreen.CS * 3 / 4;
 	public int ANIM_OFFSET_Y = 1;
+	public static final int ANIM_HIT_FRAME = 9;
+	public static final int ANIM_FINAL_FRAME = 18;
 
 	private String fileName;
 	private int exp = 10;
@@ -46,22 +51,34 @@ public class Enemy extends Role {
 			BackGroundMap map, int hp, int attack, int defence) {
 		super(filename, x, y, w, h, map, hp, attack, defence);
 		fileName = filename;
-		HPx = getXs() * MainScreen.CS + getWidth() / 2 - ANIM_OFFSET_X;
-		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
+		resetHPxy();
 	}
 
+	@Override
+	public void resetHPxy() {
+		HPx = getXs() * MainScreen.CS + getWidth() / 2 - ANIM_OFFSET_X;
+		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
+		frameNo = 0;
+	}
+	
 	@Override
 	public void update() {
 
 	}
 
-	public void drawAnimation(LGraphics g, int offsetX, int offsetY, int counts) {
+	public void drawFightingAnim(LGraphics g, int offsetX, int offsetY) {
 		this.draw(g, offsetX - ANIM_OFFSET_X, offsetY - ANIM_OFFSET_Y);
-
-		if (counts == this.getCount()) {
-			this.setCount(0);
-		} else {
-			this.setCount(this.getCount() + 1);
+	}
+	
+	public boolean updateFightingAnim(long elapsedTime) {
+		if (timer.action(elapsedTime)) {
+			if (ANIM_FINAL_FRAME == this.getCount()) {
+				this.setCount(0);
+			} else {
+				this.setCount(this.getCount() + 1);
+			}
+			return true;
 		}
+		return false;
 	}
 }

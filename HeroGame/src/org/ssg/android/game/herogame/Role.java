@@ -17,9 +17,9 @@ public abstract class Role extends Sprite {
 	public int dex;
 	public int agi;
 	public boolean guarding;
-	public int damage;
+	public int damage = -1;
 	
-	public int HPx, HPy;
+	public int HPx, HPy, frameNo = 0;
 	
     public int getHit() {
 		return hit;
@@ -81,4 +81,7 @@ public abstract class Role extends Sprite {
         maxHP = hp;
     }
 
+    public void resetHPxy() {
+    	
+    }
 }

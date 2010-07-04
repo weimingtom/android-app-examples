@@ -17,6 +17,8 @@ public class Hero extends Role {
 	private int step = MainScreen.CS / 4;
 	public int ANIM_OFFSET_X = MainScreen.CS / 2;
 	public int ANIM_OFFSET_Y = 0;
+	public static final int ANIM_HIT_FRAME = 9;
+	public static final int ANIM_FINAL_FRAME = 18;
 	private boolean isAnimating = false;
 	private int level, exp;
 	private static final int[] EXP_TO_LEVEL = { -1, 50, 60, 70, 80, 90, 100,
@@ -63,10 +65,16 @@ public class Hero extends Role {
 		level = 1;
 		exp = 0;
 		availablePoints = 0;
-		HPx = getXs() * MainScreen.CS + MainScreen.CS / 2 - ANIM_OFFSET_X;
-		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
+		resetHPxy();
 	}
 
+	@Override
+    public void resetHPxy() {
+		HPx = getXs() * MainScreen.CS + MainScreen.CS / 2 - ANIM_OFFSET_X;
+		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
+		frameNo = 0;
+    }
+    
 	public void move(int direction) {
 		if (isWalking)
 			return;
@@ -205,15 +213,21 @@ public class Hero extends Role {
 		}
 	}
 
-	public void drawAnimation(LGraphics g, int offsetX, int offsetY, int counts) {
+	public void drawFightingAnim(LGraphics g, int offsetX, int offsetY) {
 		isAnimating = true;
-		this.draw(g, offsetX - ANIM_OFFSET_X, offsetY - ANIM_OFFSET_Y);
-
-		if (counts == this.getCount()) {
-			this.setCount(0);
-			isAnimating = false;
-		} else {
-			this.setCount(this.getCount() + 1);
+		super.draw(g, offsetX - ANIM_OFFSET_X, offsetY - ANIM_OFFSET_Y);
+	}
+	
+	public boolean updateFightingAnim(long elapsedTime) {
+		if (timer.action(elapsedTime)) {
+			if (ANIM_FINAL_FRAME == this.getCount()) {
+				this.setCount(0);
+				isAnimating = false;
+			} else {
+				this.setCount(this.getCount() + 1);
+			}
+			return true;
 		}
+		return false;
 	}
 }

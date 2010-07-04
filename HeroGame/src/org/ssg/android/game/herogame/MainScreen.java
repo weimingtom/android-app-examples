@@ -20,6 +20,7 @@ import org.ssg.android.game.herogame.control.ToolBar;
 import org.ssg.android.game.herogame.control.Touchable;
 
 import android.graphics.Color;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
@@ -228,18 +229,18 @@ public class MainScreen extends Screen {
 		g.setAntiAlias(false);
 
 		if (fightingHero != null && heroFighting) {
-			fightingHero.drawAnimation(g, offsetX, offsetY, 19);
+			fightingHero.drawFightingAnim(g, offsetX, offsetY);
+			drawLostHP(g, fightingHero);
 //			fightingEnemy.setCount(0);
 //			fightingEnemy.drawAnimation(g, offsetX, offsetY, 0);
 		}
 		if (fightingEnemy != null && enemyFighting) {
-			fightingEnemy.drawAnimation(g, offsetX, offsetY, 19);
+			fightingEnemy.drawFightingAnim(g, offsetX, offsetY);
+			drawLostHP(g, fightingEnemy);
 //			fightingHero.setCount(0);
 //			fightingHero.drawAnimation(g, offsetX, offsetY, 0);
 		}
 
-		drawLostHP(g, fightingHero);
-		drawLostHP(g, fightingEnemy);
 //		if (lostHP != -1) {
 //			drawLostHP(g);
 //		}
@@ -258,7 +259,7 @@ public class MainScreen extends Screen {
 	}
 
 	private void drawLostHP(LGraphics g, Role role) {
-		if (role == null || role.damage == -1)
+		if (role == null || role.damage == -1 || role.frameNo == 10)
 			return;
 		
 		g.setColor(Color.WHITE);
@@ -266,6 +267,7 @@ public class MainScreen extends Screen {
 		g.drawString(role.damage + "", role.HPx, role.HPy);
 		g.setAntiAlias(false);
 		role.HPy -= step1;
+		role.frameNo++;
 	}
 
 	public void alter(LTimerContext timer) {
@@ -275,8 +277,15 @@ public class MainScreen extends Screen {
 
 		// role.update(timer.getTimeSinceLastUpdate());
 
-		if (fightingHero != null) {
-			fight(hero, enemyRef);
+		if (heroFighting || enemyFighting) {
+			boolean updateFight = fightingHero.updateFightingAnim(timer
+					.getTimeSinceLastUpdate());
+			updateFight = fightingEnemy.updateFightingAnim(timer
+					.getTimeSinceLastUpdate())
+					|| updateFight;
+			if (updateFight) {
+				fight(hero, enemyRef);
+			}
 		} else {
 			if (goRightKey.isPressed()) {
 				hero.move(Hero.RIGHT);
@@ -297,7 +306,6 @@ public class MainScreen extends Screen {
 		Iterator<Sprite> it = sprites.iterator();
 		while (it.hasNext()) {
 			Sprite sprite = it.next();
-			// 更新所有精灵状态
 			sprite.updateStatus(timer.getTimeSinceLastUpdate());
 
 			if ((fightingHero == null) && hero.isCollision(sprite)
@@ -308,6 +316,7 @@ public class MainScreen extends Screen {
 				if (fightingHero == null) {
 					fightingHero = new Hero("assets/images/anim_herofight.png",
 							hero.getXs(), hero.getYs(), 30, 32, map);
+					fightingHero.timer = new LTimer(50);
 					fightingHero.setDir(0);
 					heroFighting = true;
 					enemyFighting = true;
@@ -323,12 +332,13 @@ public class MainScreen extends Screen {
 								"assets/images/anim_skeleonfight.png", hero
 										.getXs() + 1, hero.getYs(), 32, 32, map);
 					}
+					fightingEnemy.timer = new LTimer(100);
 					fightingEnemy.setDir(0);
 				}
 
 				enemyIcon = enemy.getImg();
-				enemyHPBar.setValue(enemy.getHp());
 				enemyHPBar.setMaxValue(enemy.getMaxHP());
+				enemyHPBar.setValue(enemy.getHp());
 
 				hero.setShow(false);
 				enemy.setShow(false);
@@ -347,17 +357,15 @@ public class MainScreen extends Screen {
 
 	private void fight(Hero hero, Enemy enemy) {
 		if (heroFighting) {
-			if (fightingHero.getCount() == 9) {
+			if (fightingHero.getCount() == Hero.ANIM_HIT_FRAME) {
 				fightingEnemy.damage = hero.getAttack() - enemy.getDefence();
 				if (fightingEnemy.damage < 0)
 					fightingEnemy.damage = 0;
 				enemy.setHp(enemy.getHp() - fightingEnemy.damage);
-//				HPx = fightingEnemy.getXs() * CS + enemy.getWidth() / 2
-//						- fightingEnemy.ANIM_OFFSET_X;
-//				HPy = fightingEnemy.getYs() * CS + CS / 2;
 			}
-			if (fightingHero.getCount() == 19) {
+			if (fightingHero.getCount() == Hero.ANIM_FINAL_FRAME) {
 				fightingEnemy.damage = -1;
+				fightingEnemy.resetHPxy();
 				if (enemy.getHp() <= 0) {
 					hero.setShow(true);
 					hero.addExp(enemy.getExp());
@@ -367,24 +375,20 @@ public class MainScreen extends Screen {
 					enemyRef = null;
 					heroFighting = false;
 					enemyFighting = false;
-				} else {
-//					heroFighting = false;
-//					enemyFighting = true;
+					return;
 				}
 			}
 		}
 		if (enemyFighting) {
-			if (fightingEnemy.getCount() == 9) {
+			if (fightingEnemy.getCount() == Enemy.ANIM_HIT_FRAME) {
 				fightingHero.damage = enemy.getAttack() - hero.getDefence();
 				if (fightingHero.damage < 0)
 					fightingHero.damage = 0;
 				hero.setHp(hero.getHp() - fightingHero.damage);
-//				HPx = fightingHero.getXs() * CS + CS / 2
-//						- fightingHero.ANIM_OFFSET_X;
-//				HPy = fightingHero.getYs() * CS + CS / 2;
 			}
-			if (fightingEnemy.getCount() == 19) {
+			if (fightingEnemy.getCount() == Enemy.ANIM_FINAL_FRAME) {
 				fightingHero.damage = -1;
+				fightingHero.resetHPxy();
 				if (hero.getHp() <= 0) {
 					hero.setShow(false);
 					enemy.setShow(true);
@@ -394,9 +398,7 @@ public class MainScreen extends Screen {
 					enemyRef = null;
 					heroFighting = false;
 					enemyFighting = false;
-				} else {
-//					heroFighting = true;
-//					enemyFighting = false;
+					return;
 				}
 			}
 		}
@@ -408,7 +410,7 @@ public class MainScreen extends Screen {
 			return false;
 		}
 
-		if (fightingHero != null)
+		if (heroFighting)
 			return false;
 
 		switch (arg0) {
@@ -441,7 +443,7 @@ public class MainScreen extends Screen {
 	}
 
 	public boolean onKeyUp(int keyCode, KeyEvent e) {
-		if (fightingHero != null)
+		if (heroFighting)
 			return false;
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_DPAD_LEFT:
@@ -482,12 +484,12 @@ public class MainScreen extends Screen {
 				flag = flag | touchable.isTouched();
 				if (touchable instanceof Dialog)
 					flag = true;
-				if (touchable.isTouched()) {
+//				if (touchable.isTouched()) {
 					for (OnTouchListener listener : touchable
 							.getOnTouchListener()) {
 						listener.onTouchDown(arg0);
 					}
-				}
+//				}
 			}
 			if (flag)
 				return false;
@@ -510,6 +512,24 @@ public class MainScreen extends Screen {
 
 	@Override
 	public boolean onTouchMove(MotionEvent arg0) {
+		if (touchables != null) {
+			boolean flag = false;
+			for (Touchable touchable : touchables) {
+				if (!touchable.isActive())
+					continue;
+				flag = flag | touchable.isTouched();
+				if (touchable instanceof Dialog)
+					flag = true;
+//				if (touchable.isTouched()) {
+					for (OnTouchListener listener : touchable
+							.getOnTouchListener()) {
+						listener.onTouchMove(arg0);
+					}
+//				}
+			}
+			if (flag)
+				return false;
+		}
 		return false;
 	}
 
@@ -523,12 +543,12 @@ public class MainScreen extends Screen {
 				flag = flag | touchable.isTouched();
 				if (touchable instanceof Dialog)
 					flag = true;
-				if (touchable.isTouched()) {
+//				if (touchable.isTouched()) {
 					for (OnTouchListener listener : touchable
 							.getOnTouchListener()) {
 						listener.onTouchUp(arg0);
 					}
-				}
+//				}
 			}
 			if (flag)
 				return false;

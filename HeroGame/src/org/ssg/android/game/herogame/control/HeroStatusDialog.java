@@ -65,22 +65,25 @@ public class HeroStatusDialog extends Dialog {
 		drawAbsoluteString(g, "MaxHP: " + hero.getMaxHP(), 7, 0);
 		g.setFont(l);
 		g.setAntiAlias(false);
-		
+
 		for (int i = 0; i < buttons.length; i++) {
 			drawButton(g, buttons[i], 5, 1 + i, 8, 3);
 		}
-		
+
 		curWidth = null;
 	}
 
 	private void initButtons() {
 		buttons = new Button[BUTTON_NUM];
-		LImage checked = GraphicsUtils.loadImage("assets/images/addpoint_down.png");
-		LImage unchecked = GraphicsUtils.loadImage("assets/images/addpoint_up.png");
+		LImage checked = GraphicsUtils
+				.loadImage("assets/images/addpoint_down.png");
+		LImage unchecked = GraphicsUtils
+				.loadImage("assets/images/addpoint_up.png");
 		Button.initialize(MainScreen.instance, buttons, 0, checked, unchecked);
 
 		for (int i = 0; i < buttons.length; i++) {
-//			buttons[i].setDrawXY(x + (scaledWidth / BUTTON_NUM) * i + 5, y + 5);
+			// buttons[i].setDrawXY(x + (scaledWidth / BUTTON_NUM) * i + 5, y +
+			// 5);
 			buttons[i].setName("");
 			buttons[i].setComplete(false);
 			buttons[i]
@@ -89,16 +92,11 @@ public class HeroStatusDialog extends Dialog {
 						public boolean onTouchDown(MotionEvent arg0) {
 							Button button = (Button) getRef();
 							if (button.checkComplete()) {
-								if (button.checkClick() != -1) {
-//									button.setComplete(true);
-								} else {
-
-								}
 								return true;
 							}
 							return false;
 						}
-						
+
 						@Override
 						public boolean onTouchUp(MotionEvent arg0) {
 							Button button = (Button) getRef();
@@ -111,8 +109,17 @@ public class HeroStatusDialog extends Dialog {
 									}
 								}
 								button.setComplete(false);
-							} else {
+							}
+							return true;
+						}
 
+						@Override
+						public boolean onTouchMove(MotionEvent arg0) {
+							Button button = (Button) getRef();
+							if (button.isComplete()) {
+								if (!button.checkComplete()) {
+									button.setComplete(false);
+								}
 							}
 							return true;
 						}
