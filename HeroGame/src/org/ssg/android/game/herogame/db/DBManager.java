@@ -15,9 +15,9 @@ public class DBManager {
 	 * @param archivingName
 	 *            存档名称
 	 */
-	public static void saveEnemys(int level, Enemy[] enemys,
+	public static void saveEnemys(int levelNo, Enemy[] enemys,
 			String archivingName) {
-		EnemyManager.saveEnemys(level, enemys, archivingName);
+		EnemyManager.saveEnemys(levelNo, enemys, archivingName);
 	}
 
 	/**
@@ -28,8 +28,8 @@ public class DBManager {
 	 * @param enemys
 	 *            所有的怪
 	 */
-	public static void saveEnemys(int level, Enemy[] enemys) {
-		EnemyManager.saveEnemys(level, enemys,
+	public static void saveEnemys(int levelNo, Enemy[] enemys) {
+		EnemyManager.saveEnemys(levelNo, enemys,
 				ConstantUtil.autoSaveArchivingName);
 	}
 
@@ -41,8 +41,8 @@ public class DBManager {
 	 * @param archivingName
 	 *            存档名称
 	 */
-	public static Enemy[] loadEnemys(int level, String archivingName) {
-		return EnemyManager.loadEnemys(level, archivingName);
+	public static Enemy[] loadEnemys(int levelNo, String archivingName) {
+		return EnemyManager.loadEnemys(levelNo, archivingName);
 	}
 
 	/**
@@ -51,8 +51,8 @@ public class DBManager {
 	 * @param Level
 	 *            第几层
 	 */
-	public static Enemy[] loadEnemys(int level) {
-		return EnemyManager.loadEnemys(level,
+	public static Enemy[] loadEnemys(int levelNo) {
+		return EnemyManager.loadEnemys(levelNo,
 				ConstantUtil.autoSaveArchivingName);
 	}
 
@@ -136,6 +136,30 @@ public class DBManager {
 	 */
 	public static ArchivingBean getArchivingBeanByIndex(int index) {
 		return ArchivingManager.getInstance().getArchivingBeanByIndex(index);
+	}
+
+	/**
+	 * 是否已经存在levelNo的自动存档
+	 * 
+	 * @param levelNo
+	 * @return
+	 */
+	public static boolean hasAutoSaveArchiving(int levelNo) {
+		return ArchivingManager.getInstance().hasArchivingFromArchivingName(
+				ConstantUtil.autoSaveArchivingName, levelNo);
+	}
+
+	/**
+	 * 是否已经存在levelNo、archivingName的存档
+	 * 
+	 * @param archivingName
+	 * @param levelNo
+	 * @return
+	 */
+	public static boolean hasArchivingFromArchivingName(String archivingName,
+			int levelNo) {
+		return ArchivingManager.getInstance().hasArchivingFromArchivingName(
+				archivingName, levelNo);
 	}
 
 }
