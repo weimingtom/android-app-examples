@@ -4,7 +4,7 @@ import org.ssg.android.game.herogame.Role;
 
 public class BattleUtil {
 
-	public static void attack(Role attacker, Role defencer) {
+	public static int attack(Role attacker, Role defencer) {
 		// 命中
 		int damage;
 		boolean hit_result = (Math.random() * 100 < attacker.hit);
@@ -38,10 +38,10 @@ public class BattleUtil {
 						- amp;
 			}
 
-			defencer.hp -= damage;
 		} else {
 			damage = -1;
 		}
+		return damage;
 	}
 
 	public static int elements_correct(int element_set) {

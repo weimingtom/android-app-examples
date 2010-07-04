@@ -52,6 +52,12 @@ public class Enemy extends Role {
 		super(filename, x, y, w, h, map, hp, attack, defence);
 		fileName = filename;
 		resetHPxy();
+		
+	    hit = 80;
+		strength = 10;
+		element_set = 100;
+		dex = 10;
+		agi = 10;
 	}
 
 	@Override

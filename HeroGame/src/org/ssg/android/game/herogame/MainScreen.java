@@ -18,6 +18,7 @@ import org.ssg.android.game.herogame.control.OnTouchListener;
 import org.ssg.android.game.herogame.control.TitledAndBorderedStatusBar;
 import org.ssg.android.game.herogame.control.ToolBar;
 import org.ssg.android.game.herogame.control.Touchable;
+import org.ssg.android.game.herogame.util.BattleUtil;
 
 import android.graphics.Color;
 import android.view.KeyEvent;
@@ -332,7 +333,7 @@ public class MainScreen extends Screen {
 	private void fight(Hero hero, Enemy enemy, long elapsedTime) {
 		if (fightingHero.updateFightingAnim(elapsedTime)) {
 			if (fightingHero.getCount() == Hero.ANIM_HIT_FRAME) {
-				fightingEnemy.damage = hero.getAttack() - enemy.getDefence();
+				fightingEnemy.damage = BattleUtil.attack(hero, enemy);
 				if (fightingEnemy.damage < 0)
 					fightingEnemy.damage = 0;
 				enemy.setHp(enemy.getHp() - fightingEnemy.damage);
@@ -355,7 +356,7 @@ public class MainScreen extends Screen {
 		}
 		if (fightingEnemy.updateFightingAnim(elapsedTime)) {
 			if (fightingEnemy.getCount() == Enemy.ANIM_HIT_FRAME) {
-				fightingHero.damage = enemy.getAttack() - hero.getDefence();
+				fightingHero.damage = BattleUtil.attack(enemy, hero);
 				if (fightingHero.damage < 0)
 					fightingHero.damage = 0;
 				hero.setHp(hero.getHp() - fightingHero.damage);

@@ -5,6 +5,7 @@ import org.ssg.android.game.herogame.control.BackGroundMap;
 public abstract class Role extends Sprite {
 
 
+	public String roleName;
     public int hp; // 生命力
     public int attack; // 攻击力
     public int defence;// 防御力
@@ -12,7 +13,7 @@ public abstract class Role extends Sprite {
     
     public int hit;
 	public int strength;
-	public int element_set;
+	public int element_set = 100;
 	public boolean critical;
 	public int dex;
 	public int agi;

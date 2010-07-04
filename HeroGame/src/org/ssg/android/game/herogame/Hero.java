@@ -66,6 +66,12 @@ public class Hero extends Role {
 		exp = 0;
 		availablePoints = 0;
 		resetHPxy();
+		
+	    hit = 100;
+		strength = 20;
+		element_set = 100;
+		dex = 20;
+		agi = 20;
 	}
 
 	@Override
