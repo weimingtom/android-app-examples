@@ -51,8 +51,8 @@ public class DBManager {
 	 *            第几层
 	 */
 	public static Enemy[] loadEnemys(int level) {
-		return EnemyManager
-				.loadEnemys(level, ConstantUtil.autoSaveArchivingName);
+		return EnemyManager.loadEnemys(level,
+				ConstantUtil.autoSaveArchivingName);
 	}
 
 	/**
@@ -116,6 +116,15 @@ public class DBManager {
 	 */
 	public static void deleteArchiving(String archivingName) {
 		ArchivingManager.deleteArchiving(archivingName);
+	}
+
+	/**
+	 * 获取所有的存档
+	 * 
+	 * @return
+	 */
+	public static String[] getArchivings() {
+		return ArchivingManager.getArchivings();
 	}
 
 }
