@@ -20,46 +20,48 @@ import org.ssg.android.game.herogame.control.BackGroundMap;
  */
 public class Enemy extends Role {
 
-    public int ANIM_OFFSET_X = MainScreen.CS * 3 / 4;
-    public int ANIM_OFFSET_Y = 1;
+	public int ANIM_OFFSET_X = MainScreen.CS * 3 / 4;
+	public int ANIM_OFFSET_Y = 1;
 
-    private String fileName;
-    private int exp = 10;
-    
-    public int getExp() {
-        return exp;
-    }
+	private String fileName;
+	private int exp = 10;
 
-    public void setExp(int exp) {
-        this.exp = exp;
-    }
+	public int getExp() {
+		return exp;
+	}
 
-    public String getFileName() {
-        return fileName;
-    }
+	public void setExp(int exp) {
+		this.exp = exp;
+	}
 
-    public Enemy(String filename, int x, int y, int w, int h, BackGroundMap map) {
-        this(filename, x, y, w, h, map, 20, 5, 0);
-    }
+	public String getFileName() {
+		return fileName;
+	}
 
-    public Enemy(String filename, int x, int y, int w, int h,
-            BackGroundMap map, int hp, int attack, int defence) {
-        super(filename, x, y, w, h, map, hp, attack, defence);
-        fileName = filename;
-    }
+	public Enemy(String filename, int x, int y, int w, int h, BackGroundMap map) {
+		this(filename, x, y, w, h, map, 20, 5, 0);
+	}
 
-    @Override
-    public void update() {
+	public Enemy(String filename, int x, int y, int w, int h,
+			BackGroundMap map, int hp, int attack, int defence) {
+		super(filename, x, y, w, h, map, hp, attack, defence);
+		fileName = filename;
+		HPx = getXs() * MainScreen.CS + getWidth() / 2 - ANIM_OFFSET_X;
+		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
+	}
 
-    }
+	@Override
+	public void update() {
 
-    public void drawAnimation(LGraphics g, int offsetX, int offsetY, int counts) {
-        this.draw(g, offsetX - ANIM_OFFSET_X, offsetY - ANIM_OFFSET_Y);
+	}
 
-        if (counts == this.getCount()) {
-            this.setCount(0);
-        } else {
-            this.setCount(this.getCount() + 1);
-        }
-    }
+	public void drawAnimation(LGraphics g, int offsetX, int offsetY, int counts) {
+		this.draw(g, offsetX - ANIM_OFFSET_X, offsetY - ANIM_OFFSET_Y);
+
+		if (counts == this.getCount()) {
+			this.setCount(0);
+		} else {
+			this.setCount(this.getCount() + 1);
+		}
+	}
 }

@@ -17,6 +17,9 @@ public abstract class Role extends Sprite {
 	public int dex;
 	public int agi;
 	public boolean guarding;
+	public int damage;
+	
+	public int HPx, HPy;
 	
     public int getHit() {
 		return hit;

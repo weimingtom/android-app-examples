@@ -214,18 +214,20 @@ public class MainScreen extends Screen {
 
 		if (fightingHero != null && heroFighting) {
 			fightingHero.drawAnimation(g, offsetX, offsetY, 19);
-			fightingEnemy.setCount(0);
-			fightingEnemy.drawAnimation(g, offsetX, offsetY, 0);
+//			fightingEnemy.setCount(0);
+//			fightingEnemy.drawAnimation(g, offsetX, offsetY, 0);
 		}
 		if (fightingEnemy != null && enemyFighting) {
 			fightingEnemy.drawAnimation(g, offsetX, offsetY, 19);
-			fightingHero.setCount(0);
-			fightingHero.drawAnimation(g, offsetX, offsetY, 0);
+//			fightingHero.setCount(0);
+//			fightingHero.drawAnimation(g, offsetX, offsetY, 0);
 		}
 
-		if (lostHP != -1) {
-			drawLostHP(g);
-		}
+		drawLostHP(g, fightingHero);
+		drawLostHP(g, fightingEnemy);
+//		if (lostHP != -1) {
+//			drawLostHP(g);
+//		}
 
 		infoBox.draw(g);
 		dialog.draw(g);
@@ -240,12 +242,15 @@ public class MainScreen extends Screen {
 
 	}
 
-	private void drawLostHP(LGraphics g) {
+	private void drawLostHP(LGraphics g, Role role) {
+		if (role == null || role.damage == -1)
+			return;
+		
 		g.setColor(Color.WHITE);
 		g.setAntiAlias(true);
-		g.drawString(lostHP + "", HPx, HPy);
+		g.drawString(role.damage + "", role.HPx, role.HPy);
 		g.setAntiAlias(false);
-		HPy -= step1;
+		role.HPy -= step1;
 	}
 
 	public void alter(LTimerContext timer) {
@@ -290,7 +295,7 @@ public class MainScreen extends Screen {
 							hero.getXs(), hero.getYs(), 30, 32, map);
 					fightingHero.setDir(0);
 					heroFighting = true;
-					enemyFighting = false;
+					enemyFighting = true;
 				}
 				if (fightingEnemy == null) {
 					if (enemy.getFileName().endsWith("assets/images/mage.png")) {
@@ -328,16 +333,16 @@ public class MainScreen extends Screen {
 	private void fight(Hero hero, Enemy enemy) {
 		if (heroFighting) {
 			if (fightingHero.getCount() == 9) {
-				lostHP = hero.getAttack() - enemy.getDefence();
-				if (lostHP < 0)
-					lostHP = 0;
-				enemy.setHp(enemy.getHp() - lostHP);
-				HPx = fightingEnemy.getXs() * CS + enemy.getWidth() / 2
-						- fightingEnemy.ANIM_OFFSET_X;
-				HPy = fightingEnemy.getYs() * CS + CS / 2;
+				fightingEnemy.damage = hero.getAttack() - enemy.getDefence();
+				if (fightingEnemy.damage < 0)
+					fightingEnemy.damage = 0;
+				enemy.setHp(enemy.getHp() - fightingEnemy.damage);
+//				HPx = fightingEnemy.getXs() * CS + enemy.getWidth() / 2
+//						- fightingEnemy.ANIM_OFFSET_X;
+//				HPy = fightingEnemy.getYs() * CS + CS / 2;
 			}
 			if (fightingHero.getCount() == 19) {
-				lostHP = -1;
+				fightingEnemy.damage = -1;
 				if (enemy.getHp() <= 0) {
 					hero.setShow(true);
 					hero.addExp(enemy.getExp());
@@ -348,36 +353,35 @@ public class MainScreen extends Screen {
 					heroFighting = false;
 					enemyFighting = false;
 				} else {
-					heroFighting = false;
-					enemyFighting = true;
+//					heroFighting = false;
+//					enemyFighting = true;
 				}
 			}
-		} else {
-			if (enemyFighting) {
-				if (fightingEnemy.getCount() == 9) {
-					lostHP = enemy.getAttack() - hero.getDefence();
-					if (lostHP < 0)
-						lostHP = 0;
-					hero.setHp(hero.getHp() - lostHP);
-					HPx = fightingHero.getXs() * CS + CS / 2
-							- fightingHero.ANIM_OFFSET_X;
-					HPy = fightingHero.getYs() * CS + CS / 2;
-				}
-				if (fightingEnemy.getCount() == 19) {
-					lostHP = -1;
-					if (hero.getHp() <= 0) {
-						hero.setShow(false);
-						enemy.setShow(true);
-						isDead = true;
-						fightingHero = null;
-						fightingEnemy = null;
-						enemyRef = null;
-						heroFighting = false;
-						enemyFighting = false;
-					} else {
-						heroFighting = true;
-						enemyFighting = false;
-					}
+		}
+		if (enemyFighting) {
+			if (fightingEnemy.getCount() == 9) {
+				fightingHero.damage = enemy.getAttack() - hero.getDefence();
+				if (fightingHero.damage < 0)
+					fightingHero.damage = 0;
+				hero.setHp(hero.getHp() - fightingHero.damage);
+//				HPx = fightingHero.getXs() * CS + CS / 2
+//						- fightingHero.ANIM_OFFSET_X;
+//				HPy = fightingHero.getYs() * CS + CS / 2;
+			}
+			if (fightingEnemy.getCount() == 19) {
+				fightingHero.damage = -1;
+				if (hero.getHp() <= 0) {
+					hero.setShow(false);
+					enemy.setShow(true);
+					isDead = true;
+					fightingHero = null;
+					fightingEnemy = null;
+					enemyRef = null;
+					heroFighting = false;
+					enemyFighting = false;
+				} else {
+//					heroFighting = true;
+//					enemyFighting = false;
 				}
 			}
 		}
@@ -516,14 +520,15 @@ public class MainScreen extends Screen {
 		}
 		return false;
 	}
-//
-//	@Override
-//	public boolean onTouchEvent(MotionEvent e) {
-//		super.onTouchEvent(e);
-//		
-//		return false;
-//	}
-	
+
+	//
+	// @Override
+	// public boolean onTouchEvent(MotionEvent e) {
+	// super.onTouchEvent(e);
+	//		
+	// return false;
+	// }
+
 	class ActionKey {
 
 		static final int PRESS_ONLY = 1, STATE_RELEASED = 0, STATE_PRESSED = 1,
