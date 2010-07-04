@@ -2,7 +2,7 @@ package org.ssg.android.game.herogame.db;
 
 import org.ssg.android.game.herogame.Enemy;
 import org.ssg.android.game.herogame.Hero;
-import org.ssg.android.game.herogame.activity.bean.ArchivingBean;
+import org.ssg.android.game.herogame.db.bean.ArchivingBean;
 
 public class DBManager {
 	/**

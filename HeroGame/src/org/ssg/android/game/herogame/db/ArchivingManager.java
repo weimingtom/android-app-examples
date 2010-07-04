@@ -2,7 +2,7 @@ package org.ssg.android.game.herogame.db;
 
 import java.util.LinkedList;
 
-import org.ssg.android.game.herogame.activity.bean.ArchivingBean;
+import org.ssg.android.game.herogame.db.bean.ArchivingBean;
 
 public class ArchivingManager {
 	
