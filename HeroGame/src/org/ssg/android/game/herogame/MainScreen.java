@@ -10,7 +10,6 @@ import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.graphics.Screen;
 import org.loon.framework.android.game.core.timer.LTimer;
 import org.loon.framework.android.game.core.timer.LTimerContext;
-import org.loon.framework.android.game.extend.DrawButton;
 import org.ssg.android.game.herogame.control.BackGroundMap;
 import org.ssg.android.game.herogame.control.Dialog;
 import org.ssg.android.game.herogame.control.HeroStatusDialog;
@@ -69,6 +68,25 @@ public class MainScreen extends Screen {
 	private LinkedList<Touchable> touchables;
 
 	public static MainScreen instance;
+	
+	private String archivingId;	//存档ID
+//	private String archivingName;//存档名称
+	
+	public String getArchivingId() {
+		return archivingId;
+	}
+
+	public void setArchivingId(String archivingId) {
+		this.archivingId = archivingId;
+	}
+
+//	public String getArchivingName() {
+//		return archivingName;
+//	}
+//
+//	public void setArchivingName(String archivingName) {
+//		this.archivingName = archivingName;
+//	}
 
 	public MainScreen() {
 		levelNo = 1;
@@ -98,16 +116,13 @@ public class MainScreen extends Screen {
 			goDownKey = new ActionKey();
 		else
 			goDownKey.reset();
-		level = new Level(levelNo);
+		
+		level = new Level(archivingId,levelNo);
 		map = level.getBackGroundMap();
-		if (hero == null || isDead) {
-			hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
-			isDead = false;
-		} else {
-			hero.setMap(map);
-		}
-		hero.setXs(level.heroPos[0]);
-		hero.setYs(level.heroPos[1]);
+		
+		hero = level.getHero();
+
+		isDead = false;
 
 		// heroBarBg = GraphicsUtils.loadImage("assets/images/herobarbg.png");
 		heroHPBar = new TitledAndBorderedStatusBar(hero.getHp(), hero

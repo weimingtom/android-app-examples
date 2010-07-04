@@ -3,7 +3,7 @@ package org.ssg.android.game.herogame.activity;
 import org.loon.framework.android.game.LGameActivity;
 import org.ssg.android.game.herogame.MainScreen;
 
-import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 
@@ -11,10 +11,16 @@ public class HeroGame extends LGameActivity {
 
     @Override
     public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-        this.initialization(icicle, false);
+    	super.onCreate(icicle);
+    	this.initialization(icicle, false);
+    	 
+    	Intent intent = getIntent();
+    	MainScreen mainScreen = new MainScreen();
+    	mainScreen.setArchivingId(intent.getStringExtra("archivingId"));//存档ID
+//    	mainScreen.setArchivingName(intent.getStringExtra("archivingName"));//存档名称
+    	
         // 游戏主窗体
-        this.setScreen(new MainScreen());
+        this.setScreen(mainScreen);
         // 刷新率
         this.setFPS(30);
         // 是否显示刷新率
