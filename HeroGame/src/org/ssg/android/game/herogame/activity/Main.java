@@ -1,9 +1,9 @@
 package org.ssg.android.game.herogame.activity;
 
 import org.ssg.android.game.herogame.R;
-import org.ssg.android.game.herogame.activity.bean.ArchivingBean;
 import org.ssg.android.game.herogame.db.ConstantUtil;
 import org.ssg.android.game.herogame.db.DBManager;
+import org.ssg.android.game.herogame.db.bean.ArchivingBean;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -39,9 +39,9 @@ public class Main extends Activity implements OnClickListener {
 			public void onClick(DialogInterface dialog, int index) {
 				Intent intent = new Intent(Main.this, HeroGame.class);
 				ArchivingBean archivingBean = DBManager.getArchivingBeanByIndex(index);
-				Log.e("archivingBeanID", archivingBean.getId());
-				Log.e("archivingBeanName", archivingBean.getName());
-				intent.putExtra("archivingId", archivingBean.getId());
+//				Log.e("archivingBeanID", archivingBean.getId());
+				Log.e("archivingName", archivingBean.getName());
+				intent.putExtra("archivingName", archivingBean.getName());
 				startActivity(intent);
 			}});
 		selectArchivingAlertDialog.create().show();
@@ -51,7 +51,7 @@ public class Main extends Activity implements OnClickListener {
 	
 	private void newGame() {
 		Intent intent = new Intent(Main.this, HeroGame.class);
-		intent.putExtra("archivingId", ConstantUtil.autoSaveArchivingId);//默认的存档ID
+		intent.putExtra("archivingName", ConstantUtil.autoSaveArchivingName);//默认的存档ID
 		startActivity(intent);
 		return ;
 	}

@@ -15,8 +15,8 @@ public class HeroGame extends LGameActivity {
     	this.initialization(icicle, false);
     	 
     	Intent intent = getIntent();
-    	MainScreen mainScreen = new MainScreen();
-    	mainScreen.setArchivingId(intent.getStringExtra("archivingId"));//存档ID
+    	MainScreen mainScreen = new MainScreen(intent.getStringExtra("archivingName"));
+//    	mainScreen.setArchivingName();//存档ID
     	
         // 游戏主窗体
         this.setScreen(mainScreen);
