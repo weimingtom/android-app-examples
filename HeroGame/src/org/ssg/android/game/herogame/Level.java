@@ -61,9 +61,6 @@ public class Level {
     public void init() {
         calcTileXY(0, 0);
         Enemy enemy;
-        
-        hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, backGroundMap);
-		
         for (int i = firstTileY; i < lastTileY; i++) {
             for (int j = firstTileX; j < lastTileX; j++) {
                 
@@ -85,8 +82,7 @@ public class Level {
                 }
             }
         }
-        hero.setXs(heroPos[0]);
-		hero.setYs(heroPos[1]);
+        
     }
     
     public void loadLevel(final String fileName){
