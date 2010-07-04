@@ -18,7 +18,9 @@ import org.ssg.android.game.herogame.control.OnTouchListener;
 import org.ssg.android.game.herogame.control.TitledAndBorderedStatusBar;
 import org.ssg.android.game.herogame.control.ToolBar;
 import org.ssg.android.game.herogame.control.Touchable;
+import org.ssg.android.game.herogame.db.ConstantUtil;
 import org.ssg.android.game.herogame.util.BattleUtil;
+import org.ssg.android.game.herogame.db.DBManager;
 
 import android.graphics.Color;
 import android.view.KeyEvent;
@@ -65,26 +67,27 @@ public class MainScreen extends Screen {
 
 	public static MainScreen instance;
 
-	private String archivingId; // 存档ID
-	// private String archivingName;//存档名称
+//	private String archivingId; // 存档ID
+	 private String archivingName;//存档名称
 
-	public String getArchivingId() {
-		return archivingId;
-	}
+//	public String getArchivingId() {
+//		return archivingId;
+//	}
+//
+//	public void setArchivingId(String archivingId) {
+//		this.archivingId = archivingId;
+//	}
 
-	public void setArchivingId(String archivingId) {
-		this.archivingId = archivingId;
-	}
+	 public String getArchivingName() {
+	 return archivingName;
+	 }
+	
+	 public void setArchivingName(String archivingName) {
+	 this.archivingName = archivingName;
+	 }
 
-	// public String getArchivingName() {
-	// return archivingName;
-	// }
-	//
-	// public void setArchivingName(String archivingName) {
-	// this.archivingName = archivingName;
-	// }
-
-	public MainScreen() {
+	public MainScreen(String archivingName) {
+		this.archivingName = archivingName;
 		levelNo = 1;
 		instance = this;
 		init();
@@ -142,19 +145,66 @@ public class MainScreen extends Screen {
 	}
 
 	private void levelInit() {
-		level = new Level(archivingId, levelNo);
-		map = level.getBackGroundMap();
-
-		if (hero == null || isDead) {
-			hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
-			isDead = false;
-		} else {
-			hero.setMap(map);
+		
+		//自动存档，需要按照地图初始化，并将信息存入自动存档内
+		if (archivingName.equals(ConstantUtil.autoSaveArchivingName)){
+			level = new Level(levelNo);
+			map = level.getBackGroundMap();
+	
+			if (hero == null || isDead) {
+				hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
+				isDead = false;
+			} else {
+				hero.setMap(map);
+			}
+			hero.setXs(level.heroPos[0]);
+			hero.setYs(level.heroPos[1]);
+	
+			sprites = level.getSprites();
+			
+			//存入存档信息：自动存档，不需要单独调用设置“存档信息”的方法
+			
+			//存入英雄信息
+			DBManager.saveHero(hero);
+			
+			//存入怪的信息
+			for(int i=0;i<sprites.size();i++){
+				if (sprites.get(i) instanceof Enemy){
+					Enemy[] enemys = new Enemy[1];
+					enemys[0] = (Enemy)(sprites.get(i));
+					DBManager.saveEnemys(levelNo, enemys);
+				}
+			}
+			
+		}else{//按照存档初始化
+			level = new Level(levelNo);
+			map = level.getBackGroundMap();
+	
+			if (hero == null || isDead) {
+				hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
+				isDead = false;
+			} else {
+				hero.setMap(map);
+			}
+			hero.setXs(level.heroPos[0]);
+			hero.setYs(level.heroPos[1]);
+	
+			sprites = level.getSprites();
+			
+			//存入存档信息：自动存档，不需要单独调用设置“存档信息”的方法
+			
+			//存入英雄信息
+			DBManager.saveHero(hero);
+			
+			//存入怪的信息
+			for(int i=0;i<sprites.size();i++){
+				if (sprites.get(i) instanceof Enemy){
+					Enemy[] enemys = new Enemy[1];
+					enemys[0] = (Enemy)(sprites.get(i));
+					DBManager.saveEnemys(levelNo, enemys);
+				}
+			}
 		}
-		hero.setXs(level.heroPos[0]);
-		hero.setYs(level.heroPos[1]);
-
-		sprites = level.getSprites();
 	}
 
 	@Override
