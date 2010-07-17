@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+   xmlns:android="http://schemas.android.com/apk/res/android"
+   android:background="#245EDC"
+   android:layout_height="fill_parent"
+   android:layout_width="fill_parent"
+   android:padding="30dip"
+   android:orientation="horizontal">
+   <LinearLayout
+      android:orientation="vertical"
+      android:layout_height="wrap_content"
+      android:layout_width="fill_parent"
+      android:layout_gravity="center">
+      <TextView
+         android:text="Hero Game"
+         android:layout_height="wrap_content"
+         android:layout_width="wrap_content"
+         android:layout_gravity="center"
+         android:layout_marginBottom="25dip"
+         android:textSize="24.5sp" />
+      <Button
+         android:id="@+id/selectArchivingButton"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="Select archiving" />
+      <Button
+         android:id="@+id/newGameButton"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="New Game" />
+      
+      <Button
+         android:id="@+id/exitGameButton"
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:text="Exit" />
+   </LinearLayout>
+</LinearLayout>
