@@ -295,6 +295,8 @@ public class LGameView extends SurfaceView implements SurfaceHolder.Callback {
 								gl.drawString("FPS:" + curFPS, fpsX, fpsY);
 							}
 						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					} finally {
 						if (canvas != null) {
 							canvas.drawBitmap(currentScreen, 0, 0, null);

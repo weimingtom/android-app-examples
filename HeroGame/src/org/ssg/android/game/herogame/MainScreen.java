@@ -10,8 +10,10 @@ import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.graphics.Screen;
 import org.loon.framework.android.game.core.timer.LTimer;
 import org.loon.framework.android.game.core.timer.LTimerContext;
+import org.ssg.android.game.herogame.control.ActionKey;
 import org.ssg.android.game.herogame.control.BackGroundMap;
 import org.ssg.android.game.herogame.control.Dialog;
+import org.ssg.android.game.herogame.control.DirectionGameController;
 import org.ssg.android.game.herogame.control.HeroStatusDialog;
 import org.ssg.android.game.herogame.control.InfoBox;
 import org.ssg.android.game.herogame.control.OnTouchListener;
@@ -19,12 +21,15 @@ import org.ssg.android.game.herogame.control.TitledAndBorderedStatusBar;
 import org.ssg.android.game.herogame.control.ToolBar;
 import org.ssg.android.game.herogame.control.Touchable;
 import org.ssg.android.game.herogame.db.ConstantUtil;
-import org.ssg.android.game.herogame.util.BattleUtil;
 import org.ssg.android.game.herogame.db.DBManager;
+import org.ssg.android.game.herogame.util.BattleUtil;
 
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.Window;
 
 public class MainScreen extends Screen {
 	private static final long serialVersionUID = 1L;
@@ -45,14 +50,14 @@ public class MainScreen extends Screen {
 
 	public LinkedList<Sprite> sprites; // 精灵
 
-	private ActionKey goLeftKey;
-	private ActionKey goRightKey;
-	private ActionKey goUpKey;
-	private ActionKey goDownKey;
+	public ActionKey goLeftKey;
+	public ActionKey goRightKey;
+	public ActionKey goUpKey;
+	public ActionKey goDownKey;
 
 	private boolean isDead = false;
-	private boolean heroFighting = false;
-	private boolean enemyFighting = false;
+	public boolean heroFighting = false;
+	public boolean enemyFighting = false;
 	private int step1 = MainScreen.CS / 10;
 	private Enemy enemyRef;
 	private boolean initDone = false;
@@ -63,28 +68,35 @@ public class MainScreen extends Screen {
 
 	private ToolBar toolbar;
 
+	private DirectionGameController gameController;
+
 	private LinkedList<Touchable> touchables;
 
+	public Dialog topDialog, defaultTopDialog;
+
 	public static MainScreen instance;
-
-//	private String archivingId; // 存档ID
-	 private String archivingName;//存档名称
-
-//	public String getArchivingId() {
-//		return archivingId;
-//	}
-//
-//	public void setArchivingId(String archivingId) {
-//		this.archivingId = archivingId;
-//	}
-
-	 public String getArchivingName() {
-	 return archivingName;
-	 }
 	
-	 public void setArchivingName(String archivingName) {
-	 this.archivingName = archivingName;
-	 }
+	private static Object _lock = new Object();
+	private static volatile boolean _drawing;
+
+	// private String archivingId; // 存档ID
+	private String archivingName;// 存档名称
+
+	// public String getArchivingId() {
+	// return archivingId;
+	// }
+	//
+	// public void setArchivingId(String archivingId) {
+	// this.archivingId = archivingId;
+	// }
+
+	public String getArchivingName() {
+		return archivingName;
+	}
+
+	public void setArchivingName(String archivingName) {
+		this.archivingName = archivingName;
+	}
 
 	public MainScreen(String archivingName) {
 		this.archivingName = archivingName;
@@ -133,24 +145,26 @@ public class MainScreen extends Screen {
 		infoBox = new InfoBox();
 
 		dialog = new HeroStatusDialog(hero);
-		dialog.setShown(false);
-		dialog.setIsActive(false);
 		addTouchable(dialog);
 
 		toolbar = new ToolBar(0, 450, 320, 30);
-		toolbar.setIsActive(true);
 		addTouchable(toolbar);
+
+		gameController = new DirectionGameController(0, 48);
+		addTouchable(gameController);
+		topDialog = null;
+		defaultTopDialog = null;
 
 		initDone = true;
 	}
 
 	private void levelInit() {
-		
-		//自动存档，需要按照地图初始化，并将信息存入自动存档内
-		if (archivingName.equals(ConstantUtil.autoSaveArchivingName)){
+
+		// 自动存档，需要按照地图初始化，并将信息存入自动存档内
+		if (archivingName.equals(ConstantUtil.autoSaveArchivingName)) {
 			level = new Level(levelNo);
 			map = level.getBackGroundMap();
-	
+
 			if (hero == null || isDead) {
 				hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
 				isDead = false;
@@ -159,27 +173,27 @@ public class MainScreen extends Screen {
 			}
 			hero.setXs(level.heroPos[0]);
 			hero.setYs(level.heroPos[1]);
-	
+
 			sprites = level.getSprites();
-			
-			//存入存档信息：自动存档，不需要单独调用设置“存档信息”的方法
-			
-			//存入英雄信息
+
+			// 存入存档信息：自动存档，不需要单独调用设置“存档信息”的方法
+
+			// 存入英雄信息
 			DBManager.saveHero(hero);
-			
-			//存入怪的信息
-			for(int i=0;i<sprites.size();i++){
-				if (sprites.get(i) instanceof Enemy){
+
+			// 存入怪的信息
+			for (int i = 0; i < sprites.size(); i++) {
+				if (sprites.get(i) instanceof Enemy) {
 					Enemy[] enemys = new Enemy[1];
-					enemys[0] = (Enemy)(sprites.get(i));
+					enemys[0] = (Enemy) (sprites.get(i));
 					DBManager.saveEnemys(levelNo, enemys);
 				}
 			}
-			
-		}else{//按照存档初始化
+
+		} else {// 按照存档初始化
 			level = new Level(levelNo);
 			map = level.getBackGroundMap();
-	
+
 			if (hero == null || isDead) {
 				hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
 				isDead = false;
@@ -188,29 +202,53 @@ public class MainScreen extends Screen {
 			}
 			hero.setXs(level.heroPos[0]);
 			hero.setYs(level.heroPos[1]);
-	
+
 			sprites = level.getSprites();
-			
-			//存入存档信息：自动存档，不需要单独调用设置“存档信息”的方法
-			
-			//存入英雄信息
+
+			// 存入存档信息：自动存档，不需要单独调用设置“存档信息”的方法
+
+			// 存入英雄信息
 			DBManager.saveHero(hero);
-			
-			//存入怪的信息
-			for(int i=0;i<sprites.size();i++){
-				if (sprites.get(i) instanceof Enemy){
+
+			// 存入怪的信息
+			for (int i = 0; i < sprites.size(); i++) {
+				if (sprites.get(i) instanceof Enemy) {
 					Enemy[] enemys = new Enemy[1];
-					enemys[0] = (Enemy)(sprites.get(i));
+					enemys[0] = (Enemy) (sprites.get(i));
 					DBManager.saveEnemys(levelNo, enemys);
 				}
 			}
 		}
 	}
 
+    public static void checkLock(){
+        synchronized (_lock) {
+            while (_drawing) {
+                try {
+					_lock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+            }
+        }
+    }
+    
+    public static void beginDrawing() {
+    	_drawing = true;
+    }
+    
+    public static void endDrawing() {
+        synchronized (_lock) {
+            _drawing = false;
+            _lock.notifyAll();
+        }
+    }
+    
 	@Override
 	public void draw(LGraphics g) {
 		if (!initDone)
 			return;
+		
 		int offsetX = WIDTH / 2 - hero.getXs() * CS;
 		offsetX = Math.min(offsetX, 0);
 		offsetX = Math.max(offsetX, WIDTH - map.getWidth());
@@ -241,6 +279,8 @@ public class MainScreen extends Screen {
 					enemyHPBar.setValue(((Enemy) sprite).getHp());
 					enemyHPBar.setUpdate(((Enemy) sprite).getHp());
 					enemyHPBar.createUI(g);
+					
+					infoBox.draw(g);
 				}
 			}
 		}
@@ -282,10 +322,21 @@ public class MainScreen extends Screen {
 			drawLostHP(g, fightingEnemy);
 		}
 
-		infoBox.draw(g);
-		dialog.draw(g);
-		toolbar.draw(g);
+		gameController.draw(g);
 
+		beginDrawing();
+		if (topDialog != null) {
+			g.setColor(LColor.black);
+			g.setAlpha(0.2f);
+			g.fillRect(0, 0, WIDTH, HEIGHT);
+			g.setColor(LColor.white);
+			g.setAlpha(1.0f);
+			topDialog.draw(g);
+		}
+		endDrawing();
+		
+		toolbar.draw(g);
+		
 		if (isDead) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 160, 320, 160);
@@ -308,7 +359,7 @@ public class MainScreen extends Screen {
 	}
 
 	public void alter(LTimerContext timer) {
-		if (isDead)
+		if (isDead || topDialog != null)
 			return;
 
 		if (heroFighting || enemyFighting) {
@@ -435,7 +486,7 @@ public class MainScreen extends Screen {
 			return false;
 		}
 
-		if (heroFighting)
+		if (heroFighting || topDialog != null)
 			return false;
 
 		switch (arg0) {
@@ -468,7 +519,7 @@ public class MainScreen extends Screen {
 	}
 
 	public boolean onKeyUp(int keyCode, KeyEvent e) {
-		if (heroFighting)
+		if (heroFighting || topDialog != null)
 			return false;
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_DPAD_LEFT:
@@ -501,24 +552,36 @@ public class MainScreen extends Screen {
 
 	@Override
 	public boolean onTouchDown(MotionEvent arg0) {
-		if (touchables != null) {
-			boolean flag = false;
-			for (Touchable touchable : touchables) {
-				if (!touchable.isActive())
-					continue;
-				flag = flag | touchable.isTouched();
-				if (touchable instanceof Dialog)
-					flag = true;
-				// if (touchable.isTouched()) {
-				for (OnTouchListener listener : touchable.getOnTouchListener()) {
+		if (toolbar.isTouched()) {
+			for (OnTouchListener listener : toolbar.getOnTouchListener()) {
+				listener.onTouchDown(arg0);
+			}
+			return false;
+		}
+		
+		if (topDialog != null) {
+			if (topDialog.isTouched()) {
+				for (OnTouchListener listener : topDialog.getOnTouchListener()) {
 					listener.onTouchDown(arg0);
 				}
-				// }
-			}
-			if (flag)
 				return false;
+			}
+		} else {
+//			if (gameController.isTouched()) {
+				for (OnTouchListener listener : gameController
+						.getOnTouchListener()) {
+					listener.onTouchDown(arg0);
+				}
+//				return false;
+//			}
+			setInfoBox();
 		}
+		return false;
+	}
 
+	public void setInfoBox() {
+		if (heroFighting || enemyFighting)
+			return;
 		int curX, curY;
 		curX = getTouchX() / 32;
 		curY = getTouchY() / 32;
@@ -526,103 +589,73 @@ public class MainScreen extends Screen {
 				&& infoBox.isVisible()) {
 			infoBox.setVisible(false);
 		} else {
-			infoBox.setCurX(curX);
-			infoBox.setCurY(curY);
-			infoBox.setVisible(true);
+//			for (Iterator<Sprite> it = sprites.iterator(); it.hasNext();) {
+//				Sprite sprite = it.next();
+//				if (sprite.getXs() == curX && sprite.getYs() == curY) {
+					infoBox.setCurX(curX);
+					infoBox.setCurY(curY);
+					infoBox.setVisible(true);
+					return;
+//				}
+//			}
 		}
-
-		return false;
 	}
-
+	
 	@Override
 	public boolean onTouchMove(MotionEvent arg0) {
-		if (touchables != null) {
-			boolean flag = false;
-			for (Touchable touchable : touchables) {
-				if (!touchable.isActive())
-					continue;
-				flag = flag | touchable.isTouched();
-				if (touchable instanceof Dialog)
-					flag = true;
-				// if (touchable.isTouched()) {
-				for (OnTouchListener listener : touchable.getOnTouchListener()) {
+		if (toolbar.isTouched()) {
+			for (OnTouchListener listener : toolbar.getOnTouchListener()) {
+				listener.onTouchMove(arg0);
+			}
+			return false;
+		}
+		
+		if (topDialog != null) {
+			if (topDialog.isTouched()) {
+				for (OnTouchListener listener : topDialog.getOnTouchListener()) {
 					listener.onTouchMove(arg0);
 				}
-				// }
-			}
-			if (flag)
 				return false;
+			}
+		} else {
+//			if (gameController.isTouched()) {
+				for (OnTouchListener listener : gameController
+						.getOnTouchListener()) {
+					listener.onTouchMove(arg0);
+				}
+				return false;
+//			}
 		}
+
 		return false;
 	}
 
 	@Override
 	public boolean onTouchUp(MotionEvent arg0) {
-		if (touchables != null) {
-			boolean flag = false;
-			for (Touchable touchable : touchables) {
-				if (!touchable.isActive())
-					continue;
-				flag = flag | touchable.isTouched();
-				if (touchable instanceof Dialog)
-					flag = true;
-				// if (touchable.isTouched()) {
-				for (OnTouchListener listener : touchable.getOnTouchListener()) {
-					listener.onTouchUp(arg0);
-				}
-				// }
-			}
-			if (flag)
-				return false;
-		}
-		return false;
-	}
-
-	class ActionKey {
-
-		static final int PRESS_ONLY = 1, STATE_RELEASED = 0, STATE_PRESSED = 1,
-				STATE_WAITING_FOR_RELEASE = 2;
-
-		int mode, amount, state;
-
-		public ActionKey() {
-			this(0);
-		}
-
-		public ActionKey(int mode) {
-			this.mode = mode;
-			reset();
-		}
-
-		public void reset() {
-			state = STATE_RELEASED;
-			amount = 0;
-		}
-
-		public void press() {
-			if (state != STATE_WAITING_FOR_RELEASE) {
-				amount++;
-				state = STATE_PRESSED;
-			}
-		}
-
-		public void release() {
-			state = STATE_RELEASED;
-		}
-
-		public boolean isPressed() {
-			if (amount != 0) {
-				amount--;
-				if (state == STATE_RELEASED) {
-					amount = 0;
-				} else if (mode == PRESS_ONLY) {
-					state = STATE_WAITING_FOR_RELEASE;
-					amount = 0;
-				}
-				return true;
+		if (toolbar.isTouched()) {
+			for (OnTouchListener listener : toolbar.getOnTouchListener()) {
+				listener.onTouchUp(arg0);
 			}
 			return false;
 		}
+		
+		if (topDialog != null) {
+			if (topDialog.isTouched()) {
+				for (OnTouchListener listener : topDialog.getOnTouchListener()) {
+					listener.onTouchUp(arg0);
+				}
+				return false;
+			}
+		} else {
+//			if (gameController.isTouched()) {
+				for (OnTouchListener listener : gameController
+						.getOnTouchListener()) {
+					listener.onTouchUp(arg0);
+				}
+				return false;
+//			}
+		}
+		return false;
 	}
 
 	public void addTouchable(Touchable touchable) {
@@ -636,5 +669,40 @@ public class MainScreen extends Screen {
 		if (touchables != null) {
 			touchables.remove(touchable);
 		}
+	}
+
+	public static final int MESSAGE_UP_KEY_PRESSED = 0;
+	public static final int MESSAGE_RIGHT_KEY_PRESSED = 1;
+	public static final int MESSAGE_DOWN_KEY_PRESSED = 2;
+	public static final int MESSAGE_LEFT_KEY_PRESSED = 3;
+
+	private Handler _handler = new Handler() {
+		@Override
+		public void handleMessage(Message message) {
+			switch (message.what) {
+			case MESSAGE_UP_KEY_PRESSED:
+				goUpKey.press();
+				break;
+			case MESSAGE_RIGHT_KEY_PRESSED:
+				goRightKey.press();
+				break;
+			case MESSAGE_DOWN_KEY_PRESSED:
+				goDownKey.press();
+				break;
+			case MESSAGE_LEFT_KEY_PRESSED:
+				goLeftKey.press();
+				break;
+			default:
+				break;
+			}
+		}
+	};
+
+	public void sendMessage(int code, String info) {
+		_handler.sendMessage(_handler.obtainMessage(code, info));
+	}
+
+	public void sendMessageDelay(int code, int delayMillis) {
+		_handler.sendMessageDelayed(_handler.obtainMessage(code), delayMillis);
 	}
 }

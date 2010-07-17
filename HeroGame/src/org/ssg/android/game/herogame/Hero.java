@@ -212,7 +212,7 @@ public class Hero extends Role {
 
 	@Override
 	public void update() {
-		if (count == 3) {
+		if (count == 5) {
 			count = 0;
 		} else {
 			count++;

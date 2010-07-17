@@ -2,10 +2,11 @@ package org.ssg.android.game.herogame.control;
 
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
+import org.loon.framework.android.game.utils.GraphicsUtils;
 import org.ssg.android.game.herogame.MainScreen;
 import org.ssg.android.game.herogame.util.NinePatchImage;
 
-public class Dialog extends DefaultTouchable{
+public class Dialog extends DefaultTouchable {
 
 	private NinePatchImage ninePatchImg;
 	private LImage img;
@@ -19,6 +20,9 @@ public class Dialog extends DefaultTouchable{
 	protected int colNum = 1;
 	protected int[] curWidth;
 
+	public boolean isAlwaysShown = false;
+	public boolean isFirst = false;
+	
 	public boolean isShown() {
 		return isShown;
 	}
@@ -28,8 +32,14 @@ public class Dialog extends DefaultTouchable{
 		setIsActive(isShown);
 	}
 
+	public Dialog(String fileName, int scaledWidth, int scaledHeight, int x,
+			int y) {
+		this(fileName, scaledWidth, scaledHeight);
+		this.x = x;
+		this.y = y;
+	}
+
 	public Dialog(String fileName, int scaledWidth, int scaledHeight) {
-		ninePatchImg = new NinePatchImage(fileName);
 		this.scaledWidth = scaledWidth;
 		this.scaledHeight = scaledHeight;
 		x = (MainScreen.WIDTH - scaledWidth) / 2;
@@ -38,33 +48,42 @@ public class Dialog extends DefaultTouchable{
 			x = 0;
 		if (y < 0)
 			y = 0;
-		img = ninePatchImg.createImage(scaledWidth, scaledHeight);
+		if (fileName != null && !fileName.equals("")) {
+			if (fileName.contains(".9.")) {
+				ninePatchImg = new NinePatchImage(fileName);
+				img = ninePatchImg.createImage(scaledWidth, scaledHeight);
+			} else {
+				img = GraphicsUtils.loadImage(fileName, true);
+			}
+		}
 		isShown = true;
 	}
 
 	public void draw(LGraphics g) {
 		if (!isShown)
 			return;
-		g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
-				scaledWidth, scaledHeight);
+		if (img != null) {
+			g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
+					scaledWidth, scaledHeight);
+		}
 	}
-	
 
-	protected void drawAbsoluteImage(LGraphics g, LImage image, int row, int col,
-			int width, int height) {
+	protected void drawAbsoluteImage(LGraphics g, LImage image, int row,
+			int col, int width, int height) {
 		drawAbsoluteImage(g, image, row, col, width, height, rowNum, colNum);
 	}
 
-	protected void drawAbsoluteString(LGraphics g, String value, int row, int col) {
+	protected void drawAbsoluteString(LGraphics g, String value, int row,
+			int col) {
 		drawAbsoluteString(g, value, row, col, rowNum, colNum);
 	}
-	
+
 	protected void drawButton(LGraphics g, Button button, int row, int col) {
 		drawButton(g, button, row, col, rowNum, colNum);
 	}
-	
-	protected void drawAbsoluteImage(LGraphics g, LImage image, int row, int col,
-			int width, int height, int rowNum, int colNum) {
+
+	protected void drawAbsoluteImage(LGraphics g, LImage image, int row,
+			int col, int width, int height, int rowNum, int colNum) {
 		int cellWidth = (scaledWidth - 2 * PADDING_X) / colNum;
 		int cellHeight = (scaledHeight - 2 * PADDING_Y) / rowNum;
 		int absoluteX = x + PADDING_X + col * cellWidth;
@@ -77,7 +96,8 @@ public class Dialog extends DefaultTouchable{
 		setCurWidth(row, absoluteX + width);
 	}
 
-	protected void drawAbsoluteString(LGraphics g, String value, int row, int col, int rowNum, int colNum) {
+	protected void drawAbsoluteString(LGraphics g, String value, int row,
+			int col, int rowNum, int colNum) {
 		int cellWidth = (scaledWidth - 2 * PADDING_X) / colNum;
 		int cellHeight = (scaledHeight - 2 * PADDING_Y) / rowNum;
 		int absoluteX = x + PADDING_X + col * cellWidth;
@@ -88,8 +108,9 @@ public class Dialog extends DefaultTouchable{
 		g.drawString(value, absoluteX, absoluteY + g.getFont().getSize());
 		setCurWidth(row, absoluteX + g.getFont().stringWidth(value));
 	}
-	
-	protected void drawButton(LGraphics g, Button button, int row, int col, int rowNum, int colNum) {
+
+	protected void drawButton(LGraphics g, Button button, int row, int col,
+			int rowNum, int colNum) {
 		int cellWidth = (scaledWidth - 2 * PADDING_X) / colNum;
 		int cellHeight = (scaledHeight - 2 * PADDING_Y) / rowNum;
 		int absoluteX = x + PADDING_X + col * cellWidth;
@@ -100,6 +121,25 @@ public class Dialog extends DefaultTouchable{
 		button.setDrawXY(absoluteX, absoluteY);
 		button.draw(g);
 		setCurWidth(row, absoluteX + button.getWidth());
+	}
+
+	protected void drawAbsoluteImageEx(LGraphics g, LImage image, int x, int y,
+			int width, int height) {
+		g.drawImage(image, x + this.x, y + this.y, x + this.x + width, y
+				+ this.y + height, 0, 0, width, height);
+	}
+
+	protected void drawAbsoluteStringEx(LGraphics g, String value, int x, int y) {
+		g.drawString(value, x + this.x, y + this.y + g.getFont().getSize());
+	}
+
+	protected void drawButtonEx(LGraphics g, Button button, int x, int y) {
+		button.setDrawXY(x + this.x, y + this.y);
+		button.draw(g);
+	}
+
+	protected void drawButton(LGraphics g, Button button) {
+		button.draw(g);
 	}
 	
 	@Override
@@ -113,14 +153,14 @@ public class Dialog extends DefaultTouchable{
 		}
 		return false;
 	}
-	
+
 	private void setCurWidth(int row, int width) {
 		if (curWidth == null) {
 			curWidth = new int[rowNum];
 		}
 		curWidth[row] += width + 5;
 	}
-	
+
 	private int getCurWidth(int row) {
 		if (curWidth == null) {
 			curWidth = new int[rowNum];

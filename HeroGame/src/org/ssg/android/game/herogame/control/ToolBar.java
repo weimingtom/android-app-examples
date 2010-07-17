@@ -7,26 +7,34 @@ import org.ssg.android.game.herogame.MainScreen;
 
 import android.view.MotionEvent;
 
-public class ToolBar extends DefaultTouchable {
+public class ToolBar extends Dialog {
 
-	private int x, y, width, height;
 	private Button[] buttons;
 	private static int BUTTON_NUM = 1;
-	private LImage backgroundImage;
 
-	public ToolBar(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public ToolBar(int x, int y, int scaledWidth, int scaledHeight) {
+		super("assets/images/buttombg.png", scaledWidth, scaledHeight, x, y);
+		initButtons();
+		isAlwaysShown = true;
+	}
 
+	@Override
+	public void draw(LGraphics g) {
+		super.draw(g);
+		if (!isShown())
+			return;
+
+		drawButton(g, buttons[0]);
+	}
+
+	private void initButtons() {
 		buttons = new Button[BUTTON_NUM];
 		LImage checked = GraphicsUtils.loadImage("assets/images/char2.png");
 		LImage unchecked = GraphicsUtils.loadImage("assets/images/char1.png");
 		Button.initialize(MainScreen.instance, buttons, 0, checked, unchecked);
 
 		for (int i = 0; i < buttons.length; i++) {
-			buttons[i].setDrawXY(x + (width / BUTTON_NUM) * i + 5, y);
+			buttons[i].setDrawXY(x + (scaledWidth / BUTTON_NUM) * i + 5, y);
 			buttons[i].setName("");
 			buttons[i].setComplete(false);
 			buttons[i]
@@ -37,17 +45,22 @@ public class ToolBar extends DefaultTouchable {
 							HeroStatusDialog dialog = HeroStatusDialog.instance;
 							if (button.checkComplete()) {
 								if (button.checkClick() != -1) {
-									if (!dialog.isShown()) {
-										dialog.setShown(true);
+									if (MainScreen.instance.topDialog == null
+											|| !MainScreen.instance.topDialog
+													.equals(dialog)) {
+										MainScreen.instance.topDialog = dialog;
 										button.setComplete(true);
 										button.setSelect(true);
 									} else {
-										dialog.setShown(false);
+										MainScreen.checkLock();
+										MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
 										button.setComplete(false);
 										button.setSelect(false);
 									}
 								} else {
-									if (dialog.isShown()) {
+									if (MainScreen.instance.topDialog != null
+											&& MainScreen.instance.topDialog
+													.equals(dialog)) {
 										button.setComplete(true);
 										button.setSelect(true);
 									}
@@ -59,27 +72,5 @@ public class ToolBar extends DefaultTouchable {
 					});
 			addOnTouchListener(buttons[i].getOnTouchListener());
 		}
-
-		backgroundImage = GraphicsUtils.loadImage("assets/images/buttombg.png");
-	}
-
-	public void draw(LGraphics g) {
-		g.drawImage(backgroundImage, x, y, x + width, y + height, 0, 0, width,
-				height);
-		for (int i = 0; i < buttons.length; i++) {
-			buttons[i].draw(g);
-		}
-	}
-
-	@Override
-	public boolean isTouched() {
-		if (((double) MainScreen.instance.getTouch().x > x
-				&& (double) MainScreen.instance.getTouch().x < x
-						+ (double) this.width
-				&& (double) MainScreen.instance.getTouch().y > y && (double) MainScreen.instance
-				.getTouch().y < y + (double) this.height)) {
-			return true;
-		}
-		return false;
 	}
 }
