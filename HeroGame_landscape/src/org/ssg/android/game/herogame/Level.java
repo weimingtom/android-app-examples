@@ -179,16 +179,18 @@ public class Level {
     public int firstTileY;
     public int lastTileY;
     
-    private void calcTileXY(int offsetX, int offsetY) {
+    public void calcTileXY(int offsetX, int offsetY) {
         firstTileX = pixelsToTiles(-offsetX);
         lastTileX = firstTileX + pixelsToTiles(MainScreen.WIDTH) + 1;
 
-        lastTileX = Math.min(lastTileX, col);
+//        lastTileX = Math.min(lastTileX, col);
+        lastTileX = col;
 
         firstTileY = pixelsToTiles(-offsetY);
         lastTileY = firstTileY + pixelsToTiles(MainScreen.HEIGHT) + 1;
 
-        lastTileY = Math.min(lastTileY, row);
+//        lastTileY = Math.min(lastTileY, row);
+        lastTileY = row;
     }
    
 }

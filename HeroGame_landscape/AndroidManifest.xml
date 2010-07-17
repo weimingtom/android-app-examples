@@ -6,7 +6,7 @@
     <application android:icon="@drawable/icon" android:label="@string/app_name">
         <activity android:name=".activity.Main"
                   android:label="@string/app_name"
-                  android:screenOrientation="portrait"
+                  android:screenOrientation="landscape"
                   android:configChanges="keyboardHidden|orientation|navigation" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -15,7 +15,7 @@
         </activity>
         <activity android:name=".activity.HeroGame"
         	android:configChanges="orientation|keyboardHidden|navigation"
-			android:screenOrientation="portrait"/>
+			android:screenOrientation="landscape"/>
     </application>
 
 

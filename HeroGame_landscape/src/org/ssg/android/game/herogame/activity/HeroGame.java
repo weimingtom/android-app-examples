@@ -12,7 +12,8 @@ public class HeroGame extends LGameActivity {
     @Override
     public void onCreate(Bundle icicle) {
     	super.onCreate(icicle);
-    	this.initialization(icicle, false);
+    	//landscape mode
+    	this.initialization(icicle, true);
     	 
     	Intent intent = getIntent();
     	MainScreen mainScreen = new MainScreen(intent.getStringExtra("archivingName"));

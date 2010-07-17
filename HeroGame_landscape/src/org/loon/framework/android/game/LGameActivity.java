@@ -549,7 +549,7 @@ public class LGameActivity extends Activity {
 			}
 			super.onDestroy();
 			// 双保险
-			android.os.Process.killProcess(android.os.Process.myPid());
+//			android.os.Process.killProcess(android.os.Process.myPid());
 		} catch (Exception e) {
 
 		}

@@ -33,8 +33,8 @@ import android.view.Window;
 
 public class MainScreen extends Screen {
 	private static final long serialVersionUID = 1L;
-	public static final int WIDTH = 320;
-	public static final int HEIGHT = 480;
+	public static final int WIDTH = 480;
+	public static final int HEIGHT = 320;
 	public static final int CS = 32;
 	private Level level;
 	private int levelNo;
@@ -44,6 +44,7 @@ public class MainScreen extends Screen {
 	private StatusBar heroEXPBar;
 	private StatusBar enemyHPBar;
 	private LImage enemyIcon;
+	private int offsetX, offsetY;
 
 	private Hero fightingHero;
 	private Enemy fightingEnemy;
@@ -249,13 +250,16 @@ public class MainScreen extends Screen {
 		if (!initDone)
 			return;
 		
-		int offsetX = WIDTH / 2 - hero.getXs() * CS;
+		offsetX = WIDTH / 2 - hero.getXs() * CS;
 		offsetX = Math.min(offsetX, 0);
 		offsetX = Math.max(offsetX, WIDTH - map.getWidth());
 
-		int offsetY = HEIGHT / 2 - hero.getYs() * CS;
+		offsetY = HEIGHT / 2 - hero.getYs() * CS;
 		offsetY = Math.min(offsetY, 0);
 		offsetY = Math.max(offsetY, HEIGHT - map.getHeight());
+		
+//		level.calcTileXY(offsetX, offsetY);
+		
 		map.draw(g, offsetX, offsetY);
 
 		hero.draw(g, offsetX, offsetY);
@@ -268,8 +272,8 @@ public class MainScreen extends Screen {
 					&& y > level.firstTileY && y < level.lastTileY) {
 				sprite.draw(g, offsetX, offsetY);
 
-				if (fightingHero == null && x == infoBox.getCurX()
-						&& y == infoBox.getCurY() && sprite instanceof Enemy
+				if (fightingHero == null && x + offsetX / CS == infoBox.getCurX()
+						&& y + offsetY / CS == infoBox.getCurY() && sprite instanceof Enemy
 						&& infoBox.isVisible()) {
 					g.drawImage(sprite.getImg(), 150, 0, 150 + sprite.getImg()
 							.getWidth() / 4, 32, 0, 0, sprite.getImg()
@@ -352,7 +356,7 @@ public class MainScreen extends Screen {
 
 		g.setColor(Color.WHITE);
 		g.setAntiAlias(true);
-		g.drawString(role.damage + "", role.HPx, role.HPy);
+		g.drawString(role.damage + "", role.HPx + offsetX, role.HPy + offsetY);
 		g.setAntiAlias(false);
 		role.HPy -= step1;
 		role.frameNo++;
