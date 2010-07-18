@@ -35,8 +35,8 @@ public class InfoBox {
 		isVisible = false;
 	}
 	
-	public void draw(LGraphics g) {
+	public void draw(LGraphics g, int offsetX, int offsetY) {
 		if (isVisible)
-			g.drawImage("assets/images/touchbox.png", curX * 32, curY * 32, 32, 32);
+			g.drawImage("assets/images/touchbox.png", curX * 32 + offsetX, curY * 32 + offsetY, 32, 32);
 	}
 }

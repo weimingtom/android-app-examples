@@ -29,7 +29,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.Window;
 
 public class MainScreen extends Screen {
 	private static final long serialVersionUID = 1L;
@@ -76,7 +75,7 @@ public class MainScreen extends Screen {
 	public Dialog topDialog, defaultTopDialog;
 
 	public static MainScreen instance;
-	
+
 	private static Object _lock = new Object();
 	private static volatile boolean _drawing;
 
@@ -222,34 +221,34 @@ public class MainScreen extends Screen {
 		}
 	}
 
-    public static void checkLock(){
-        synchronized (_lock) {
-            while (_drawing) {
-                try {
+	public static void checkLock() {
+		synchronized (_lock) {
+			while (_drawing) {
+				try {
 					_lock.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-            }
-        }
-    }
-    
-    public static void beginDrawing() {
-    	_drawing = true;
-    }
-    
-    public static void endDrawing() {
-        synchronized (_lock) {
-            _drawing = false;
-            _lock.notifyAll();
-        }
-    }
-    
+			}
+		}
+	}
+
+	public static void beginDrawing() {
+		_drawing = true;
+	}
+
+	public static void endDrawing() {
+		synchronized (_lock) {
+			_drawing = false;
+			_lock.notifyAll();
+		}
+	}
+
 	@Override
 	public void draw(LGraphics g) {
 		if (!initDone)
 			return;
-		
+
 		offsetX = WIDTH / 2 - hero.getXs() * CS;
 		offsetX = Math.min(offsetX, 0);
 		offsetX = Math.max(offsetX, WIDTH - map.getWidth());
@@ -257,9 +256,9 @@ public class MainScreen extends Screen {
 		offsetY = HEIGHT / 2 - hero.getYs() * CS;
 		offsetY = Math.min(offsetY, 0);
 		offsetY = Math.max(offsetY, HEIGHT - map.getHeight());
-		
-//		level.calcTileXY(offsetX, offsetY);
-		
+
+		// level.calcTileXY(offsetX, offsetY);
+
 		map.draw(g, offsetX, offsetY);
 
 		hero.draw(g, offsetX, offsetY);
@@ -272,9 +271,13 @@ public class MainScreen extends Screen {
 					&& y > level.firstTileY && y < level.lastTileY) {
 				sprite.draw(g, offsetX, offsetY);
 
-				if (fightingHero == null && x + offsetX / CS == infoBox.getCurX()
-						&& y + offsetY / CS == infoBox.getCurY() && sprite instanceof Enemy
-						&& infoBox.isVisible()) {
+				int xx = x * CS + offsetX;
+				int yy = y * CS + offsetY;
+				if (fightingHero == null && x == infoBox.getCurX()
+				// && xx < (infoBox.getCurX() + 1) * CS
+						&& y == infoBox.getCurY()
+						// && yy < (infoBox.getCurY() + 1) * CS
+						&& sprite instanceof Enemy && infoBox.isVisible()) {
 					g.drawImage(sprite.getImg(), 150, 0, 150 + sprite.getImg()
 							.getWidth() / 4, 32, 0, 0, sprite.getImg()
 							.getWidth() / 4, 32);
@@ -283,8 +286,8 @@ public class MainScreen extends Screen {
 					enemyHPBar.setValue(((Enemy) sprite).getHp());
 					enemyHPBar.setUpdate(((Enemy) sprite).getHp());
 					enemyHPBar.createUI(g);
-					
-					infoBox.draw(g);
+
+					infoBox.draw(g, offsetX, offsetY);
 				}
 			}
 		}
@@ -338,9 +341,9 @@ public class MainScreen extends Screen {
 			topDialog.draw(g);
 		}
 		endDrawing();
-		
+
 		toolbar.draw(g);
-		
+
 		if (isDead) {
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 160, 320, 160);
@@ -562,7 +565,7 @@ public class MainScreen extends Screen {
 			}
 			return false;
 		}
-		
+
 		if (topDialog != null) {
 			if (topDialog.isTouched()) {
 				for (OnTouchListener listener : topDialog.getOnTouchListener()) {
@@ -571,13 +574,12 @@ public class MainScreen extends Screen {
 				return false;
 			}
 		} else {
-//			if (gameController.isTouched()) {
-				for (OnTouchListener listener : gameController
-						.getOnTouchListener()) {
-					listener.onTouchDown(arg0);
-				}
-//				return false;
-//			}
+			// if (gameController.isTouched()) {
+			for (OnTouchListener listener : gameController.getOnTouchListener()) {
+				listener.onTouchDown(arg0);
+			}
+			// return false;
+			// }
 			setInfoBox();
 		}
 		return false;
@@ -587,24 +589,24 @@ public class MainScreen extends Screen {
 		if (heroFighting || enemyFighting)
 			return;
 		int curX, curY;
-		curX = getTouchX() / 32;
-		curY = getTouchY() / 32;
+		curX = (getTouchX() - offsetX) / 32;
+		curY = (getTouchY() - offsetY) / 32;
 		if (infoBox.getCurX() == curX && infoBox.getCurY() == curY
 				&& infoBox.isVisible()) {
 			infoBox.setVisible(false);
 		} else {
-//			for (Iterator<Sprite> it = sprites.iterator(); it.hasNext();) {
-//				Sprite sprite = it.next();
-//				if (sprite.getXs() == curX && sprite.getYs() == curY) {
-					infoBox.setCurX(curX);
-					infoBox.setCurY(curY);
-					infoBox.setVisible(true);
-					return;
-//				}
-//			}
+			// for (Iterator<Sprite> it = sprites.iterator(); it.hasNext();) {
+			// Sprite sprite = it.next();
+			// if (sprite.getXs() == curX && sprite.getYs() == curY) {
+			infoBox.setCurX(curX);
+			infoBox.setCurY(curY);
+			infoBox.setVisible(true);
+			return;
+			// }
+			// }
 		}
 	}
-	
+
 	@Override
 	public boolean onTouchMove(MotionEvent arg0) {
 		if (toolbar.isTouched()) {
@@ -613,7 +615,7 @@ public class MainScreen extends Screen {
 			}
 			return false;
 		}
-		
+
 		if (topDialog != null) {
 			if (topDialog.isTouched()) {
 				for (OnTouchListener listener : topDialog.getOnTouchListener()) {
@@ -622,13 +624,12 @@ public class MainScreen extends Screen {
 				return false;
 			}
 		} else {
-//			if (gameController.isTouched()) {
-				for (OnTouchListener listener : gameController
-						.getOnTouchListener()) {
-					listener.onTouchMove(arg0);
-				}
-				return false;
-//			}
+			// if (gameController.isTouched()) {
+			for (OnTouchListener listener : gameController.getOnTouchListener()) {
+				listener.onTouchMove(arg0);
+			}
+			return false;
+			// }
 		}
 
 		return false;
@@ -642,7 +643,7 @@ public class MainScreen extends Screen {
 			}
 			return false;
 		}
-		
+
 		if (topDialog != null) {
 			if (topDialog.isTouched()) {
 				for (OnTouchListener listener : topDialog.getOnTouchListener()) {
@@ -651,13 +652,12 @@ public class MainScreen extends Screen {
 				return false;
 			}
 		} else {
-//			if (gameController.isTouched()) {
-				for (OnTouchListener listener : gameController
-						.getOnTouchListener()) {
-					listener.onTouchUp(arg0);
-				}
-				return false;
-//			}
+			// if (gameController.isTouched()) {
+			for (OnTouchListener listener : gameController.getOnTouchListener()) {
+				listener.onTouchUp(arg0);
+			}
+			return false;
+			// }
 		}
 		return false;
 	}
