@@ -27,6 +27,7 @@ public class Enemy extends Role {
 	public int ANIM_OFFSET_Y = 1;
 	public static final int ANIM_HIT_FRAME = 9;
 	public static final int ANIM_FINAL_FRAME = 18;
+	public String racial;
 
 	private String fileName;
 	private int exp = 10;
@@ -43,12 +44,12 @@ public class Enemy extends Role {
 		return fileName;
 	}
 
-	public Enemy(String filename, int x, int y, int w, int h, BackGroundMap map) {
-		this(filename, x, y, w, h, map, 20, 5, 0);
+	public Enemy(String filename, int x, int y, int w, int h, BackGroundMap map, String racial) {
+		this(filename, x, y, w, h, map, 20, 5, 0, racial);
 	}
 
 	public Enemy(String filename, int x, int y, int w, int h,
-			BackGroundMap map, int hp, int attack, int defence) {
+			BackGroundMap map, int hp, int attack, int defence, String racial) {
 		super(filename, x, y, w, h, map, hp, attack, defence);
 		fileName = filename;
 		resetHPxy();
@@ -58,6 +59,7 @@ public class Enemy extends Role {
 		element_set = 100;
 		dex = 10;
 		agi = 10;
+		this.racial = racial;
 	}
 
 	@Override
@@ -65,6 +67,8 @@ public class Enemy extends Role {
 		HPx = getXs() * MainScreen.CS + getWidth() / 2 - ANIM_OFFSET_X;
 		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
 		frameNo = 0;
+		damage = -1;
+		count = 0;
 	}
 	
 	@Override

@@ -91,12 +91,12 @@ public class Level {
                 
                 switch (creaturesArray[i][j]) {
                     case 's':
-                    	Enemy enemy_s = new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap, 50, 5, 1);
+                    	Enemy enemy_s = new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap, 50, 5, 1, "skeleon");
                     	enemy_s.setExp(30);
                         sprites.add(enemy_s);
                         break;
                     case 'm':
-                    	Enemy enemy_m = new Enemy(MAGE_IMAGE, j, i, 32, 32, backGroundMap, 40, 10, 0);
+                    	Enemy enemy_m = new Enemy(MAGE_IMAGE, j, i, 32, 32, backGroundMap, 40, 10, 0, "mage");
                     	enemy_m.setExp(40);
                         sprites.add(enemy_m);
                         break;

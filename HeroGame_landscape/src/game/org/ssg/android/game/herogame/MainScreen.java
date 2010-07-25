@@ -4,19 +4,20 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.loon.framework.android.game.action.sprite.StatusBar;
+import org.loon.framework.android.game.action.sprite.WaitAnimation;
 import org.loon.framework.android.game.core.graphics.LColor;
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.graphics.Screen;
 import org.loon.framework.android.game.core.timer.LTimer;
 import org.loon.framework.android.game.core.timer.LTimerContext;
-import org.loon.framework.android.game.utils.GraphicsUtils;
 import org.ssg.android.game.herogame.control.ActionKey;
 import org.ssg.android.game.herogame.control.BackGroundMap;
 import org.ssg.android.game.herogame.control.Dialog;
-import org.ssg.android.game.herogame.control.LeftPanel;
 import org.ssg.android.game.herogame.control.HeroStatusDialog;
 import org.ssg.android.game.herogame.control.InfoBox;
+import org.ssg.android.game.herogame.control.LeftPanel;
+import org.ssg.android.game.herogame.control.LoadingAnimation;
 import org.ssg.android.game.herogame.control.OnTouchListener;
 import org.ssg.android.game.herogame.control.TitledAndBorderedStatusBar;
 import org.ssg.android.game.herogame.control.ToolBar;
@@ -77,6 +78,8 @@ public class MainScreen extends Screen {
 
 	public boolean isShownLeftPanel, changeNext, oldChangeNext;
 	public int panelX, panelY;
+	
+	public LoadingAnimation wait;
 
 	public static MainScreen instance;
 
@@ -106,12 +109,20 @@ public class MainScreen extends Screen {
 		this.archivingName = archivingName;
 		levelNo = 1;
 		instance = this;
-		init();
+		wait = new LoadingAnimation(100, 100);
+		wait.setRunning(true);
+		new Thread() {
+			public void run() {
+				init();
+			}
+		}.start();
 	}
 
 	private void init() {
 		initDone = false;
 
+		AndroidGlobalSession.init();
+		
 		levelInit();
 
 		fightingHero = null;
@@ -255,8 +266,10 @@ public class MainScreen extends Screen {
 
 	@Override
 	public void draw(LGraphics g) {
-		if (!initDone)
+		if (!initDone) {
+			wait.draw(g, 0, 0, 480, 320);
 			return;
+		}
 
 		if (oldChangeNext != changeNext) {
 			setShownLeftPanel(changeNext);
@@ -414,6 +427,11 @@ public class MainScreen extends Screen {
 	}
 
 	public void alter(LTimerContext timer) {
+		if (!initDone) {
+			wait.update(timer.getTimeSinceLastUpdate());
+			return;
+		}
+		
 		if (isDead || topDialog != null)
 			return;
 
@@ -447,26 +465,24 @@ public class MainScreen extends Screen {
 				enemyRef = enemy;
 
 				if (fightingHero == null) {
-					fightingHero = new Hero("assets/images/anim_herofight.png",
-							hero.getXs(), hero.getYs(), 30, 32, map);
+					fightingHero = (Hero) AndroidGlobalSession.get("hero_fight");
+					fightingHero.setXs(hero.getXs());
+					fightingHero.setYs(hero.getYs());
+					fightingHero.setMap(map);
 					fightingHero.timer = new LTimer(50);
 					fightingHero.setDir(0);
 					heroFighting = true;
 					enemyFighting = true;
+					fightingHero.resetHPxy();
 				}
 				if (fightingEnemy == null) {
-					if (enemy.getFileName().endsWith("assets/images/mage.png")) {
-						fightingEnemy = new Enemy(
-								"assets/images/anim_magefight.png", hero
-										.getXs() + 1, hero.getYs(), 41, 32, map);
-						fightingEnemy.ANIM_OFFSET_X = CS;
-					} else {
-						fightingEnemy = new Enemy(
-								"assets/images/anim_skeleonfight.png", hero
-										.getXs() + 1, hero.getYs(), 32, 32, map);
-					}
+					fightingEnemy = (Enemy) AndroidGlobalSession.get(enemy.racial);
+					fightingEnemy.setXs(hero.getXs() + 1);
+					fightingEnemy.setYs(hero.getYs());
+					fightingEnemy.setMap(map);
 					fightingEnemy.timer = new LTimer(100);
 					fightingEnemy.setDir(0);
+					fightingEnemy.resetHPxy();
 				}
 
 				enemyIcon = enemy.getImg();
