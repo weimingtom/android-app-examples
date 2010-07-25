@@ -24,7 +24,11 @@ public class ToolBar extends Dialog {
 		if (!isShown())
 			return;
 
-		drawButtonEx(g, buttons[0], 0 , 35);
+		if (MainScreen.instance.topDialog == null) {
+			buttons[0].setComplete(false);
+			buttons[0].setSelect(false);
+		}
+		drawButtonEx(g, buttons[0], 0, 35);
 		drawButtonEx(g, buttons[1], 0, 0);
 	}
 

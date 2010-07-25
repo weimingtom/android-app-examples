@@ -626,7 +626,7 @@ public class MainScreen extends Screen {
 		if (arg0.getX() > panelX) {
 			touchX -= panelX;
 
-			if (topDialog != null) {
+			if (topDialog != null && topDialog.isShown) {
 				if (topDialog.isTouched()) {
 					for (OnTouchListener listener : topDialog
 							.getOnTouchListener()) {
@@ -685,7 +685,7 @@ public class MainScreen extends Screen {
 		if (arg0.getX() > panelX) {
 			touchX -= panelX;
 
-			if (topDialog != null) {
+			if (topDialog != null && topDialog.isShown) {
 				if (topDialog.isTouched()) {
 					for (OnTouchListener listener : topDialog
 							.getOnTouchListener()) {
@@ -720,7 +720,7 @@ public class MainScreen extends Screen {
 		if (arg0.getX() > panelX) {
 			touchX -= panelX;
 
-			if (topDialog != null) {
+			if (topDialog != null && topDialog.isShown) {
 				if (topDialog.isTouched()) {
 					for (OnTouchListener listener : topDialog
 							.getOnTouchListener()) {

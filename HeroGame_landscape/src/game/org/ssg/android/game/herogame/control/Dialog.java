@@ -12,7 +12,7 @@ public class Dialog extends DefaultTouchable {
 	private LImage img, img1;
 	public int scaledWidth, scaledHeight;
 	protected int x, y;
-	private boolean isShown;
+	public boolean isShown;
 
 	protected int PADDING_X;
 	protected int PADDING_Y;

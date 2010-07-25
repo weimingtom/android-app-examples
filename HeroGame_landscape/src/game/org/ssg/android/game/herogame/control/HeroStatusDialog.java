@@ -19,6 +19,7 @@ public class HeroStatusDialog extends Dialog {
 	private Hero hero;
 
 	private Button[] buttons;
+	private Button closeBtn;
 
 	private static int BUTTON_NUM = 1;
 
@@ -49,7 +50,7 @@ public class HeroStatusDialog extends Dialog {
 
 		g.setAntiAlias(true);
 		LFont l = g.getFont();
-//		g.setFont(LFont.SIZE_SMALL);
+		g.setFont(12);
 		drawAbsoluteString(g, "Hero Name: " + "Sharyu", 0, 1, 8, 2);
 		drawAbsoluteString(g, "Hero Level: " + hero.getLevel(), 1, 0);
 		drawAbsoluteString(g, "Hit Point: " + hero.getHp() + "/"
@@ -70,6 +71,7 @@ public class HeroStatusDialog extends Dialog {
 			drawButton(g, buttons[i], 5, 1 + i, 8, 3);
 		}
 
+		drawButtonEx(g, closeBtn, scaledWidth - 80, 20);
 		curWidth = null;
 	}
 
@@ -82,8 +84,6 @@ public class HeroStatusDialog extends Dialog {
 		Button.initialize(MainScreen.instance, buttons, 0, checked, unchecked);
 
 		for (int i = 0; i < buttons.length; i++) {
-			// buttons[i].setDrawXY(x + (scaledWidth / BUTTON_NUM) * i + 5, y +
-			// 5);
 			buttons[i].setName("");
 			buttons[i].setComplete(false);
 			buttons[i]
@@ -106,5 +106,26 @@ public class HeroStatusDialog extends Dialog {
 					});
 			addOnTouchListener(buttons[i].getOnTouchListener());
 		}
+		
+		unchecked = GraphicsUtils.loadImage("assets/images/close.png");
+		closeBtn = new Button(MainScreen.instance, 4, 0, false, unchecked,
+				unchecked);
+		closeBtn.setName("");
+		closeBtn.setComplete(false);
+		closeBtn.setOnTouchListener(new DefaultOnTouchListener(closeBtn) {
+			@Override
+			public boolean onTouchUp(MotionEvent arg0) {
+				Button button = (Button) getRef();
+				if (button.isComplete()) {
+					if (button.checkComplete()) {
+						MainScreen.checkLock();
+						MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
+					}
+					button.setComplete(false);
+				}
+				return true;
+			}
+		});
+		addOnTouchListener(closeBtn.getOnTouchListener());
 	}
 }
