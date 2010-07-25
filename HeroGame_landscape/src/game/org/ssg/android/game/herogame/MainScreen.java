@@ -308,7 +308,7 @@ public class MainScreen extends Screen {
 			HEIGHT = 320;
 		}
 		if (topDialog != null) {
-			topDialog.scaledWidth = WIDTH - 8;
+			topDialog.scaledWidth = WIDTH - 10;
 		}
 	}
 

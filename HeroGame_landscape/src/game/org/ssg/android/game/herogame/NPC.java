@@ -45,7 +45,7 @@ public class NPC extends Sprite {
 		topics.add("谢啦～");
 		LImage image2 = GraphicsUtils.loadImage("assets/images/hero.png");
 		LImage image1 = getImg();
-		talkDialog = new TextDialog(MainScreen.instance.WIDTH - 8, 120, 8, 180,
+		talkDialog = new TextDialog(MainScreen.instance.WIDTH - 10, 120, 8, 180,
 				topics, image1, image2);
 	}
 	
