@@ -9,7 +9,7 @@ import org.ssg.android.game.herogame.util.NinePatchImage;
 public class Dialog extends DefaultTouchable {
 
 	private NinePatchImage ninePatchImg;
-	private LImage img, img1;
+	public LImage img, img1;
 	public int scaledWidth, scaledHeight;
 	protected int x, y;
 	public boolean isShown;

@@ -2,9 +2,12 @@ package org.ssg.android.game.herogame;
 
 import java.util.HashMap;
 
+import org.ssg.android.game.herogame.control.LoadingAnimation;
+import org.ssg.android.game.herogame.util.NinePatchImage;
+
 public class AndroidGlobalSession {
 
-	public static HashMap<String, Sprite> resMap = new HashMap<String, Sprite>();
+	public static HashMap<String, Object> resMap = new HashMap<String, Object>();
 
 	public static void init() {
 		resMap.put("hero_fight", new Hero("assets/images/anim_herofight.png",
@@ -17,9 +20,17 @@ public class AndroidGlobalSession {
 				32, null, "mage");
 		temp.ANIM_OFFSET_X = MainScreen.CS;
 		resMap.put("mage", temp);
+		
+		resMap.put("loading", new LoadingAnimation(100, 100));
+		
+		NinePatchImage ninePatchImg = new NinePatchImage("assets/images/window.9.png");
+		resMap.put("dialog_438_310", ninePatchImg.createImage(438, 310));
+		resMap.put("dialog_310_310", ninePatchImg.createImage(310, 310));
+		resMap.put("dialog_438_120", ninePatchImg.createImage(438, 120));
+		resMap.put("dialog_310_120", ninePatchImg.createImage(310, 120));
 	}
 
-	public static Sprite get(String key) {
+	public static Object get(String key) {
 		return resMap.get(key);
 	}
 

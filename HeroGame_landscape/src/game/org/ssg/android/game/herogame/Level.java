@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.loon.framework.android.game.core.resource.Resources;
@@ -34,6 +35,7 @@ public class Level {
     private static final String LEVEL_FILE_NAME = "assets/maps/floor";
     private static final String SKELEON_IMAGE = "assets/images/skeleon.png";
     private static final String MAGE_IMAGE = "assets/images/mage.png";
+    private static final String SHOP_IMAGE = "assets/images/npc.png";
     
     public int getLevelNo() {
         return levelNo;
@@ -91,12 +93,12 @@ public class Level {
                 
                 switch (creaturesArray[i][j]) {
                     case 's':
-                    	Enemy enemy_s = new Enemy(SKELEON_IMAGE, j, i, 28, 32, backGroundMap, 50, 5, 1, "skeleon");
+                    	Enemy enemy_s = new Enemy(SKELEON_IMAGE, j, i, 28, 32, this, 50, 5, 1, "skeleon");
                     	enemy_s.setExp(30);
                         sprites.add(enemy_s);
                         break;
                     case 'm':
-                    	Enemy enemy_m = new Enemy(MAGE_IMAGE, j, i, 32, 32, backGroundMap, 40, 10, 0, "mage");
+                    	Enemy enemy_m = new Enemy(MAGE_IMAGE, j, i, 32, 32, this, 40, 10, 0, "mage");
                     	enemy_m.setExp(40);
                         sprites.add(enemy_m);
                         break;
@@ -104,6 +106,8 @@ public class Level {
                         heroPos[0] = j;
                         heroPos[1] = i;
                         break;
+                    case 'n':
+                        sprites.add( new NPC(SHOP_IMAGE, j, i, 32, 32, this, "shop"));
                 }
             }
         }
@@ -193,4 +197,22 @@ public class Level {
         lastTileY = row;
     }
    
+    public boolean isAllow(int x, int y) {
+        if (backGroundArray[y][x] == '1') {
+            return false;
+        }
+        return true;
+    }
+    
+    public NPC isNPC(int x, int y) {
+        if (creaturesArray[y][x] == 'n') {
+        	for (Iterator<Sprite> it = sprites.iterator(); it.hasNext();) {
+    			Sprite sprite = it.next();
+    			if (x == sprite.x && y == sprite.y)
+    				return (NPC) sprite;
+        	}
+        	return null;
+        }
+        return null;
+    }
 }

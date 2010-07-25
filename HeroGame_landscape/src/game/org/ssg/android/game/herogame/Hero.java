@@ -20,7 +20,7 @@ public class Hero extends Role {
 	public static final int ANIM_HIT_FRAME = 9;
 	public static final int ANIM_FINAL_FRAME = 18;
 	private boolean isAnimating = false;
-	private int level, exp;
+	private int herolevel, exp;
 	private static final int[] EXP_TO_LEVEL = { -1, 50, 60, 70, 80, 90, 100,
 			110, 120 };
 	private int availablePoints;
@@ -34,15 +34,15 @@ public class Hero extends Role {
 	}
 
 	public int getEXPtoNextLevel() {
-		return EXP_TO_LEVEL[level];
+		return EXP_TO_LEVEL[herolevel];
 	}
 
 	public int getLevel() {
-		return level;
+		return herolevel;
 	}
 
-	public void setLevel(int level) {
-		this.level = level;
+	public void setLevel(int herolevel) {
+		this.herolevel = herolevel;
 	}
 
 	public int getExp() {
@@ -52,22 +52,22 @@ public class Hero extends Role {
 	public void addExp(int exp) {
 		if (this.exp + exp >= getEXPtoNextLevel()) {
 			this.exp = this.exp + exp - getEXPtoNextLevel();
-			level++;
+			herolevel++;
 			availablePoints += 4;
 		} else {
 			this.exp += exp;
 		}
 	}
 
-	public Hero(String filename, int x, int y, int w, int h, BackGroundMap map) {
-		super(filename, x, y, w, h, map, 100, 10, 9);
+	public Hero(String filename, int x, int y, int w, int h, Level level) {
+		super(filename, x, y, w, h, level, 100, 10, 9);
 		dir = DOWN;
-		level = 1;
+		herolevel = 1;
 		exp = 0;
 		availablePoints = 0;
 		resetHPxy();
-		
-	    hit = 100;
+
+		hit = 100;
 		strength = 20;
 		element_set = 100;
 		dex = 20;
@@ -75,44 +75,71 @@ public class Hero extends Role {
 	}
 
 	@Override
-    public void resetHPxy() {
+	public void resetHPxy() {
 		HPx = getXs() * MainScreen.CS + MainScreen.CS / 2 - ANIM_OFFSET_X;
 		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
 		frameNo = 0;
 		damage = -1;
 		count = 0;
-    }
-    
+	}
+
 	public void move(int direction) {
 		if (isWalking)
 			return;
 		switch (direction) {
 		case LEFT:
-			// �����ж��¼�
-			if (map.isAllow(x - 1, y)) {
-				destX = x - 1;
-				isWalking = true;
+			if (level.isAllow(x - 1, y)) {
+				NPC npc = level.isNPC(x - 1, y);
+				if (npc != null) {
+					npc.talkDialog.resetDialog();
+					MainScreen.instance.isNPCAction = true;
+					MainScreen.instance.actionNPC = npc;
+				} else {
+					destX = x - 1;
+					isWalking = true;
+				}
 			}
 			dir = LEFT;
 			break;
 		case RIGHT:
-			if (map.isAllow(x + 1, y)) {
-				destX = x + 1;
-				isWalking = true;
+			if (level.isAllow(x + 1, y)) {
+				NPC npc = level.isNPC(x + 1, y);
+				if (npc != null) {
+					npc.talkDialog.resetDialog();
+					MainScreen.instance.isNPCAction = true;
+					MainScreen.instance.actionNPC = npc;
+				} else {
+					destX = x + 1;
+					isWalking = true;
+				}
 			}
 			dir = RIGHT;
 			break;
 		case UP:
-			if (map.isAllow(x, y - 1)) {
-				destY = y - 1;
-				isWalking = true;
+			if (level.isAllow(x, y - 1)) {
+				NPC npc = level.isNPC(x, y - 1);
+				if (npc != null) {
+					npc.talkDialog.resetDialog();
+					MainScreen.instance.isNPCAction = true;
+					MainScreen.instance.actionNPC = npc;
+				} else {
+					destY = y - 1;
+					isWalking = true;
+				}
 			}
 			dir = UP;
 			break;
 		case DOWN:
-			if (map.isAllow(x, y + 1)) {
-				destY = y + 1;
-				isWalking = true;
+			if (level.isAllow(x, y + 1)) {
+				NPC npc = level.isNPC(x, y + 1);
+				if (npc != null) {
+					npc.talkDialog.resetDialog();
+					MainScreen.instance.isNPCAction = true;
+					MainScreen.instance.actionNPC = npc;
+				} else {
+					destY = y + 1;
+					isWalking = true;
+				}
 			}
 			dir = DOWN;
 			break;
@@ -225,7 +252,7 @@ public class Hero extends Role {
 		isAnimating = true;
 		super.draw(g, offsetX - ANIM_OFFSET_X, offsetY - ANIM_OFFSET_Y);
 	}
-	
+
 	public boolean updateFightingAnim(long elapsedTime) {
 		if (timer.action(elapsedTime)) {
 			if (ANIM_FINAL_FRAME == this.getCount()) {

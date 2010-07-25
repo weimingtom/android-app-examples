@@ -73,9 +73,9 @@ public abstract class Role extends Sprite {
         this.maxHP = maxHP;
     }
     
-    public Role(String fileName, int x, int y, int w, int h, BackGroundMap map, int hp,
+    public Role(String fileName, int x, int y, int w, int h, Level level, int hp,
             int attack, int defence) {
-        super(fileName, x, y, w, h, map);
+        super(fileName, x, y, w, h, level);
         this.hp = hp;
         this.attack = attack;
         this.defence = defence;

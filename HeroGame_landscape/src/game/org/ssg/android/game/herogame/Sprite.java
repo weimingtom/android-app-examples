@@ -58,24 +58,16 @@ public abstract class Sprite extends
 
     private boolean isShow = true; // 是否显示
 
-    protected BackGroundMap map;
-
-    public BackGroundMap getMap() {
-        return map;
-    }
-
-    public void setMap(BackGroundMap map) {
-        this.map = map;
-    }
+    protected Level level;
 
     public LTimer timer;
 
     private int fixX, fixY;
 
-    public Sprite(String fileName, int x, int y, int w, int h, BackGroundMap map) {
+    public Sprite(String fileName, int x, int y, int w, int h, Level level) {
         this.x = x;
         this.y = y;
-        this.map = map;
+        this.level = level;
         this.timer = new LTimer(300);
         width = w;
         height = h;

@@ -44,13 +44,13 @@ public class Enemy extends Role {
 		return fileName;
 	}
 
-	public Enemy(String filename, int x, int y, int w, int h, BackGroundMap map, String racial) {
-		this(filename, x, y, w, h, map, 20, 5, 0, racial);
+	public Enemy(String filename, int x, int y, int w, int h, Level level, String racial) {
+		this(filename, x, y, w, h, level, 20, 5, 0, racial);
 	}
 
 	public Enemy(String filename, int x, int y, int w, int h,
-			BackGroundMap map, int hp, int attack, int defence, String racial) {
-		super(filename, x, y, w, h, map, hp, attack, defence);
+			Level level, int hp, int attack, int defence, String racial) {
+		super(filename, x, y, w, h, level, hp, attack, defence);
 		fileName = filename;
 		resetHPxy();
 		

@@ -5,6 +5,7 @@ import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.extend.DrawButton;
 import org.loon.framework.android.game.utils.GraphicsUtils;
+import org.ssg.android.game.herogame.AndroidGlobalSession;
 import org.ssg.android.game.herogame.Hero;
 import org.ssg.android.game.herogame.MainScreen;
 
@@ -28,7 +29,7 @@ public class HeroStatusDialog extends Dialog {
 	}
 
 	public HeroStatusDialog(Hero hero) {
-		this(DIALOG_BG, 440, 312);
+		this("", 440, 312);
 		instance = this;
 		this.hero = hero;
 		PADDING_X = 20;
@@ -36,6 +37,9 @@ public class HeroStatusDialog extends Dialog {
 		rowNum = 8;
 		colNum = 1;
 
+		img = (LImage) AndroidGlobalSession.get("dialog_438_310");
+		img1 = (LImage) AndroidGlobalSession.get("dialog_310_310");
+		
 		initButtons();
 	}
 

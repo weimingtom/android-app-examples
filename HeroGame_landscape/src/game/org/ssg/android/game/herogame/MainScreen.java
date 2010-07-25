@@ -80,6 +80,9 @@ public class MainScreen extends Screen {
 	public int panelX, panelY;
 	
 	public LoadingAnimation wait;
+	
+	public boolean isNPCAction, cleanDialog = false;
+	public NPC actionNPC;
 
 	public static MainScreen instance;
 
@@ -109,7 +112,7 @@ public class MainScreen extends Screen {
 		this.archivingName = archivingName;
 		levelNo = 1;
 		instance = this;
-		wait = new LoadingAnimation(100, 100);
+		wait = (LoadingAnimation) AndroidGlobalSession.get("loading");
 		wait.setRunning(true);
 		new Thread() {
 			public void run() {
@@ -121,8 +124,6 @@ public class MainScreen extends Screen {
 	private void init() {
 		initDone = false;
 
-		AndroidGlobalSession.init();
-		
 		levelInit();
 
 		fightingHero = null;
@@ -186,10 +187,10 @@ public class MainScreen extends Screen {
 			map = level.getBackGroundMap();
 
 			if (hero == null || isDead) {
-				hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
+				hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, level);
 				isDead = false;
 			} else {
-				hero.setMap(map);
+				hero.level = level;
 			}
 			hero.setXs(level.heroPos[0]);
 			hero.setYs(level.heroPos[1]);
@@ -215,10 +216,10 @@ public class MainScreen extends Screen {
 			map = level.getBackGroundMap();
 
 			if (hero == null || isDead) {
-				hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, map);
+				hero = new Hero("assets/images/hero.png", 1, 1, 20, 32, level);
 				isDead = false;
 			} else {
-				hero.setMap(map);
+				hero.level = level;
 			}
 			hero.setXs(level.heroPos[0]);
 			hero.setYs(level.heroPos[1]);
@@ -306,9 +307,9 @@ public class MainScreen extends Screen {
 			WIDTH = 448;
 			HEIGHT = 320;
 		}
-		heroStatusDialog.scaledWidth = WIDTH - 8;
-		heroStatusDialog.scaledHeight = HEIGHT - 8;
-		// heroStatusDialog.resetDialogBG();
+		if (topDialog != null) {
+			topDialog.scaledWidth = WIDTH - 8;
+		}
 	}
 
 	private void drawLeftPanel(LGraphics g) {
@@ -355,8 +356,6 @@ public class MainScreen extends Screen {
 			}
 		}
 
-		g.setColor(Color.WHITE);
-		g.setAntiAlias(true);
 		g.drawImage(hero.getImg(), (CS - hero.getWidth()) / 2, (CS - hero
 				.getHeight()) / 2,
 				(CS - hero.getWidth()) / 2 + hero.getWidth(), (CS - hero
@@ -379,6 +378,8 @@ public class MainScreen extends Screen {
 			enemyHPBar.setUpdate(enemyRef.getHp());
 			enemyHPBar.createUI(g);
 		}
+		g.setColor(Color.WHITE);
+		g.setAntiAlias(true);
 		g.drawString("Level: ", 5, HEIGHT - 10);
 		g.drawString(Integer.toString(levelNo), 40, HEIGHT - 10);
 		g.setAntiAlias(false);
@@ -432,6 +433,13 @@ public class MainScreen extends Screen {
 			return;
 		}
 		
+		if (cleanDialog) {
+			topDialog = defaultTopDialog;
+			isNPCAction = false;
+			actionNPC = null;
+			cleanDialog = false;
+		}
+		
 		if (isDead || topDialog != null)
 			return;
 
@@ -448,6 +456,10 @@ public class MainScreen extends Screen {
 				hero.move(Hero.DOWN);
 			}
 
+			if (isNPCAction) {
+				topDialog = actionNPC.talkDialog;
+			}
+			
 			if (map.isDoor(hero.getXs(), hero.getYs())) {
 				levelNo++;
 				levelInit();
@@ -468,7 +480,7 @@ public class MainScreen extends Screen {
 					fightingHero = (Hero) AndroidGlobalSession.get("hero_fight");
 					fightingHero.setXs(hero.getXs());
 					fightingHero.setYs(hero.getYs());
-					fightingHero.setMap(map);
+//					fightingHero.level = level;
 					fightingHero.timer = new LTimer(50);
 					fightingHero.setDir(0);
 					heroFighting = true;
@@ -479,7 +491,7 @@ public class MainScreen extends Screen {
 					fightingEnemy = (Enemy) AndroidGlobalSession.get(enemy.racial);
 					fightingEnemy.setXs(hero.getXs() + 1);
 					fightingEnemy.setYs(hero.getYs());
-					fightingEnemy.setMap(map);
+//					fightingEnemy.level = level;
 					fightingEnemy.timer = new LTimer(100);
 					fightingEnemy.setDir(0);
 					fightingEnemy.resetHPxy();

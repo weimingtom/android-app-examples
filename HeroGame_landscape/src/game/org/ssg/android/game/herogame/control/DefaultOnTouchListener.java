@@ -27,7 +27,10 @@ public class DefaultOnTouchListener implements OnTouchListener{
 		this.ref = ref;
 	}
 
+	public DefaultOnTouchListener() {
 
+	}
+	
 	@Override
 	public boolean onTouchMove(MotionEvent arg0) {
 		Button button = (Button) getRef();

@@ -1,5 +1,6 @@
 package org.ssg.android.game.herogame.activity;
 
+import org.ssg.android.game.herogame.AndroidGlobalSession;
 import org.ssg.android.game.herogame.R;
 import org.ssg.android.game.herogame.db.ConstantUtil;
 import org.ssg.android.game.herogame.db.DBManager;
@@ -21,6 +22,8 @@ public class Main extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.menu);
 
+		AndroidGlobalSession.init();
+		
 		View newButton = findViewById(R.id.newGameButton);
 		View continueButton = findViewById(R.id.selectArchivingButton);
 		View exitButton = findViewById(R.id.exitGameButton);
