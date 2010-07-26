@@ -279,7 +279,8 @@ public class MainScreen extends Screen {
 
 		offsetX = WIDTH / 2 - hero.getXs() * CS;
 		offsetX = Math.min(offsetX, 0);
-		offsetX = Math.max(offsetX, WIDTH - map.getWidth());
+		if (WIDTH <= map.getWidth())
+			offsetX = Math.max(offsetX, WIDTH - map.getWidth());
 
 		offsetY = HEIGHT / 2 - hero.getYs() * CS;
 		offsetY = Math.min(offsetY, 0);

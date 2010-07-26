@@ -69,11 +69,13 @@ public class BackGroundMap {
     public void draw(LGraphics g, int offsetX, int offsetY) {
 
         firstTileX = pixelsToTiles(-offsetX);
+        firstTileX = Math.max(firstTileX, 0);
         lastTileX = firstTileX + pixelsToTiles(MainScreen.instance.WIDTH) + 1;
 
         lastTileX = Math.min(lastTileX, col);
 
         firstTileY = pixelsToTiles(-offsetY);
+        firstTileY = Math.max(firstTileY, 0);
         lastTileY = firstTileY + pixelsToTiles(MainScreen.instance.HEIGHT) + 1;
 
         lastTileY = Math.min(lastTileY, row);
