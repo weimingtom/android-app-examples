@@ -75,7 +75,7 @@ public class HeroStatusDialog extends Dialog {
 			drawButton(g, buttons[i], 5, 1 + i, 8, 3);
 		}
 
-		drawButtonEx(g, closeBtn, scaledWidth - 80, 20);
+		drawButtonEx(g, closeBtn, scaledWidth - 70, 10);
 		curWidth = null;
 	}
 

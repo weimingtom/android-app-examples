@@ -67,11 +67,9 @@ public class Item extends NPC {
 	}
 
 	private int i = 0;
-	public boolean animationFinished = false;
 
 	public void drawAnimation(LGraphics g, int offsetX, int offsetY) {
 		if (i == 30) {
-			animationFinished = true;
 			return;
 		}
 		if (i == 25) {

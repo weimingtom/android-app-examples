@@ -1,9 +1,7 @@
 package org.ssg.android.game.herogame.control;
 
-import org.loon.framework.android.game.core.graphics.LFont;
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
-import org.loon.framework.android.game.extend.DrawButton;
 import org.loon.framework.android.game.utils.GraphicsUtils;
 import org.ssg.android.game.herogame.AndroidGlobalSession;
 import org.ssg.android.game.herogame.Hero;
@@ -17,10 +15,12 @@ public class InventoryDialog extends Dialog {
 
 	private Hero hero;
 
-	private Button[] buttons;
+	private CellButton[] buttons;
 	private Button closeBtn;
 
 	private static int BUTTON_NUM = 1;
+	
+	private LImage bodyImage;
 
 	public InventoryDialog(String fileName, int scaledWidth, int scaledHeight) {
 		super(fileName, scaledWidth, scaledHeight);
@@ -38,6 +38,8 @@ public class InventoryDialog extends Dialog {
 		img = (LImage) AndroidGlobalSession.get("dialog_438_310");
 		img1 = (LImage) AndroidGlobalSession.get("dialog_310_310");
 		
+		bodyImage = GraphicsUtils.loadImage("assets/images/body.png");
+		
 		initButtons();
 	}
 
@@ -47,63 +49,59 @@ public class InventoryDialog extends Dialog {
 		if (!isShown())
 			return;
 
-		LImage img = hero.getImg();
-		drawAbsoluteImage(g, img, 0, 0, 20, 32, 8, 2);
-
-		g.setAntiAlias(true);
-		LFont l = g.getFont();
-		g.setFont(12);
-		drawAbsoluteString(g, "Hero Name: " + "Sharyu", 0, 1, 8, 2);
-		drawAbsoluteString(g, "Hero Level: " + hero.getLevel(), 1, 0);
-		drawAbsoluteString(g, "Hit Point: " + hero.getHp() + "/"
-				+ hero.getMaxHP(), 2, 0);
-		drawAbsoluteString(g, "Experience: " + hero.getExp() + "/"
-				+ hero.getEXPtoNextLevel(), 3, 0);
-		drawAbsoluteString(g, "Points Remaining: " + hero.getAvailablePoints(),
-				4, 0);
-
-		drawAbsoluteString(g, "Attack: " + hero.getAttack(), 5, 0, 8, 3);
-
-		drawAbsoluteString(g, "Defence: " + hero.getDefence(), 6, 0);
-		drawAbsoluteString(g, "MaxHP: " + hero.getMaxHP(), 7, 0);
-		g.setFont(l);
-		g.setAntiAlias(false);
-
+		drawAbsoluteImageEx(g, bodyImage, 25, 37, 63, 216);
+		drawButtonEx(g, closeBtn, scaledWidth - 70, 10);
+		
 		for (int i = 0; i < buttons.length; i++) {
-			drawButton(g, buttons[i], 5, 1 + i, 8, 3);
+			drawButton(g, buttons[i]);
 		}
-
-		drawButtonEx(g, closeBtn, scaledWidth - 80, 20);
-		curWidth = null;
 	}
 
 	private void initButtons() {
-		buttons = new Button[BUTTON_NUM];
-		LImage checked = GraphicsUtils
-				.loadImage("assets/images/addpoint_down.png");
+		buttons = new CellButton[BUTTON_NUM];
 		LImage unchecked = GraphicsUtils
-				.loadImage("assets/images/addpoint_up.png");
-		Button.initialize(MainScreen.instance, buttons, 0, checked, unchecked);
+				.loadImage("assets/images/cell.png");
+		CellButton.initialize(MainScreen.instance, buttons, 0, unchecked, unchecked);
 
 		for (int i = 0; i < buttons.length; i++) {
 			buttons[i].setName("");
 			buttons[i].setComplete(false);
+			buttons[i].setDrawXY(130 + i * 40, 42);
+			buttons[i].resetItemPos();
 			buttons[i]
 					.setOnTouchListener(new DefaultOnTouchListener(buttons[i]) {
+						public boolean startDrag;
 						@Override
-						public boolean onTouchUp(MotionEvent arg0) {
-							Button button = (Button) getRef();
-							if (button.isComplete()) {
-								if (button.checkComplete()) {
-									if (hero.getAvailablePoints() > 0) {
-										hero.setAttack(hero.getAttack() + 1);
-										hero.setAvailablePoints(hero
-												.getAvailablePoints() - 1);
-									}
+						public boolean onTouchDown(MotionEvent arg0) {
+							CellButton button = (CellButton) getRef();
+							if (button.checkComplete()) {
+								if (button.checkClick() != -1) {
+									startDrag = true;
+									button.itemX = (int) MainScreen.instance.touchX - 12;
+									button.itemY = (int) MainScreen.instance.touchY - 12;
 								}
-								button.setComplete(false);
+							}
+							return false;
+						}
+						
+						@Override
+						public boolean onTouchMove(MotionEvent arg0) {
+							CellButton button = (CellButton) getRef();
+							if (startDrag) {
+								button.itemX = (int) MainScreen.instance.touchX - 12;
+								button.itemY = (int) MainScreen.instance.touchY - 12;
 							}
 							return true;
+						}
+						
+						@Override
+						public boolean onTouchUp(MotionEvent arg0) {
+							CellButton button = (CellButton) getRef();
+							if (startDrag) {
+								button.resetItemPos();
+								startDrag = false;
+							}
+							return false;
 						}
 					});
 			addOnTouchListener(buttons[i].getOnTouchListener());

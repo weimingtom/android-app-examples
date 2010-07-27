@@ -30,7 +30,7 @@ public abstract class Sprite extends
     public static final int UP = 3;
     public static final int DOWN = 0;
 
-    protected int dir;
+    public int dir;
 
     protected int x, y;
 
@@ -54,7 +54,7 @@ public abstract class Sprite extends
         this.image = image;
     }
 
-    protected int count;
+    public int count;
 
     private boolean isShow = true; // 是否显示
 

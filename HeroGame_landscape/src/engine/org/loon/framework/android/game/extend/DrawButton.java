@@ -32,11 +32,11 @@ public class DrawButton {
 
 	private int id;
 
-	protected boolean usable;
+	public boolean usable;
 
 	private boolean complete;
 
-	protected boolean click;
+	public boolean click;
 
 	private boolean select;
 

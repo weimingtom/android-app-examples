@@ -47,6 +47,4 @@ public class DefaultOnTouchListener implements OnTouchListener{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	
 }

@@ -15,6 +15,7 @@ import org.ssg.android.game.herogame.control.BackGroundMap;
 import org.ssg.android.game.herogame.control.Dialog;
 import org.ssg.android.game.herogame.control.HeroStatusDialog;
 import org.ssg.android.game.herogame.control.InfoBox;
+import org.ssg.android.game.herogame.control.InventoryDialog;
 import org.ssg.android.game.herogame.control.LeftPanel;
 import org.ssg.android.game.herogame.control.LoadingAnimation;
 import org.ssg.android.game.herogame.control.OnTouchListener;
@@ -65,7 +66,7 @@ public class MainScreen extends Screen {
 
 	private InfoBox infoBox;
 
-	private Dialog heroStatusDialog;
+	private Dialog heroStatusDialog, inventoryDialog;
 
 	private ToolBar toolbar;
 
@@ -163,6 +164,8 @@ public class MainScreen extends Screen {
 
 		heroStatusDialog = new HeroStatusDialog(hero);
 		addTouchable(heroStatusDialog);
+		inventoryDialog = new InventoryDialog(hero);
+		addTouchable(inventoryDialog);
 
 		leftPanel = new LeftPanel(0, 0);
 		addTouchable(leftPanel);
@@ -362,7 +365,7 @@ public class MainScreen extends Screen {
 				if (sprite instanceof NPC) {
 					NPC npc = (NPC) sprite;
 					if (npc.racial.equals("box") && npc.isTriggered && npc.item != null) {
-						if (npc.item.animationFinished)
+						if (npc.isOpened)
 							npc.item = null;
 						else 
 							npc.item.drawAnimation(g, offsetX, offsetY);
