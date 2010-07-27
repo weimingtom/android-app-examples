@@ -16,7 +16,7 @@ public class LoadingAnimation extends WaitAnimation {
 	private static final String message4 = "Loading....";
 	private static final String message5 = "Loading.....";
 	private static final String message6 = "Loading......";
-	private String message;
+	private String message = "";
 	
 	private int dot = 1;
 

@@ -51,7 +51,8 @@ public class TextDialog extends Dialog {
 	public void resetDialog() {
 		scaledWidth = MainScreen.instance.WIDTH - 10;
 		iter = messages.iterator();
-		message = iter.next();
+		if (iter.hasNext())
+			message = iter.next();
 		dialogImage = image1;
 	}
 	

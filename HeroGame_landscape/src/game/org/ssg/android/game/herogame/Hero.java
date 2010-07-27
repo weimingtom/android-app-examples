@@ -79,8 +79,6 @@ public class Hero extends Role {
 		HPx = getXs() * MainScreen.CS + MainScreen.CS / 2 - ANIM_OFFSET_X;
 		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
 		frameNo = 0;
-		damage = -1;
-		count = 0;
 	}
 
 	public void move(int direction) {
@@ -91,9 +89,7 @@ public class Hero extends Role {
 			if (level.isAllow(x - 1, y)) {
 				NPC npc = level.isNPC(x - 1, y);
 				if (npc != null) {
-					npc.talkDialog.resetDialog();
-					MainScreen.instance.isNPCAction = true;
-					MainScreen.instance.actionNPC = npc;
+					action(npc);
 				} else {
 					destX = x - 1;
 					isWalking = true;
@@ -105,9 +101,7 @@ public class Hero extends Role {
 			if (level.isAllow(x + 1, y)) {
 				NPC npc = level.isNPC(x + 1, y);
 				if (npc != null) {
-					npc.talkDialog.resetDialog();
-					MainScreen.instance.isNPCAction = true;
-					MainScreen.instance.actionNPC = npc;
+					action(npc);
 				} else {
 					destX = x + 1;
 					isWalking = true;
@@ -119,9 +113,7 @@ public class Hero extends Role {
 			if (level.isAllow(x, y - 1)) {
 				NPC npc = level.isNPC(x, y - 1);
 				if (npc != null) {
-					npc.talkDialog.resetDialog();
-					MainScreen.instance.isNPCAction = true;
-					MainScreen.instance.actionNPC = npc;
+					action(npc);
 				} else {
 					destY = y - 1;
 					isWalking = true;
@@ -133,9 +125,7 @@ public class Hero extends Role {
 			if (level.isAllow(x, y + 1)) {
 				NPC npc = level.isNPC(x, y + 1);
 				if (npc != null) {
-					npc.talkDialog.resetDialog();
-					MainScreen.instance.isNPCAction = true;
-					MainScreen.instance.actionNPC = npc;
+					action(npc);
 				} else {
 					destY = y + 1;
 					isWalking = true;
@@ -150,6 +140,21 @@ public class Hero extends Role {
 		movingY = y * MainScreen.CS;
 		destX *= MainScreen.CS;
 		destY *= MainScreen.CS;
+	}
+
+	private void action(NPC npc) {
+		if (npc.racial.equals("shop") && npc.hasAction()) {
+			npc.talkDialog.resetDialog();
+			MainScreen.instance.isNPCAction = true;
+			MainScreen.instance.actionNPC = npc;
+		} else {
+			if (npc.racial.equals("box") && !npc.isOpened && npc.item == null) {
+				npc.isTriggered = true;
+				npc.item = Item.getRandomItem();
+				npc.item.setXs(npc.x);
+				npc.item.setYs(npc.y);
+			}
+		}
 	}
 
 	public boolean isCollision(Sprite sprite) {

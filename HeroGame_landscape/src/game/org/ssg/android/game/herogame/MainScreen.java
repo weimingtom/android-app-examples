@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.loon.framework.android.game.action.sprite.StatusBar;
-import org.loon.framework.android.game.action.sprite.WaitAnimation;
 import org.loon.framework.android.game.core.graphics.LColor;
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
@@ -124,6 +123,8 @@ public class MainScreen extends Screen {
 	private void init() {
 		initDone = false;
 
+		AndroidGlobalSession.init();
+		
 		levelInit();
 
 		fightingHero = null;
@@ -308,8 +309,11 @@ public class MainScreen extends Screen {
 			WIDTH = 448;
 			HEIGHT = 320;
 		}
-		if (topDialog != null) {
-			topDialog.scaledWidth = WIDTH - 10;
+	}
+	
+	public void resetDialog(Dialog dialog) {
+		if (dialog != null) {
+			dialog.scaledWidth = WIDTH - 10;
 		}
 	}
 
@@ -354,6 +358,16 @@ public class MainScreen extends Screen {
 
 					infoBox.draw(g, offsetX, offsetY);
 				}
+				
+				if (sprite instanceof NPC) {
+					NPC npc = (NPC) sprite;
+					if (npc.racial.equals("box") && npc.isTriggered && npc.item != null) {
+						if (npc.item.animationFinished)
+							npc.item = null;
+						else 
+							npc.item.drawAnimation(g, offsetX, offsetY);
+					}
+				}
 			}
 		}
 
@@ -396,6 +410,7 @@ public class MainScreen extends Screen {
 
 		beginDrawing();
 		if (topDialog != null) {
+			resetDialog(topDialog);
 			g.setColor(LColor.black);
 			g.setAlpha(0.2f);
 			g.fillRect(0, 0, WIDTH, HEIGHT);
@@ -481,21 +496,23 @@ public class MainScreen extends Screen {
 					fightingHero = (Hero) AndroidGlobalSession.get("hero_fight");
 					fightingHero.setXs(hero.getXs());
 					fightingHero.setYs(hero.getYs());
-//					fightingHero.level = level;
 					fightingHero.timer = new LTimer(50);
 					fightingHero.setDir(0);
 					heroFighting = true;
 					enemyFighting = true;
 					fightingHero.resetHPxy();
+					fightingHero.damage = -1;
+					fightingHero.count = 0;
 				}
 				if (fightingEnemy == null) {
 					fightingEnemy = (Enemy) AndroidGlobalSession.get(enemy.racial);
 					fightingEnemy.setXs(hero.getXs() + 1);
 					fightingEnemy.setYs(hero.getYs());
-//					fightingEnemy.level = level;
 					fightingEnemy.timer = new LTimer(100);
 					fightingEnemy.setDir(0);
 					fightingEnemy.resetHPxy();
+					fightingEnemy.damage = -1;
+					fightingEnemy.count = 0;
 				}
 
 				enemyIcon = enemy.getImg();

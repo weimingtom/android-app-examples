@@ -67,8 +67,6 @@ public class Enemy extends Role {
 		HPx = getXs() * MainScreen.CS + getWidth() / 2 - ANIM_OFFSET_X;
 		HPy = getYs() * MainScreen.CS + MainScreen.CS / 2;
 		frameNo = 0;
-		damage = -1;
-		count = 0;
 	}
 	
 	@Override

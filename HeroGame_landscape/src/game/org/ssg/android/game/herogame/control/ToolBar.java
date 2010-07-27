@@ -24,7 +24,7 @@ public class ToolBar extends Dialog {
 		if (!isShown())
 			return;
 
-		if (MainScreen.instance.topDialog == null) {
+		if (MainScreen.instance.topDialog != HeroStatusDialog.instance) {
 			buttons[0].setComplete(false);
 			buttons[0].setSelect(false);
 		}
@@ -72,7 +72,6 @@ public class ToolBar extends Dialog {
 		});
 		addOnTouchListener(buttons[0].getOnTouchListener());
 		
-//		checked = GraphicsUtils.loadImage("assets/images/expand.png");
 		unchecked = GraphicsUtils.loadImage("assets/images/expand.png");
 		buttons[1] = new Button(MainScreen.instance, 1, 0, false, unchecked,
 				unchecked);

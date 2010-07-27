@@ -36,6 +36,7 @@ public class Level {
     private static final String SKELEON_IMAGE = "assets/images/skeleon.png";
     private static final String MAGE_IMAGE = "assets/images/mage.png";
     private static final String SHOP_IMAGE = "assets/images/npc.png";
+    private static final String BOX_IMAGE = "assets/images/box.png";
     
     public int getLevelNo() {
         return levelNo;
@@ -107,7 +108,17 @@ public class Level {
                         heroPos[1] = i;
                         break;
                     case 'n':
-                        sprites.add( new NPC(SHOP_IMAGE, j, i, 32, 32, this, "shop"));
+                    	NPC npc = new NPC(SHOP_IMAGE, j, i, 32, 32, this, "shop");
+                    	npc.addAction("你好，欢迎来到商店！");
+                    	npc.addAction("恩恩，快把东西给我瞧瞧！");
+                    	npc.addAction("呵呵，好的。");
+                    	npc.addAction("谢啦～");
+                        sprites.add(npc);
+                        break;
+                    case 'b':
+                    	NPC box = new NPC(BOX_IMAGE, j, i, 32, 32, this, "box");
+                        sprites.add(box);
+                        break;
                 }
             }
         }
@@ -204,8 +215,18 @@ public class Level {
         return true;
     }
     
+    private static final char[] NPCs = new char[] {
+        'n', 'b', 'i'};
+    
     public NPC isNPC(int x, int y) {
-        if (creaturesArray[y][x] == 'n') {
+    	boolean flag = false;
+    	for (int i = 0; i < NPCs.length; i++) {
+    		if (creaturesArray[y][x] == NPCs[i]) {
+    			flag = true;
+    			continue;
+    		}
+    	}
+        if (flag) {
         	for (Iterator<Sprite> it = sprites.iterator(); it.hasNext();) {
     			Sprite sprite = it.next();
     			if (x == sprite.x && y == sprite.y)

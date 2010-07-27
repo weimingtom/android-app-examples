@@ -2,6 +2,7 @@ package org.ssg.android.game.herogame.activity;
 
 import org.ssg.android.game.herogame.AndroidGlobalSession;
 import org.ssg.android.game.herogame.R;
+import org.ssg.android.game.herogame.control.LoadingAnimation;
 import org.ssg.android.game.herogame.db.ConstantUtil;
 import org.ssg.android.game.herogame.db.DBManager;
 import org.ssg.android.game.herogame.db.bean.ArchivingBean;
@@ -21,8 +22,8 @@ public class Main extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.menu);
-
-		AndroidGlobalSession.init();
+		
+		AndroidGlobalSession.put("loading", new LoadingAnimation(100, 100));
 		
 		View newButton = findViewById(R.id.newGameButton);
 		View continueButton = findViewById(R.id.selectArchivingButton);
