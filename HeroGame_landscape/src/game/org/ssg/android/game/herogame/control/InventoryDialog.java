@@ -18,9 +18,11 @@ public class InventoryDialog extends Dialog {
 	private CellButton[] buttons;
 	private Button closeBtn;
 
-	private static int BUTTON_NUM = 1;
+	private static int BUTTON_NUM = 9;
 	
 	private LImage bodyImage;
+	
+	private CellButton draggedButton;
 
 	public InventoryDialog(String fileName, int scaledWidth, int scaledHeight) {
 		super(fileName, scaledWidth, scaledHeight);
@@ -55,6 +57,10 @@ public class InventoryDialog extends Dialog {
 		for (int i = 0; i < buttons.length; i++) {
 			drawButton(g, buttons[i]);
 		}
+		
+		if (draggedButton != null) {
+			draggedButton.drawItem(g);
+		}
 	}
 
 	private void initButtons() {
@@ -66,19 +72,21 @@ public class InventoryDialog extends Dialog {
 		for (int i = 0; i < buttons.length; i++) {
 			buttons[i].setName("");
 			buttons[i].setComplete(false);
-			buttons[i].setDrawXY(130 + i * 40, 42);
+			int x = 130 + (i % 3) * 40;
+			int y = 30 + 40 * (i / 3);
+			buttons[i].setDrawXY(x, y);
 			buttons[i].resetItemPos();
 			buttons[i]
 					.setOnTouchListener(new DefaultOnTouchListener(buttons[i]) {
-						public boolean startDrag;
 						@Override
 						public boolean onTouchDown(MotionEvent arg0) {
 							CellButton button = (CellButton) getRef();
 							if (button.checkComplete()) {
 								if (button.checkClick() != -1) {
-									startDrag = true;
+									button.isDragged = true;
 									button.itemX = (int) MainScreen.instance.touchX - 12;
 									button.itemY = (int) MainScreen.instance.touchY - 12;
+									draggedButton = button;
 								}
 							}
 							return false;
@@ -87,7 +95,13 @@ public class InventoryDialog extends Dialog {
 						@Override
 						public boolean onTouchMove(MotionEvent arg0) {
 							CellButton button = (CellButton) getRef();
-							if (startDrag) {
+							//if touchPoint overflows dialog border, reset drag position.
+							if (!InventoryDialog.instance.isTouched()) {
+								button.resetItemPos();
+								button.isDragged = false;
+								draggedButton = null;
+							}
+							if (button.isDragged) {
 								button.itemX = (int) MainScreen.instance.touchX - 12;
 								button.itemY = (int) MainScreen.instance.touchY - 12;
 							}
@@ -97,9 +111,10 @@ public class InventoryDialog extends Dialog {
 						@Override
 						public boolean onTouchUp(MotionEvent arg0) {
 							CellButton button = (CellButton) getRef();
-							if (startDrag) {
+							if (button.isDragged) {
 								button.resetItemPos();
-								startDrag = false;
+								button.isDragged = false;
+								draggedButton = null;
 							}
 							return false;
 						}

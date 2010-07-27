@@ -10,6 +10,7 @@ public class CellButton extends Button {
 
 	public Item item;
 	public int itemX, itemY;
+	public boolean isDragged = false;
 
 	public CellButton(Screen screen, int no, int space, boolean isRow,
 			LImage selectImage, LImage buttonImage) {
@@ -26,6 +27,11 @@ public class CellButton extends Button {
 	@Override
 	public void draw(LGraphics g) {
 		super.draw(g);
+		if (!isDragged)
+			drawItem(g);
+	}
+	
+	public void drawItem(LGraphics g) {
 		g.drawImage(item.getImg(), itemX, itemY, itemX + 24, itemY + 24,
 				item.count * 24, item.dir * 24, item.count * 24 + 24,
 				item.dir * 24 + 24);

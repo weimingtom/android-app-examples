@@ -660,13 +660,13 @@ public class MainScreen extends Screen {
 			touchX -= panelX;
 
 			if (topDialog != null && topDialog.isShown) {
-				if (topDialog.isTouched()) {
+//				if (topDialog.isTouched()) {
 					for (OnTouchListener listener : topDialog
 							.getOnTouchListener()) {
 						listener.onTouchDown(arg0);
 					}
 					return false;
-				}
+//				}
 			} else {
 				setInfoBox();
 			}
@@ -719,13 +719,13 @@ public class MainScreen extends Screen {
 			touchX -= panelX;
 
 			if (topDialog != null && topDialog.isShown) {
-				if (topDialog.isTouched()) {
+//				if (topDialog.isTouched()) {
 					for (OnTouchListener listener : topDialog
 							.getOnTouchListener()) {
 						listener.onTouchMove(arg0);
 					}
 					return false;
-				}
+//				}
 			}
 		}
 		if (arg0.getX() > panelX) {
@@ -754,13 +754,13 @@ public class MainScreen extends Screen {
 			touchX -= panelX;
 
 			if (topDialog != null && topDialog.isShown) {
-				if (topDialog.isTouched()) {
+//				if (topDialog.isTouched()) {
 					for (OnTouchListener listener : topDialog
 							.getOnTouchListener()) {
 						listener.onTouchUp(arg0);
 					}
 					return false;
-				}
+//				}
 			}
 		}
 		if (arg0.getX() > panelX) {
