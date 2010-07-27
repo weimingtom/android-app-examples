@@ -1,10 +1,14 @@
 package org.ssg.android.game.herogame.control;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.utils.GraphicsUtils;
 import org.ssg.android.game.herogame.AndroidGlobalSession;
 import org.ssg.android.game.herogame.Hero;
+import org.ssg.android.game.herogame.Item;
 import org.ssg.android.game.herogame.MainScreen;
 
 import android.view.MotionEvent;
@@ -15,14 +19,17 @@ public class InventoryDialog extends Dialog {
 
 	private Hero hero;
 
-	private CellButton[] buttons;
+	private CellButton[] inventoryButtons, equipButtons;
+	public CellButton extraButton;
 	private Button closeBtn;
 
-	private static int BUTTON_NUM = 9;
-	
+	public static int INV_BUTTON_NUM = 15;
+
 	private LImage bodyImage;
-	
+
 	private CellButton draggedButton;
+	
+//	public Item[][] items = new Item[5][3];
 
 	public InventoryDialog(String fileName, int scaledWidth, int scaledHeight) {
 		super(fileName, scaledWidth, scaledHeight);
@@ -39,10 +46,25 @@ public class InventoryDialog extends Dialog {
 
 		img = (LImage) AndroidGlobalSession.get("dialog_438_310");
 		img1 = (LImage) AndroidGlobalSession.get("dialog_310_310");
-		
+
 		bodyImage = GraphicsUtils.loadImage("assets/images/body.png");
-		
+
 		initButtons();
+		
+		refreshInvetory();
+	}
+	
+	public void refreshInvetory() {
+		List<Item> itemList = MainScreen.instance.hero.items;
+		int k = 0;
+		for (Iterator<Item> it = itemList.iterator(); it.hasNext();) {
+//			items[i][j] = it.next();
+			inventoryButtons[k].item = it.next();
+			inventoryButtons[k].resetItemPos();
+			k++;
+//			i = k / 3;
+//			j = k % 3;
+		}
 	}
 
 	@Override
@@ -53,75 +75,129 @@ public class InventoryDialog extends Dialog {
 
 		drawAbsoluteImageEx(g, bodyImage, 25, 37, 63, 216);
 		drawButtonEx(g, closeBtn, scaledWidth - 70, 10);
-		
-		for (int i = 0; i < buttons.length; i++) {
-			drawButton(g, buttons[i]);
+
+		for (int i = 0; i < inventoryButtons.length; i++) {
+			drawButton(g, inventoryButtons[i]);
 		}
 		
+		drawButton(g, extraButton);
+
 		if (draggedButton != null) {
 			draggedButton.drawItem(g);
 		}
 	}
 
 	private void initButtons() {
-		buttons = new CellButton[BUTTON_NUM];
-		LImage unchecked = GraphicsUtils
-				.loadImage("assets/images/cell.png");
-		CellButton.initialize(MainScreen.instance, buttons, 0, unchecked, unchecked);
+		inventoryButtons = new CellButton[INV_BUTTON_NUM];
+		LImage unchecked = GraphicsUtils.loadImage("assets/images/cell.png");
+		CellButton.initialize(MainScreen.instance, inventoryButtons, 0,
+				unchecked, unchecked);
 
-		for (int i = 0; i < buttons.length; i++) {
-			buttons[i].setName("");
-			buttons[i].setComplete(false);
+		for (int i = 0; i < inventoryButtons.length; i++) {
+			inventoryButtons[i].setName("");
+			inventoryButtons[i].setComplete(false);
 			int x = 130 + (i % 3) * 40;
 			int y = 30 + 40 * (i / 3);
-			buttons[i].setDrawXY(x, y);
-			buttons[i].resetItemPos();
-			buttons[i]
-					.setOnTouchListener(new DefaultOnTouchListener(buttons[i]) {
-						@Override
-						public boolean onTouchDown(MotionEvent arg0) {
-							CellButton button = (CellButton) getRef();
-							if (button.checkComplete()) {
-								if (button.checkClick() != -1) {
-									button.isDragged = true;
-									button.itemX = (int) MainScreen.instance.touchX - 12;
-									button.itemY = (int) MainScreen.instance.touchY - 12;
-									draggedButton = button;
-								}
-							}
-							return false;
+			inventoryButtons[i].setDrawXY(x, y);
+			inventoryButtons[i].setOnTouchListener(new DefaultOnTouchListener(
+					inventoryButtons[i]) {
+				@Override
+				public boolean onTouchDown(MotionEvent arg0) {
+					CellButton button = (CellButton) getRef();
+					if (button.checkComplete()) {
+						if (button.checkClick() != -1) {
+							button.isDragged = true;
+							button.itemX = (int) MainScreen.instance.touchX - 12;
+							button.itemY = (int) MainScreen.instance.touchY - 12;
+							draggedButton = button;
 						}
-						
-						@Override
-						public boolean onTouchMove(MotionEvent arg0) {
-							CellButton button = (CellButton) getRef();
-							//if touchPoint overflows dialog border, reset drag position.
-							if (!InventoryDialog.instance.isTouched()) {
-								button.resetItemPos();
-								button.isDragged = false;
-								draggedButton = null;
-							}
-							if (button.isDragged) {
-								button.itemX = (int) MainScreen.instance.touchX - 12;
-								button.itemY = (int) MainScreen.instance.touchY - 12;
-							}
-							return true;
-						}
-						
-						@Override
-						public boolean onTouchUp(MotionEvent arg0) {
-							CellButton button = (CellButton) getRef();
-							if (button.isDragged) {
-								button.resetItemPos();
-								button.isDragged = false;
-								draggedButton = null;
-							}
-							return false;
-						}
-					});
-			addOnTouchListener(buttons[i].getOnTouchListener());
+					}
+					return false;
+				}
+
+				@Override
+				public boolean onTouchMove(MotionEvent arg0) {
+					CellButton button = (CellButton) getRef();
+					// if touchPoint overflows dialog border, reset drag
+					// position.
+					if (!InventoryDialog.instance.isTouched()) {
+						button.resetItemPos();
+						button.isDragged = false;
+						draggedButton = null;
+					}
+					if (button.isDragged) {
+						button.itemX = (int) MainScreen.instance.touchX - 12;
+						button.itemY = (int) MainScreen.instance.touchY - 12;
+					}
+					return true;
+				}
+
+				@Override
+				public boolean onTouchUp(MotionEvent arg0) {
+					CellButton button = (CellButton) getRef();
+					if (button.isDragged) {
+						button.resetItemPos();
+						button.isDragged = false;
+						draggedButton = null;
+					}
+					return false;
+				}
+			});
+			addOnTouchListener(inventoryButtons[i].getOnTouchListener());
 		}
-		
+
+		// extraButton
+		unchecked = GraphicsUtils.loadImage("assets/images/cell.png");
+		extraButton = new CellButton(MainScreen.instance, INV_BUTTON_NUM, 0,
+				false, unchecked, unchecked);
+		extraButton.setName("");
+		extraButton.setComplete(false);
+		extraButton.setDrawXY(130, 240);
+		extraButton.setOnTouchListener(new DefaultOnTouchListener(extraButton) {
+			@Override
+			public boolean onTouchDown(MotionEvent arg0) {
+				CellButton button = (CellButton) getRef();
+				if (button.checkComplete()) {
+					if (button.checkClick() != -1) {
+						button.isDragged = true;
+						button.itemX = (int) MainScreen.instance.touchX - 12;
+						button.itemY = (int) MainScreen.instance.touchY - 12;
+						draggedButton = button;
+					}
+				}
+				return false;
+			}
+
+			@Override
+			public boolean onTouchMove(MotionEvent arg0) {
+				CellButton button = (CellButton) getRef();
+				// if touchPoint overflows dialog border, reset drag position.
+				if (!InventoryDialog.instance.isTouched()) {
+					button.resetItemPos();
+					button.isDragged = false;
+					draggedButton = null;
+				}
+				if (button.isDragged) {
+					button.itemX = (int) MainScreen.instance.touchX - 12;
+					button.itemY = (int) MainScreen.instance.touchY - 12;
+				}
+				return true;
+			}
+
+			@Override
+			public boolean onTouchUp(MotionEvent arg0) {
+				CellButton button = (CellButton) getRef();
+				if (button.isDragged) {
+					button.resetItemPos();
+					button.isDragged = false;
+					draggedButton = null;
+				}
+				return false;
+			}
+		});
+		addOnTouchListener(extraButton.getOnTouchListener());
+
+		// closeButton
 		unchecked = GraphicsUtils.loadImage("assets/images/close.png");
 		closeBtn = new Button(MainScreen.instance, 4, 0, false, unchecked,
 				unchecked);

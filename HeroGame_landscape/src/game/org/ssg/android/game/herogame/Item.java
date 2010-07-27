@@ -1,15 +1,13 @@
 package org.ssg.android.game.herogame;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import org.loon.framework.android.game.core.graphics.LGraphics;
-import org.loon.framework.android.game.core.graphics.LImage;
-import org.loon.framework.android.game.utils.GraphicsUtils;
-import org.ssg.android.game.herogame.control.TextDialog;
 
-public class Item extends NPC {
+public class Item extends NPC{
 
+	public ItemAttr attr = new ItemAttr();
+	
 	public Item(String filename, int x, int y, int w, int h, Level level,
 			String racial) {
 		super(filename, x, y, w, h, level, racial);
@@ -17,51 +15,52 @@ public class Item extends NPC {
 
 	public static Item getRandomItem() {
 		Random random = new Random();
-		int dir = Math.abs(random.nextInt() % 11);
+		int dir = Math.abs(random.nextInt() % (ItemDefinition.itemSet.length - 1));
 		int count = 0;
 		switch (dir) {
 		case 0:
-			count = Math.abs(random.nextInt() % 5);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[0].length - 1));
 			break;
 		case 1:
-			count = Math.abs(random.nextInt() % 22);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[1].length - 1));
 			break;
 		case 2:
-			count = Math.abs(random.nextInt() % 14);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[2].length - 1));
 			break;
 		case 3:
-			count = Math.abs(random.nextInt() % 15);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[3].length - 1));
 			break;
 		case 4:
-			count = Math.abs(random.nextInt() % 12);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[4].length - 1));
 			break;
 		case 5:
-			count = Math.abs(random.nextInt() % 14);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[5].length - 1));
 			break;
 		case 6:
-			count = Math.abs(random.nextInt() % 12);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[6].length - 1));
 			break;
 		case 7:
-			count = Math.abs(random.nextInt() % 12);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[7].length - 1));
 			break;
 		case 8:
-			count = Math.abs(random.nextInt() % 19);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[8].length - 1));
 			break;
 		case 9:
-			count = Math.abs(random.nextInt() % 19);
+			count = Math.abs(random.nextInt() % (ItemDefinition.itemSet[9].length - 1));
 			break;
-		case 10:
-			count = Math.abs(random.nextInt() % 9);
-			break;
-		case 11:
-			count = 0;
-			break;
+//		case 10:
+//			count = Math.abs(random.nextInt() % 9);
+//			break;
+//		case 11:
+//			count = 0;
+//			break;
 		}
 
 		Item item = new Item("assets/images/items.png", 0, 0, 24, 24, null,
 				"item");
 		item.count = count;
 		item.dir = dir;
+		item.attr.copyItemAttr(ItemDefinition.itemSet[dir][count]);
 
 		return item;
 	}
@@ -79,4 +78,6 @@ public class Item extends NPC {
 			i += 2;
 		}
 	}
+	
+	
 }

@@ -1,9 +1,10 @@
 package org.ssg.android.game.herogame;
 
+import java.util.ArrayList;
+
 import org.loon.framework.android.game.action.map.RectBox;
 import org.loon.framework.android.game.core.graphics.LGraphics;
-import org.loon.framework.android.game.core.timer.LTimer;
-import org.ssg.android.game.herogame.control.BackGroundMap;
+import org.ssg.android.game.herogame.control.InventoryDialog;
 
 /**
  * @author chenpeng
@@ -24,6 +25,8 @@ public class Hero extends Role {
 	private static final int[] EXP_TO_LEVEL = { -1, 50, 60, 70, 80, 90, 100,
 			110, 120 };
 	private int availablePoints;
+	
+	public ArrayList<Item> items = new ArrayList<Item>();
 
 	public int getAvailablePoints() {
 		return availablePoints;
@@ -72,6 +75,9 @@ public class Hero extends Role {
 		element_set = 100;
 		dex = 20;
 		agi = 20;
+		
+		for (int i = 0; i < 14; i++)
+			items.add(Item.getRandomItem());
 	}
 
 	@Override
@@ -153,6 +159,7 @@ public class Hero extends Role {
 				npc.item = Item.getRandomItem();
 				npc.item.setXs(npc.x);
 				npc.item.setYs(npc.y);
+				addItem(npc.item);
 			}
 		}
 	}
@@ -269,5 +276,15 @@ public class Hero extends Role {
 			return true;
 		}
 		return false;
+	}
+	
+	public void addItem(Item item) {
+		if (items.size() < InventoryDialog.INV_BUTTON_NUM) {
+			items.add(item);
+			InventoryDialog.instance.refreshInvetory();
+		} else {
+			InventoryDialog.instance.extraButton.setItem(item);
+			MainScreen.instance.topDialog = InventoryDialog.instance;
+		}
 	}
 }

@@ -40,7 +40,7 @@ public class MainScreen extends Screen {
 	private Level level;
 	private int levelNo;
 	private BackGroundMap map;
-	private Hero hero;
+	public Hero hero;
 	private StatusBar heroHPBar;
 	private StatusBar heroEXPBar;
 	private StatusBar enemyHPBar;
