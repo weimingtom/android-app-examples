@@ -27,10 +27,16 @@ public class ToolBar extends Dialog {
 		if (MainScreen.instance.topDialog != HeroStatusDialog.instance) {
 			buttons[0].setComplete(false);
 			buttons[0].setSelect(false);
+		} else {
+			buttons[0].setComplete(true);
+			buttons[0].setSelect(true);
 		}
 		if (MainScreen.instance.topDialog != InventoryDialog.instance) {
 			buttons[2].setComplete(false);
 			buttons[2].setSelect(false);
+		} else {
+			buttons[2].setComplete(true);
+			buttons[2].setSelect(true);
 		}
 		drawButtonEx(g, buttons[1], 0, 0);
 		drawButtonEx(g, buttons[0], 0, 35);
@@ -59,8 +65,7 @@ public class ToolBar extends Dialog {
 							button.setComplete(true);
 							button.setSelect(true);
 						} else {
-							MainScreen.checkLock();
-							MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
+							HeroStatusDialog.instance.close();
 							button.setComplete(false);
 							button.setSelect(false);
 						}
@@ -128,8 +133,7 @@ public class ToolBar extends Dialog {
 							button.setComplete(true);
 							button.setSelect(true);
 						} else {
-							MainScreen.checkLock();
-							MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
+							InventoryDialog.instance.close();
 							button.setComplete(false);
 							button.setSelect(false);
 						}

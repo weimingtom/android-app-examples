@@ -154,6 +154,14 @@ public class Dialog extends DefaultTouchable {
 		button.draw(g);
 	}
 
+	protected void drawRect(LGraphics g, int x, int y, int w, int h) {
+		g.drawRect(x + this.x, y + this.y, w, h);
+	}
+	
+	protected void drawString(LGraphics g, String message, int x, int y) {
+		g.drawString(message, x + this.x, y + this.y + g.getFont().getSize());
+	}
+	
 	@Override
 	public boolean isTouched() {
 		if (((double) MainScreen.instance.getTouch().x > x

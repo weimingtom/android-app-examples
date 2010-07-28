@@ -122,8 +122,7 @@ public class HeroStatusDialog extends Dialog {
 				Button button = (Button) getRef();
 				if (button.isComplete()) {
 					if (button.checkComplete()) {
-						MainScreen.checkLock();
-						MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
+						close();
 					}
 					button.setComplete(false);
 				}
@@ -131,5 +130,10 @@ public class HeroStatusDialog extends Dialog {
 			}
 		});
 		addOnTouchListener(closeBtn.getOnTouchListener());
+	}
+	
+	public void close() {
+		MainScreen.checkLock();
+		MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
 	}
 }

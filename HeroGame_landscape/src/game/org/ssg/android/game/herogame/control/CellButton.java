@@ -1,5 +1,6 @@
 package org.ssg.android.game.herogame.control;
 
+import org.loon.framework.android.game.core.graphics.LColor;
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.graphics.Screen;
@@ -45,6 +46,12 @@ public class CellButton extends Button {
 					item.dir * 24 + 24);
 	}
 
+	public void drawHighlight(LGraphics g) {
+		g.setColor(LColor.red);
+		g.drawRect(getX(), getY(), getWidth(), getHeight());
+		g.setColor(LColor.white);
+	}
+	
 	public static void initialize(final Screen screen,
 			final CellButton[] buttons, final int space, final LImage checked,
 			final LImage unchecked) {

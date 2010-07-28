@@ -26,7 +26,8 @@ public class Hero extends Role {
 			110, 120 };
 	private int availablePoints;
 	
-	public ArrayList<Item> items = new ArrayList<Item>();
+	public final static int MAX_ITEMS = 15;
+	public Item[] items = new Item[MAX_ITEMS];
 	public boolean isItemOverFlows = false;
 
 	public int getAvailablePoints() {
@@ -78,7 +79,7 @@ public class Hero extends Role {
 		agi = 20;
 		
 		for (int i = 0; i < 14; i++)
-			items.add(Item.getRandomItem());
+			items[i] = Item.getRandomItem();
 	}
 
 	@Override
@@ -280,13 +281,15 @@ public class Hero extends Role {
 	}
 	
 	public void addItem(Item item) {
-		if (items.size() < InventoryDialog.INV_BUTTON_NUM) {
-			items.add(item);
-			InventoryDialog.instance.refreshInvetory();
-		} else {
-			InventoryDialog.instance.extraButton.setItem(item);
-//			MainScreen.instance.topDialog = InventoryDialog.instance;
-			isItemOverFlows = true;
+		for (int i = 0; i < MAX_ITEMS; i++) {
+			if (items[i] == null) {
+				items[i] = item;
+				InventoryDialog.instance.refreshCell(i);
+				return;
+			}
 		}
+		InventoryDialog.instance.hasExtra = true;
+		InventoryDialog.instance.extraButton.setItem(item);
+		isItemOverFlows = true;
 	}
 }
