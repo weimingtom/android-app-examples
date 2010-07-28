@@ -27,6 +27,7 @@ public class Hero extends Role {
 	private int availablePoints;
 	
 	public ArrayList<Item> items = new ArrayList<Item>();
+	public boolean isItemOverFlows = false;
 
 	public int getAvailablePoints() {
 		return availablePoints;
@@ -284,7 +285,8 @@ public class Hero extends Role {
 			InventoryDialog.instance.refreshInvetory();
 		} else {
 			InventoryDialog.instance.extraButton.setItem(item);
-			MainScreen.instance.topDialog = InventoryDialog.instance;
+//			MainScreen.instance.topDialog = InventoryDialog.instance;
+			isItemOverFlows = true;
 		}
 	}
 }

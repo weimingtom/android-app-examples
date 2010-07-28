@@ -135,10 +135,18 @@ public class InventoryDialog extends Dialog {
 				@Override
 				public boolean onTouchUp(MotionEvent arg0) {
 					CellButton button = (CellButton) getRef();
-					if (button.isDragged) {
+					if (button.isDragged && !inOtherCells(button)) {
 						button.resetItemPos();
 						button.isDragged = false;
 						draggedButton = null;
+					} else {
+						if (button.checkComplete() && draggedButton != null) {
+							Item temp;
+							temp = button.item;
+							button.setItem(draggedButton.item);
+							draggedButton.setItem(temp);
+							draggedButton.isDragged = false;
+						}
 					}
 					return false;
 				}
@@ -187,10 +195,18 @@ public class InventoryDialog extends Dialog {
 			@Override
 			public boolean onTouchUp(MotionEvent arg0) {
 				CellButton button = (CellButton) getRef();
-				if (button.isDragged) {
+				if (button.isDragged && !inOtherCells(button)) {
 					button.resetItemPos();
 					button.isDragged = false;
 					draggedButton = null;
+				} else {
+					if (button.checkComplete() && draggedButton != null) {
+						Item temp;
+						temp = button.item;
+						button.setItem(draggedButton.item);
+						draggedButton.setItem(temp);
+						draggedButton.isDragged = false;
+					}
 				}
 				return false;
 			}
@@ -218,5 +234,15 @@ public class InventoryDialog extends Dialog {
 			}
 		});
 		addOnTouchListener(closeBtn.getOnTouchListener());
+	}
+	
+	public boolean inOtherCells(CellButton cell) {
+		for (int i = 0; i < inventoryButtons.length; i++) {
+			if (inventoryButtons[i] != cell) {
+				if (inventoryButtons[i].checkComplete())
+					return true;
+			}
+		}
+		return false;
 	}
 }

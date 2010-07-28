@@ -15,20 +15,22 @@ public class CellButton extends Button {
 	public CellButton(Screen screen, int no, int space, boolean isRow,
 			LImage selectImage, LImage buttonImage) {
 		super(screen, no, space, isRow, selectImage, buttonImage);
-//		item = Item.getRandomItem();
+		// item = Item.getRandomItem();
 		// resetItemPos();
 	}
 
 	public void resetItemPos() {
-		itemX = this.getX() + (this.getWidth() - item.getWidth()) / 2;
-		itemY = this.getY() + (this.getHeight() - item.getHeight()) / 2;
+		if (item != null) {
+			itemX = this.getX() + (this.getWidth() - item.getWidth()) / 2;
+			itemY = this.getY() + (this.getHeight() - item.getHeight()) / 2;
+		}
 	}
 
 	public void setItem(Item item) {
 		this.item = item;
 		resetItemPos();
 	}
-	
+
 	@Override
 	public void draw(LGraphics g) {
 		super.draw(g);

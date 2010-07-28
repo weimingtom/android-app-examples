@@ -81,7 +81,7 @@ public class MainScreen extends Screen {
 	
 	public LoadingAnimation wait;
 	
-	public boolean isNPCAction, cleanDialog = false;
+	public boolean isNPCAction, cleanDialog = false, isAnimating = false;
 	public NPC actionNPC;
 
 	public static MainScreen instance;
@@ -365,10 +365,16 @@ public class MainScreen extends Screen {
 				if (sprite instanceof NPC) {
 					NPC npc = (NPC) sprite;
 					if (npc.racial.equals("box") && npc.isTriggered && npc.item != null) {
-						if (npc.isOpened)
+						if (npc.isOpened) {
+							if (hero.isItemOverFlows) {
+								topDialog = InventoryDialog.instance;
+							}
 							npc.item = null;
-						else 
+							isAnimating = false;
+						} else {
+							isAnimating = true;
 							npc.item.drawAnimation(g, offsetX, offsetY);
+						}
 					}
 				}
 			}
@@ -590,7 +596,7 @@ public class MainScreen extends Screen {
 			return false;
 		}
 
-		if (heroFighting || topDialog != null)
+		if (heroFighting || topDialog != null || isAnimating)
 			return false;
 
 		switch (arg0) {
@@ -623,7 +629,7 @@ public class MainScreen extends Screen {
 	}
 
 	public boolean onKeyUp(int keyCode, KeyEvent e) {
-		if (heroFighting || topDialog != null)
+		if (heroFighting || topDialog != null || isAnimating)
 			return false;
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_DPAD_LEFT:
