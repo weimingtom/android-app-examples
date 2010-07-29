@@ -25,6 +25,7 @@ public class InventoryDialog extends Dialog {
 	private Button closeBtn;
 
 	public static int INV_BUTTON_NUM = 15;
+	public static int EQP_BUTTON_NUM = 10;
 
 	private LImage bodyImage;
 
@@ -75,7 +76,7 @@ public class InventoryDialog extends Dialog {
 		if (!isShown())
 			return;
 
-		drawAbsoluteImageEx(g, bodyImage, 25, 37, 63, 216);
+		drawAbsoluteImageEx(g, bodyImage, 35, 42, 63, 216);
 		drawButtonEx(g, closeBtn, scaledWidth - 70, 10);
 
 		for (int i = 0; i < inventoryButtons.length; i++) {
@@ -198,6 +199,28 @@ public class InventoryDialog extends Dialog {
 		}
 	}
 
+	public void initEquipButtons() {
+		equipButtons = new CellButton[EQP_BUTTON_NUM];
+		LImage unchecked = GraphicsUtils.loadImage("assets/images/cell.png");
+		CellButton.initialize(MainScreen.instance, equipButtons, 0,
+				unchecked, unchecked);
+
+		int[][] pos = new int[][] {
+				{}
+		};
+		for (int i = 0; i < equipButtons.length; i++) {
+			equipButtons[i].setName("");
+			equipButtons[i].setComplete(false);
+			int x = 130 + (i % 3) * 40;
+			int y = 30 + 40 * (i / 3);
+			equipButtons[i].setDrawXY(x, y);
+			equipButtons[i]
+					.setOnTouchListener(new CellButtonOnTouchListener(
+							equipButtons[i]));
+			addOnTouchListener(equipButtons[i].getOnTouchListener());
+		}
+	}
+	
 	public boolean inOtherCells(CellButton cell) {
 		for (int i = 0; i < inventoryButtons.length; i++) {
 			// if (inventoryButtons[i] != cell) {
