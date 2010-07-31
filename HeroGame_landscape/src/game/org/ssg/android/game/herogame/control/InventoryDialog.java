@@ -21,7 +21,7 @@ public class InventoryDialog extends Dialog {
 	public CellButton extraButton, dropButton;
 	private Button closeBtn;
 
-	public static int INV_BUTTON_NUM = 15;
+	public static int INV_BUTTON_NUM = 12;
 	public static int EQP_BUTTON_NUM = 10;
 
 	private LImage bodyImage;
@@ -71,7 +71,7 @@ public class InventoryDialog extends Dialog {
 		if (!isShown())
 			return;
 
-		drawAbsoluteImageEx(g, bodyImage, 35, 42, 63, 216);
+		drawAbsoluteImageEx(g, bodyImage, 51, 45, 63, 216);
 		drawButtonEx(g, closeBtn, scaledWidth - 70, 10);
 
 		for (int i = 0; i < inventoryButtons.length; i++) {
@@ -117,7 +117,7 @@ public class InventoryDialog extends Dialog {
 				false, unchecked, unchecked);
 		extraButton.setName("");
 		extraButton.setComplete(false);
-		extraButton.setDrawXY(130, 240);
+		extraButton.setDrawXY(170, 250);
 		extraButton.setOnTouchListener(new CellButtonOnTouchListener(
 				extraButton));
 		extraButton.isVisible = false;
@@ -128,7 +128,7 @@ public class InventoryDialog extends Dialog {
 				false, unchecked, unchecked);
 		dropButton.setName("");
 		dropButton.setComplete(false);
-		dropButton.setDrawXY(210, 240);
+		dropButton.setDrawXY(236, 250);
 		dropButton.setOnTouchListener(new DefaultOnTouchListener(dropButton) {
 			@Override
 			public boolean onTouchDown(MotionEvent arg0) {
@@ -186,8 +186,8 @@ public class InventoryDialog extends Dialog {
 		for (int i = 0; i < inventoryButtons.length; i++) {
 			inventoryButtons[i].setName("");
 			inventoryButtons[i].setComplete(false);
-			int x = 130 + (i % 3) * 40;
-			int y = 30 + 40 * (i / 3);
+			int x = 156 + (i % 3) * 40;
+			int y = 70 + 40 * (i / 3);
 			inventoryButtons[i].setDrawXY(x, y);
 			inventoryButtons[i]
 					.setOnTouchListener(new CellButtonOnTouchListener(

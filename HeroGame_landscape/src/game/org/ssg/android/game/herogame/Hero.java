@@ -26,7 +26,7 @@ public class Hero extends Role {
 			110, 120 };
 	private int availablePoints;
 	
-	public final static int MAX_ITEMS = 15;
+	public final static int MAX_ITEMS = 12;
 	public Item[] items = new Item[MAX_ITEMS];
 	public boolean isItemOverFlows = false;
 
@@ -78,7 +78,7 @@ public class Hero extends Role {
 		dex = 20;
 		agi = 20;
 		
-		for (int i = 0; i < 14; i++)
+		for (int i = 0; i < MAX_ITEMS - 1; i++)
 			items[i] = Item.getRandomItem();
 	}
 
