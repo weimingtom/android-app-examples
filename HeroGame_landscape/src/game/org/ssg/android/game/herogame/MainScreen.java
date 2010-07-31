@@ -662,22 +662,26 @@ public class MainScreen extends Screen {
 
 	@Override
 	public boolean onTouchDown(MotionEvent arg0) {
-		if (arg0.getX() > panelX) {
+		if (touchX > panelX) {
 			touchX -= panelX;
 
 			if (topDialog != null && topDialog.isShown) {
-//				if (topDialog.isTouched()) {
 					for (OnTouchListener listener : topDialog
 							.getOnTouchListener()) {
 						listener.onTouchDown(arg0);
 					}
 					return false;
-//				}
 			} else {
 				setInfoBox();
 			}
 		}
-		if (arg0.getX() > panelX) {
+		if (topDialog != null && topDialog.isShown && !topDialog.isTouched()) {
+			for (OnTouchListener listener : topDialog
+					.getOnTouchListener()) {
+				listener.onTouchUp(arg0);
+			}
+		}
+		if (touchX > panelX) {
 			touchX += panelX;
 		}
 		if (!isShownLeftPanel) {
@@ -721,7 +725,7 @@ public class MainScreen extends Screen {
 
 	@Override
 	public boolean onTouchMove(MotionEvent arg0) {
-		if (arg0.getX() > panelX) {
+		if (touchX > panelX) {
 			touchX -= panelX;
 
 			if (topDialog != null && topDialog.isShown) {
@@ -734,7 +738,13 @@ public class MainScreen extends Screen {
 //				}
 			}
 		}
-		if (arg0.getX() > panelX) {
+		if (topDialog != null && topDialog.isShown && !topDialog.isTouched()) {
+			for (OnTouchListener listener : topDialog
+					.getOnTouchListener()) {
+				listener.onTouchUp(arg0);
+			}
+		}
+		if (touchX > panelX) {
 			touchX += panelX;
 		}
 		if (!isShownLeftPanel) {
@@ -756,7 +766,7 @@ public class MainScreen extends Screen {
 
 	@Override
 	public boolean onTouchUp(MotionEvent arg0) {
-		if (arg0.getX() > panelX) {
+		if (touchX > panelX) {
 			touchX -= panelX;
 
 			if (topDialog != null && topDialog.isShown) {
@@ -769,7 +779,7 @@ public class MainScreen extends Screen {
 //				}
 			}
 		}
-		if (arg0.getX() > panelX) {
+		if (touchX > panelX) {
 			touchX += panelX;
 		}
 		if (!isShownLeftPanel) {

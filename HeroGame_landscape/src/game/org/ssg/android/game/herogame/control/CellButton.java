@@ -12,6 +12,7 @@ public class CellButton extends Button {
 	public Item item;
 	public int itemX, itemY;
 	public boolean isDragged = false;
+	public boolean isVisible = true;
 
 	public CellButton(Screen screen, int no, int space, boolean isRow,
 			LImage selectImage, LImage buttonImage) {

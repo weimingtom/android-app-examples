@@ -1,8 +1,5 @@
 package org.ssg.android.game.herogame.control;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.loon.framework.android.game.core.graphics.LFont;
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
@@ -30,8 +27,6 @@ public class InventoryDialog extends Dialog {
 	private LImage bodyImage;
 
 	private CellButton draggedButton, selectedButton;
-
-	public boolean hasExtra = false;
 
 	public InventoryDialog(String fileName, int scaledWidth, int scaledHeight) {
 		super(fileName, scaledWidth, scaledHeight);
@@ -83,10 +78,10 @@ public class InventoryDialog extends Dialog {
 			drawButton(g, inventoryButtons[i]);
 		}
 
-		if (hasExtra) {
+		if (extraButton.isVisible) {
 			drawButton(g, extraButton);
 		}
-		
+
 		if (selectedButton != null) {
 			selectedButton.drawHighlight(g);
 			if (selectedButton.item != null) {
@@ -123,7 +118,9 @@ public class InventoryDialog extends Dialog {
 		extraButton.setName("");
 		extraButton.setComplete(false);
 		extraButton.setDrawXY(130, 240);
-		extraButton.setOnTouchListener(new CellButtonOnTouchListener(extraButton));
+		extraButton.setOnTouchListener(new CellButtonOnTouchListener(
+				extraButton));
+		extraButton.isVisible = false;
 		addOnTouchListener(extraButton.getOnTouchListener());
 
 		unchecked = GraphicsUtils.loadImage("assets/images/dropcell.png");
@@ -202,25 +199,22 @@ public class InventoryDialog extends Dialog {
 	public void initEquipButtons() {
 		equipButtons = new CellButton[EQP_BUTTON_NUM];
 		LImage unchecked = GraphicsUtils.loadImage("assets/images/cell.png");
-		CellButton.initialize(MainScreen.instance, equipButtons, 0,
-				unchecked, unchecked);
+		CellButton.initialize(MainScreen.instance, equipButtons, 0, unchecked,
+				unchecked);
 
-		int[][] pos = new int[][] {
-				{}
-		};
+		int[][] pos = new int[][] { {} };
 		for (int i = 0; i < equipButtons.length; i++) {
 			equipButtons[i].setName("");
 			equipButtons[i].setComplete(false);
 			int x = 130 + (i % 3) * 40;
 			int y = 30 + 40 * (i / 3);
 			equipButtons[i].setDrawXY(x, y);
-			equipButtons[i]
-					.setOnTouchListener(new CellButtonOnTouchListener(
-							equipButtons[i]));
+			equipButtons[i].setOnTouchListener(new CellButtonOnTouchListener(
+					equipButtons[i]));
 			addOnTouchListener(equipButtons[i].getOnTouchListener());
 		}
 	}
-	
+
 	public boolean inOtherCells(CellButton cell) {
 		for (int i = 0; i < inventoryButtons.length; i++) {
 			// if (inventoryButtons[i] != cell) {
@@ -228,7 +222,8 @@ public class InventoryDialog extends Dialog {
 				return true;
 			// }
 		}
-		if (dropButton.checkComplete() || extraButton.checkComplete())
+		if (dropButton.checkComplete()
+				|| (extraButton.checkComplete() && extraButton.isVisible))
 			return true;
 		return false;
 	}
@@ -237,7 +232,7 @@ public class InventoryDialog extends Dialog {
 		MainScreen.checkLock();
 		MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
 		extraButton.item = null;
-		hasExtra = false;
+		extraButton.isVisible = false;
 		draggedButton = null;
 		selectedButton = null;
 	}
@@ -250,6 +245,8 @@ public class InventoryDialog extends Dialog {
 		@Override
 		public boolean onTouchDown(MotionEvent arg0) {
 			CellButton button = (CellButton) getRef();
+			if (!button.isVisible)
+				return false;
 			if (button.checkComplete()) {
 				if (button.checkClick() != -1) {
 					// if (selectedButton == button) {
@@ -269,6 +266,8 @@ public class InventoryDialog extends Dialog {
 		@Override
 		public boolean onTouchMove(MotionEvent arg0) {
 			CellButton button = (CellButton) getRef();
+			if (!button.isVisible)
+				return false;
 			// if touchPoint overflows dialog border, reset drag
 			// position.
 			if (!InventoryDialog.instance.isTouched()) {
@@ -286,6 +285,8 @@ public class InventoryDialog extends Dialog {
 		@Override
 		public boolean onTouchUp(MotionEvent arg0) {
 			CellButton button = (CellButton) getRef();
+			if (!button.isVisible)
+				return false;
 			if (button.isDragged && !inOtherCells(button)) {
 				button.resetItemPos();
 				button.isDragged = false;
@@ -296,12 +297,12 @@ public class InventoryDialog extends Dialog {
 					temp = button.item;
 					button.setItem(draggedButton.item);
 					draggedButton.setItem(temp);
-					
+
 					if (draggedButton != extraButton)
 						hero.items[draggedButton.getId()] = draggedButton.item;
 					if (button != extraButton)
 						hero.items[button.getId()] = button.item;
-					
+
 					draggedButton.isDragged = false;
 					draggedButton = null;
 					selectedButton = button;

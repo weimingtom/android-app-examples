@@ -172,7 +172,7 @@ public class Hero extends Role {
 		RectBox spriteRect = new RectBox(sprite.getXs() * MainScreen.CS, sprite
 				.getYs()
 				* MainScreen.CS, sprite.getWidth(), sprite.getHeight());
-		// 判定指定精灵的矩形边框是否与本精灵重合
+		// ��ゅ�����瀹�绮剧�电����╁舰杈规��������涓����绮剧�甸�����
 		if (playerRect.intersects(spriteRect)) {
 			return true;
 		}
@@ -288,7 +288,7 @@ public class Hero extends Role {
 				return;
 			}
 		}
-		InventoryDialog.instance.hasExtra = true;
+		InventoryDialog.instance.extraButton.isVisible = true;
 		InventoryDialog.instance.extraButton.setItem(item);
 		isItemOverFlows = true;
 	}
