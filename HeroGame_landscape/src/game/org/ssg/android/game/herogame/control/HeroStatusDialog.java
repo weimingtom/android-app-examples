@@ -15,8 +15,6 @@ public class HeroStatusDialog extends Dialog {
 
 	public static HeroStatusDialog instance;
 
-	private static final String DIALOG_BG = "assets/images/window.9.png";
-
 	private Hero hero;
 
 	private Button[] buttons;
@@ -29,7 +27,7 @@ public class HeroStatusDialog extends Dialog {
 	}
 
 	public HeroStatusDialog(Hero hero) {
-		this("", 440, 312);
+		this("", 472, 312);
 		instance = this;
 		this.hero = hero;
 		PADDING_X = 20;
@@ -37,8 +35,7 @@ public class HeroStatusDialog extends Dialog {
 		rowNum = 8;
 		colNum = 1;
 
-		img = (LImage) AndroidGlobalSession.get("dialog_438_310");
-		img1 = (LImage) AndroidGlobalSession.get("dialog_310_310");
+		img = (LImage) AndroidGlobalSession.get("dialog_472_312");
 		
 		initButtons();
 	}
@@ -134,6 +131,6 @@ public class HeroStatusDialog extends Dialog {
 	
 	public void close() {
 		MainScreen.checkLock();
-		MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
+		MainScreen.instance.setDefaultTopDialog();
 	}
 }

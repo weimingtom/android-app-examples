@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.utils.GraphicsUtils;
 import org.ssg.android.game.herogame.control.TextDialog;
+import org.ssg.android.game.herogame.util.Constants;
 
 public class NPC extends Sprite {
 
@@ -32,7 +33,7 @@ public class NPC extends Sprite {
 		LImage image2 = GraphicsUtils.loadImage("assets/images/hero.png");
 		LImage image1 = getImg();
 		topics = new ArrayList<String>();
-		talkDialog = new TextDialog(MainScreen.instance.WIDTH - 10, 120, 8, 180,
+		talkDialog = new TextDialog(Constants.STAGE_WIDTH - 10, 120, 8, 180,
 				topics, image1, image2);
 	}
 	

@@ -1,11 +1,12 @@
 package org.ssg.android.game.herogame.control;
 
+import org.loon.framework.android.game.action.sprite.StatusBar;
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.utils.GraphicsUtils;
+import org.ssg.android.game.herogame.Enemy;
 import org.ssg.android.game.herogame.MainScreen;
 
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.MotionEvent;
 
@@ -14,8 +15,10 @@ public class LeftPanel extends Dialog {
 	public LImage leftPanelBG;
 	
 	private Button[] buttons;
-
-	private static int BUTTON_NUM = 5;
+	private Button unexpandButton, charButton, inventoryButton;
+	private static int BUTTON_NUM = 4;
+	
+	private StatusBar enemyHPBar;
 
 	public LeftPanel(int x, int y) {
 		this(null, 160, 320, x, y);
@@ -26,6 +29,9 @@ public class LeftPanel extends Dialog {
 		super(fileName, scaledWidth, scaledHeight, x, y);
 		leftPanelBG = GraphicsUtils.loadImage("assets/images/leftpanelbg.png");
 		initButtons();
+		
+		enemyHPBar = new TitledAndBorderedStatusBar(1, 1, 7, 37, 80, 5, "HP");
+		enemyHPBar.setShowHP(true);
 	}
 
 	@Override
@@ -35,12 +41,30 @@ public class LeftPanel extends Dialog {
 			return;
 
 		g.drawImage(leftPanelBG, 0, 0);
-		drawButtonEx(g, buttons[4], 0, 0);
+		drawButton(g, unexpandButton);
 		drawButtonEx(g, buttons[0], 44, 191);//up
 		drawButtonEx(g, buttons[1], 44, 280);//down
 		drawButtonEx(g, buttons[2], 0, 239);//left
 		drawButtonEx(g, buttons[3], 106, 239);//right
+		
+		drawButton(g, charButton);
+		drawButton(g, inventoryButton);
+		
+		Enemy enemy = MainScreen.instance.selectedEnemy;
+		if (enemy != null) {
+			g.drawImage(enemy.getImg(), 150, 0, 150 + enemy.getImg()
+					.getWidth() / 4, 32, 0, 0, enemy.getImg()
+					.getWidth() / 4, 32);
 
+			enemyHPBar.setMaxValue(enemy.getMaxHP());
+			enemyHPBar.setValue(enemy.getHp());
+			enemyHPBar.setUpdate(enemy.getHp());
+			enemyHPBar.createUI(g);
+			
+			drawString(g, "HP: " + enemy.hp, 13, 84);
+			drawString(g, "ATK: " + enemy.attack, 80, 84);
+			drawString(g, "DEF: " + enemy.defence, 13, 102);
+		}
 	}
 
 	private void initButtons() {
@@ -72,11 +96,12 @@ public class LeftPanel extends Dialog {
 		initSingleButton(buttons[3], MainScreen.instance.goRightKey);
 		
 		unchecked = GraphicsUtils.loadImage("assets/images/unexpand.png");
-		buttons[4] = new Button(MainScreen.instance, 4, 0, false, unchecked,
+		unexpandButton = new Button(MainScreen.instance, 4, 0, false, unchecked,
 				unchecked);
-		buttons[4].setName("");
-		buttons[4].setComplete(false);
-		buttons[4].setOnTouchListener(new DefaultOnTouchListener(buttons[4]) {
+		unexpandButton.setName("");
+		unexpandButton.setComplete(false);
+		unexpandButton.setDrawXY(0, 0);
+		unexpandButton.setOnTouchListener(new DefaultOnTouchListener(unexpandButton) {
 			@Override
 			public boolean onTouchDown(MotionEvent arg0) {
 				Button button = (Button) getRef();
@@ -98,7 +123,9 @@ public class LeftPanel extends Dialog {
 				return false;
 			}
 		});
-		addOnTouchListener(buttons[4].getOnTouchListener());
+		addOnTouchListener(unexpandButton.getOnTouchListener());
+		
+		initMenuButtons();
 	}
 
 	private void initSingleButton(Button button, final ActionKey key) {
@@ -143,7 +170,6 @@ public class LeftPanel extends Dialog {
 				Button button = (Button) getRef();
 				if (button.isComplete()) {
 					if (button.checkComplete()) {
-//						SystemClock.sleep(50);
 						keyPressThread.interrupt();
 						keyPressThread = null;
 						key.reset();
@@ -158,7 +184,6 @@ public class LeftPanel extends Dialog {
 				Button button = (Button) getRef();
 				if (button.isComplete()) {
 					if (!button.checkComplete()) {
-//						SystemClock.sleep(50);
 						button.setComplete(false);
 						keyPressThread.interrupt();
 						keyPressThread = null;
@@ -169,5 +194,29 @@ public class LeftPanel extends Dialog {
 			}
 		});
 		addOnTouchListener(button.getOnTouchListener());
+	}
+	
+	private void initMenuButtons() {
+		LImage checked = GraphicsUtils.loadImage("assets/images/char2_hoz.png");
+		LImage unchecked = GraphicsUtils.loadImage("assets/images/char1_hoz.png");
+		charButton = new Button(MainScreen.instance, 0, 0, false, checked,
+				unchecked);
+		charButton.setName("");
+		charButton.setComplete(false);
+		charButton.setDrawXY(13, 131);
+		charButton.setOnTouchListener(new OpenDialogOnTouchListener(
+				charButton, HeroStatusDialog.instance));
+		addOnTouchListener(charButton.getOnTouchListener());
+
+		checked = GraphicsUtils.loadImage("assets/images/char2_hoz.png");
+		unchecked = GraphicsUtils.loadImage("assets/images/char1_hoz.png");
+		inventoryButton = new Button(MainScreen.instance, 2, 0, false, checked,
+				unchecked);
+		inventoryButton.setName("");
+		inventoryButton.setComplete(false);
+		inventoryButton.setDrawXY(95, 131);
+		inventoryButton.setOnTouchListener(new OpenDialogOnTouchListener(
+				inventoryButton, InventoryDialog.instance));
+		addOnTouchListener(inventoryButton.getOnTouchListener());
 	}
 }

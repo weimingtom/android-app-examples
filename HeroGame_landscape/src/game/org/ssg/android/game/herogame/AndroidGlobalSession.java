@@ -25,10 +25,10 @@ public class AndroidGlobalSession {
 		resMap.put("mage", temp);
 		
 		NinePatchImage ninePatchImg = new NinePatchImage("assets/images/window.9.png");
-		resMap.put("dialog_438_310", ninePatchImg.createImage(438, 310));
-		resMap.put("dialog_310_310", ninePatchImg.createImage(310, 310));
-		resMap.put("dialog_438_120", ninePatchImg.createImage(438, 120));
-		resMap.put("dialog_310_120", ninePatchImg.createImage(310, 120));
+		resMap.put("dialog_472_312", ninePatchImg.createImage(472, 312));
+//		resMap.put("dialog_310_310", ninePatchImg.createImage(310, 310));
+		resMap.put("dialog_472_120", ninePatchImg.createImage(472, 120));
+//		resMap.put("dialog_310_120", ninePatchImg.createImage(310, 120));
 		
 		GraphicsUtils.loadImage("assets/images/items.png");
 	}

@@ -37,6 +37,7 @@ public class DefaultOnTouchListener implements OnTouchListener{
 		if (button.isComplete()) {
 			if (!button.checkComplete()) {
 				button.setComplete(false);
+				button.setSelect(false);
 			}
 		}
 		return true;

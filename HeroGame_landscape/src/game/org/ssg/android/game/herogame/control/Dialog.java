@@ -4,6 +4,7 @@ import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.utils.GraphicsUtils;
 import org.ssg.android.game.herogame.MainScreen;
+import org.ssg.android.game.herogame.util.Constants;
 import org.ssg.android.game.herogame.util.NinePatchImage;
 
 public class Dialog extends DefaultTouchable {
@@ -43,8 +44,8 @@ public class Dialog extends DefaultTouchable {
 	public Dialog(String fileName, int scaledWidth, int scaledHeight) {
 		this.scaledWidth = scaledWidth;
 		this.scaledHeight = scaledHeight;
-		x = (MainScreen.instance.WIDTH - scaledWidth) / 2;
-		y = (MainScreen.instance.HEIGHT - scaledHeight) / 2;
+		x = (Constants.STAGE_WIDTH - scaledWidth) / 2;
+		y = (Constants.STAGE_HEIGHT - scaledHeight) / 2;
 		if (x < 0)
 			x = 0;
 		if (y < 0)
@@ -59,7 +60,7 @@ public class Dialog extends DefaultTouchable {
 			if (fileName.contains(".9.")) {
 				ninePatchImg = new NinePatchImage(fileName);
 				img = ninePatchImg.createImage(scaledWidth, scaledHeight);
-				img1 = ninePatchImg.createImage(320 - 8, 320 - 8);
+//				img1 = ninePatchImg.createImage(320 - 8, 320 - 8);
 			} else {
 				img = GraphicsUtils.loadImage(fileName, true);
 			}
@@ -70,13 +71,15 @@ public class Dialog extends DefaultTouchable {
 		if (!isShown)
 			return;
 		if (img != null) {
-			if (!MainScreen.instance.isShownLeftPanel) {
-				g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
-						scaledWidth, scaledHeight);
-			} else {
-				g.drawImage(img1, x, y, x + scaledWidth, y + scaledHeight, 0,
-						0, scaledWidth, scaledHeight);
-			}
+//			if (!MainScreen.instance.isShownLeftPanel) {
+//				g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
+//						scaledWidth, scaledHeight);
+//			} else {
+//				g.drawImage(img1, x, y, x + scaledWidth, y + scaledHeight, 0,
+//						0, scaledWidth, scaledHeight);
+//			}
+			g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
+					scaledWidth, scaledHeight);
 		}
 	}
 

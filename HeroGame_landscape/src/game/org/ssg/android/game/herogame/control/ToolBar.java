@@ -9,8 +9,7 @@ import android.view.MotionEvent;
 
 public class ToolBar extends Dialog {
 
-	private Button[] buttons;
-	private static int BUTTON_NUM = 3;
+	private Button expandButton, charButton, inventoryButton;
 
 	public ToolBar(int x, int y, int scaledWidth, int scaledHeight) {
 		super("assets/images/leftpanelbg1.png", scaledWidth, scaledHeight, x, y);
@@ -24,131 +23,56 @@ public class ToolBar extends Dialog {
 		if (!isShown())
 			return;
 
-		if (MainScreen.instance.topDialog != HeroStatusDialog.instance) {
-			buttons[0].setComplete(false);
-			buttons[0].setSelect(false);
-		} else {
-			buttons[0].setComplete(true);
-			buttons[0].setSelect(true);
-		}
-		if (MainScreen.instance.topDialog != InventoryDialog.instance) {
-			buttons[2].setComplete(false);
-			buttons[2].setSelect(false);
-		} else {
-			buttons[2].setComplete(true);
-			buttons[2].setSelect(true);
-		}
-		drawButtonEx(g, buttons[1], 0, 0);
-		drawButtonEx(g, buttons[0], 0, 35);
-		drawButtonEx(g, buttons[2], 0, 100);
+		drawButton(g, expandButton);
+		drawButton(g, charButton);
+		drawButton(g, inventoryButton);
 	}
 
 	private void initButtons() {
-		buttons = new Button[BUTTON_NUM];
-		LImage checked = GraphicsUtils.loadImage("assets/images/char2.png");
-		LImage unchecked = GraphicsUtils.loadImage("assets/images/char1.png");
-		buttons[0] = new Button(MainScreen.instance, 0, 0, false, checked,
+		LImage checked;
+		LImage unchecked = GraphicsUtils.loadImage("assets/images/expand.png");
+		expandButton = new Button(MainScreen.instance, 1, 0, false, unchecked,
 				unchecked);
-		buttons[0].setName("");
-		buttons[0].setComplete(false);
-		buttons[0].setOnTouchListener(new DefaultOnTouchListener(buttons[0]) {
-			@Override
-			public boolean onTouchDown(MotionEvent arg0) {
-				Button button = (Button) getRef();
-				HeroStatusDialog dialog = HeroStatusDialog.instance;
-				if (button.checkComplete()) {
-					if (button.checkClick() != -1) {
-						if (MainScreen.instance.topDialog == null
-								|| !MainScreen.instance.topDialog
-										.equals(dialog)) {
-							MainScreen.instance.topDialog = dialog;
-							button.setComplete(true);
-							button.setSelect(true);
-						} else {
-							HeroStatusDialog.instance.close();
-							button.setComplete(false);
-							button.setSelect(false);
+		expandButton.setName("");
+		expandButton.setComplete(false);
+		expandButton.setDrawXY(0, 0);
+		expandButton
+				.setOnTouchListener(new DefaultOnTouchListener(expandButton) {
+					@Override
+					public boolean onTouchDown(MotionEvent arg0) {
+						Button button = (Button) getRef();
+						if (button.checkComplete()) {
+							if (MainScreen.instance.isShownLeftPanel == false) {
+								MainScreen.instance.changeNext = true;
+								button.setComplete(true);
+								button.setSelect(true);
+							}
 						}
-					} else {
-						if (MainScreen.instance.topDialog != null
-								&& MainScreen.instance.topDialog.equals(dialog)) {
-							button.setComplete(true);
-							button.setSelect(true);
-						}
+						return false;
 					}
-					return true;
-				}
-				return false;
-			}
-		});
-		addOnTouchListener(buttons[0].getOnTouchListener());
-		
-		unchecked = GraphicsUtils.loadImage("assets/images/expand.png");
-		buttons[1] = new Button(MainScreen.instance, 1, 0, false, unchecked,
-				unchecked);
-		buttons[1].setName("");
-		buttons[1].setComplete(false);
-		buttons[1].setOnTouchListener(new DefaultOnTouchListener(buttons[1]) {
-			@Override
-			public boolean onTouchDown(MotionEvent arg0) {
-				Button button = (Button) getRef();
-				if (button.checkComplete()) {
-					if (button.checkClick() != -1) {
-						if (MainScreen.instance.isShownLeftPanel == false) {
-							MainScreen.instance.changeNext = true;
-							button.setComplete(true);
-							button.setSelect(true);
-						}
-					}
-					return true;
-				}
-				return false;
-			}
-			
-			@Override
-			public boolean onTouchUp(MotionEvent arg0) {
-				return false;
-			}
-		});
-		addOnTouchListener(buttons[1].getOnTouchListener());
-		
+				});
+		addOnTouchListener(expandButton.getOnTouchListener());
 
 		checked = GraphicsUtils.loadImage("assets/images/char2.png");
 		unchecked = GraphicsUtils.loadImage("assets/images/char1.png");
-		buttons[2] = new Button(MainScreen.instance, 2, 0, false, checked,
+		charButton = new Button(MainScreen.instance, 0, 0, false, checked,
 				unchecked);
-		buttons[2].setName("");
-		buttons[2].setComplete(false);
-		buttons[2].setOnTouchListener(new DefaultOnTouchListener(buttons[2]) {
-			@Override
-			public boolean onTouchDown(MotionEvent arg0) {
-				Button button = (Button) getRef();
-				InventoryDialog dialog = InventoryDialog.instance;
-				if (button.checkComplete()) {
-					if (button.checkClick() != -1) {
-						if (MainScreen.instance.topDialog == null
-								|| !MainScreen.instance.topDialog
-										.equals(dialog)) {
-							MainScreen.instance.topDialog = dialog;
-							button.setComplete(true);
-							button.setSelect(true);
-						} else {
-							InventoryDialog.instance.close();
-							button.setComplete(false);
-							button.setSelect(false);
-						}
-					} else {
-						if (MainScreen.instance.topDialog != null
-								&& MainScreen.instance.topDialog.equals(dialog)) {
-							button.setComplete(true);
-							button.setSelect(true);
-						}
-					}
-					return true;
-				}
-				return false;
-			}
-		});
-		addOnTouchListener(buttons[2].getOnTouchListener());
+		charButton.setName("");
+		charButton.setComplete(false);
+		charButton.setDrawXY(0, 35);
+		charButton.setOnTouchListener(new OpenDialogOnTouchListener(
+				charButton, HeroStatusDialog.instance));
+		addOnTouchListener(charButton.getOnTouchListener());
+
+		checked = GraphicsUtils.loadImage("assets/images/char2.png");
+		unchecked = GraphicsUtils.loadImage("assets/images/char1.png");
+		inventoryButton = new Button(MainScreen.instance, 2, 0, false, checked,
+				unchecked);
+		inventoryButton.setName("");
+		inventoryButton.setComplete(false);
+		inventoryButton.setDrawXY(0, 100);
+		inventoryButton.setOnTouchListener(new OpenDialogOnTouchListener(
+				inventoryButton, InventoryDialog.instance));
+		addOnTouchListener(inventoryButton.getOnTouchListener());
 	}
 }

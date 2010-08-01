@@ -63,6 +63,7 @@ public class MainScreen extends Screen {
 	private int step1 = MainScreen.CS / 10;
 	private Enemy enemyRef;
 	private boolean initDone = false;
+	public Enemy selectedEnemy;
 
 	private InfoBox infoBox;
 
@@ -74,7 +75,7 @@ public class MainScreen extends Screen {
 
 	private LinkedList<Touchable> touchables;
 
-	public Dialog topDialog, defaultTopDialog;
+	private Dialog topDialog, defaultTopDialog;
 
 	public boolean isShownLeftPanel, changeNext, oldChangeNext;
 	public int panelX, panelY;
@@ -296,6 +297,18 @@ public class MainScreen extends Screen {
 		} else {
 			drawLeftPanelHidden(g);
 		}
+		
+
+		beginDrawing();
+		if (topDialog != null) {
+			g.setColor(LColor.black);
+			g.setAlpha(0.2f);
+			g.fillRect(0, 0, 480, 320);
+			g.setColor(LColor.white);
+			g.setAlpha(1.0f);
+			topDialog.draw(g);
+		}
+		endDrawing();
 	}
 
 	public void setShownLeftPanel(boolean flag) {
@@ -311,12 +324,6 @@ public class MainScreen extends Screen {
 			panelY = 0;
 			WIDTH = 448;
 			HEIGHT = 320;
-		}
-	}
-	
-	public void resetDialog(Dialog dialog) {
-		if (dialog != null) {
-			dialog.scaledWidth = WIDTH - 10;
 		}
 	}
 
@@ -347,20 +354,20 @@ public class MainScreen extends Screen {
 					&& y > level.firstTileY && y < level.lastTileY) {
 				sprite.draw(g, offsetX, offsetY);
 
-				if (fightingHero == null && x == infoBox.getCurX()
-						&& y == infoBox.getCurY() && sprite instanceof Enemy
-						&& infoBox.isVisible()) {
-					g.drawImage(sprite.getImg(), 150, 0, 150 + sprite.getImg()
-							.getWidth() / 4, 32, 0, 0, sprite.getImg()
-							.getWidth() / 4, 32);
-
-					enemyHPBar.setMaxValue(((Enemy) sprite).getMaxHP());
-					enemyHPBar.setValue(((Enemy) sprite).getHp());
-					enemyHPBar.setUpdate(((Enemy) sprite).getHp());
-					enemyHPBar.createUI(g);
-
-					infoBox.draw(g, offsetX, offsetY);
-				}
+//				if (fightingHero == null && x == infoBox.getCurX()
+//						&& y == infoBox.getCurY() && sprite instanceof Enemy
+//						&& infoBox.isVisible()) {
+//					g.drawImage(sprite.getImg(), 150, 0, 150 + sprite.getImg()
+//							.getWidth() / 4, 32, 0, 0, sprite.getImg()
+//							.getWidth() / 4, 32);
+//
+//					enemyHPBar.setMaxValue(((Enemy) sprite).getMaxHP());
+//					enemyHPBar.setValue(((Enemy) sprite).getHp());
+//					enemyHPBar.setUpdate(((Enemy) sprite).getHp());
+//					enemyHPBar.createUI(g);
+//
+//					infoBox.draw(g, offsetX, offsetY);
+//				}
 				
 				if (sprite instanceof NPC) {
 					NPC npc = (NPC) sprite;
@@ -394,6 +401,17 @@ public class MainScreen extends Screen {
 		heroEXPBar.setValue(hero.getExp());
 		heroEXPBar.setUpdate(hero.getExp());
 		heroEXPBar.createUI(g);
+		
+		if (selectedEnemy != null) {
+			g.drawImage(selectedEnemy.getImg(), 150, 0, 150 + selectedEnemy.getImg()
+					.getWidth() / 4, 32, 0, 0, selectedEnemy.getImg()
+					.getWidth() / 4, 32);
+
+			enemyHPBar.setMaxValue(selectedEnemy.getMaxHP());
+			enemyHPBar.setValue(selectedEnemy.getHp());
+			enemyHPBar.setUpdate(selectedEnemy.getHp());
+			enemyHPBar.createUI(g);
+		}
 
 		if (enemyRef != null) {
 			g.drawImage(enemyIcon, 150, 0, 150 + enemyIcon.getWidth() / 4, 32,
@@ -416,18 +434,6 @@ public class MainScreen extends Screen {
 			fightingEnemy.drawFightingAnim(g, offsetX, offsetY);
 			drawLostHP(g, fightingEnemy);
 		}
-
-		beginDrawing();
-		if (topDialog != null) {
-			resetDialog(topDialog);
-			g.setColor(LColor.black);
-			g.setAlpha(0.2f);
-			g.fillRect(0, 0, WIDTH, HEIGHT);
-			g.setColor(LColor.white);
-			g.setAlpha(1.0f);
-			topDialog.draw(g);
-		}
-		endDrawing();
 
 		if (isDead) {
 			g.setColor(Color.BLACK);
@@ -452,6 +458,18 @@ public class MainScreen extends Screen {
 		role.frameNo++;
 	}
 
+	public Dialog getTopDialog() {
+		return topDialog;
+	}
+	
+	public void setTopDialog(Dialog dialog) {
+		topDialog = dialog;
+	}
+	
+	public void setDefaultTopDialog() {
+		topDialog = defaultTopDialog;
+	}
+	
 	public void alter(LTimerContext timer) {
 		if (!initDone) {
 			wait.update(timer.getTimeSinceLastUpdate());
@@ -459,7 +477,7 @@ public class MainScreen extends Screen {
 		}
 		
 		if (cleanDialog) {
-			topDialog = defaultTopDialog;
+			setTopDialog(defaultTopDialog);
 			isNPCAction = false;
 			actionNPC = null;
 			cleanDialog = false;
@@ -482,7 +500,7 @@ public class MainScreen extends Screen {
 			}
 
 			if (isNPCAction) {
-				topDialog = actionNPC.talkDialog;
+				setTopDialog(actionNPC.talkDialog);
 			}
 			
 			if (map.isDoor(hero.getXs(), hero.getYs())) {
@@ -662,41 +680,29 @@ public class MainScreen extends Screen {
 
 	@Override
 	public boolean onTouchDown(MotionEvent arg0) {
-		if (touchX > panelX) {
-			touchX -= panelX;
-
-			if (topDialog != null && topDialog.isShown) {
-					for (OnTouchListener listener : topDialog
-							.getOnTouchListener()) {
-						listener.onTouchDown(arg0);
-					}
-					return false;
-			} else {
-				setInfoBox();
-			}
-		}
-		if (topDialog != null && topDialog.isShown && !topDialog.isTouched()) {
+		if (topDialog != null && topDialog.isShown) {
 			for (OnTouchListener listener : topDialog
 					.getOnTouchListener()) {
-				listener.onTouchUp(arg0);
+				listener.onTouchDown(arg0);
 			}
+			return false;
 		}
+		
 		if (touchX > panelX) {
-			touchX += panelX;
+			touchX -= panelX;
+			setInfoBox();
+			return false;
 		}
 		if (!isShownLeftPanel) {
 			if (toolbar.isTouched()) {
 				for (OnTouchListener listener : toolbar.getOnTouchListener()) {
 					listener.onTouchDown(arg0);
 				}
-				return false;
 			}
 		} else {
-			// if (leftPanel.isTouched()) {
 			for (OnTouchListener listener : leftPanel.getOnTouchListener()) {
 				listener.onTouchDown(arg0);
 			}
-			// }
 		}
 		return false;
 	}
@@ -710,91 +716,73 @@ public class MainScreen extends Screen {
 		if (infoBox.getCurX() == curX && infoBox.getCurY() == curY
 				&& infoBox.isVisible()) {
 			infoBox.setVisible(false);
+			selectedEnemy = null;
 		} else {
-			// for (Iterator<Sprite> it = sprites.iterator(); it.hasNext();) {
-			// Sprite sprite = it.next();
-			// if (sprite.getXs() == curX && sprite.getYs() == curY) {
 			infoBox.setCurX(curX);
 			infoBox.setCurY(curY);
 			infoBox.setVisible(true);
+			
+			for (Iterator<Sprite> it = sprites.iterator(); it.hasNext();) {
+				Sprite sprite = it.next();
+				int x = sprite.getXs();
+				int y = sprite.getYs();
+				if (x > level.firstTileX && x < level.lastTileX
+						&& y > level.firstTileY && y < level.lastTileY) {
+					if (fightingHero == null && x == infoBox.getCurX()
+							&& y == infoBox.getCurY() && sprite instanceof Enemy
+							&& infoBox.isVisible()) {
+						selectedEnemy = (Enemy) sprite;
+					}
+				}
+			}
 			return;
-			// }
-			// }
 		}
 	}
 
 	@Override
 	public boolean onTouchMove(MotionEvent arg0) {
-		if (touchX > panelX) {
-			touchX -= panelX;
-
-			if (topDialog != null && topDialog.isShown) {
-//				if (topDialog.isTouched()) {
-					for (OnTouchListener listener : topDialog
-							.getOnTouchListener()) {
-						listener.onTouchMove(arg0);
-					}
-					return false;
-//				}
-			}
-		}
-		if (topDialog != null && topDialog.isShown && !topDialog.isTouched()) {
+		if (topDialog != null && topDialog.isShown) {
 			for (OnTouchListener listener : topDialog
 					.getOnTouchListener()) {
-				listener.onTouchUp(arg0);
+				listener.onTouchMove(arg0);
 			}
+			return false;
 		}
-		if (touchX > panelX) {
-			touchX += panelX;
-		}
+		
 		if (!isShownLeftPanel) {
 			if (toolbar.isTouched()) {
 				for (OnTouchListener listener : toolbar.getOnTouchListener()) {
 					listener.onTouchMove(arg0);
 				}
-				return false;
 			}
 		} else {
-			// if (leftPanel.isTouched()) {
 			for (OnTouchListener listener : leftPanel.getOnTouchListener()) {
 				listener.onTouchMove(arg0);
 			}
-			// }
 		}
 		return false;
 	}
 
 	@Override
 	public boolean onTouchUp(MotionEvent arg0) {
-		if (touchX > panelX) {
-			touchX -= panelX;
-
-			if (topDialog != null && topDialog.isShown) {
-//				if (topDialog.isTouched()) {
-					for (OnTouchListener listener : topDialog
-							.getOnTouchListener()) {
-						listener.onTouchUp(arg0);
-					}
-					return false;
-//				}
+		if (topDialog != null && topDialog.isShown) {
+			for (OnTouchListener listener : topDialog
+					.getOnTouchListener()) {
+				listener.onTouchUp(arg0);
 			}
+			return false;
 		}
-		if (touchX > panelX) {
-			touchX += panelX;
-		}
+		
 		if (!isShownLeftPanel) {
 			if (toolbar.isTouched()) {
 				for (OnTouchListener listener : toolbar.getOnTouchListener()) {
 					listener.onTouchUp(arg0);
 				}
-				return false;
 			}
 		} else {
-			// if (leftPanel.isTouched()) {
 			for (OnTouchListener listener : leftPanel.getOnTouchListener()) {
 				listener.onTouchUp(arg0);
 			}
-			// }
 		}
 		return false;
 	}

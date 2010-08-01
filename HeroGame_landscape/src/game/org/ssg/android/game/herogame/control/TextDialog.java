@@ -8,6 +8,7 @@ import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.loon.framework.android.game.core.graphics.LImage;
 import org.ssg.android.game.herogame.AndroidGlobalSession;
 import org.ssg.android.game.herogame.MainScreen;
+import org.ssg.android.game.herogame.util.Constants;
 
 import android.view.MotionEvent;
 
@@ -23,8 +24,8 @@ public class TextDialog extends Dialog {
 			ArrayList<String> messages, LImage im1, LImage im2) {
 		super("", scaledWidth, scaledHeight, x, y);
 		
-		img = (LImage) AndroidGlobalSession.get("dialog_438_120");
-		img1 = (LImage) AndroidGlobalSession.get("dialog_310_120");
+		img = (LImage) AndroidGlobalSession.get("dialog_472_120");
+//		img1 = (LImage) AndroidGlobalSession.get("dialog_310_120");
 		
 		this.image1 = im1;
 		this.image2 = im2;
@@ -49,7 +50,7 @@ public class TextDialog extends Dialog {
 	}
 
 	public void resetDialog() {
-		scaledWidth = MainScreen.instance.WIDTH - 10;
+		scaledWidth = Constants.STAGE_WIDTH - 8;
 		iter = messages.iterator();
 		if (iter.hasNext())
 			message = iter.next();

@@ -33,7 +33,7 @@ public class InventoryDialog extends Dialog {
 	}
 
 	public InventoryDialog(Hero hero) {
-		this("", 440, 312);
+		this("", 472, 312);
 		instance = this;
 		this.hero = hero;
 		PADDING_X = 20;
@@ -41,8 +41,8 @@ public class InventoryDialog extends Dialog {
 		rowNum = 8;
 		colNum = 1;
 
-		img = (LImage) AndroidGlobalSession.get("dialog_438_310");
-		img1 = (LImage) AndroidGlobalSession.get("dialog_310_310");
+		img = (LImage) AndroidGlobalSession.get("dialog_472_312");
+//		img1 = (LImage) AndroidGlobalSession.get("dialog_310_310");
 
 		bodyImage = GraphicsUtils.loadImage("assets/images/body.png");
 
@@ -117,7 +117,7 @@ public class InventoryDialog extends Dialog {
 				false, unchecked, unchecked);
 		extraButton.setName("");
 		extraButton.setComplete(false);
-		extraButton.setDrawXY(170, 250);
+		extraButton.setDrawXY(156, 250);
 		extraButton.setOnTouchListener(new CellButtonOnTouchListener(
 				extraButton));
 		extraButton.isVisible = false;
@@ -144,7 +144,9 @@ public class InventoryDialog extends Dialog {
 			public boolean onTouchUp(MotionEvent arg0) {
 				CellButton button = (CellButton) getRef();
 				if (button.checkComplete() && draggedButton != null) {
-					hero.items[draggedButton.getId()] = null;
+					if (!draggedButton.equals(extraButton)) {
+						hero.items[draggedButton.getId()] = null;
+					}
 					draggedButton.setItem(null);
 					draggedButton.isDragged = false;
 					draggedButton = null;
@@ -230,7 +232,7 @@ public class InventoryDialog extends Dialog {
 
 	public void close() {
 		MainScreen.checkLock();
-		MainScreen.instance.topDialog = MainScreen.instance.defaultTopDialog;
+		MainScreen.instance.setDefaultTopDialog();
 		extraButton.item = null;
 		extraButton.isVisible = false;
 		draggedButton = null;

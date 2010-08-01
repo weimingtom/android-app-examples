@@ -1,7 +1,5 @@
 package org.ssg.android.game.herogame;
 
-import java.util.ArrayList;
-
 import org.loon.framework.android.game.action.map.RectBox;
 import org.loon.framework.android.game.core.graphics.LGraphics;
 import org.ssg.android.game.herogame.control.InventoryDialog;
@@ -172,7 +170,7 @@ public class Hero extends Role {
 		RectBox spriteRect = new RectBox(sprite.getXs() * MainScreen.CS, sprite
 				.getYs()
 				* MainScreen.CS, sprite.getWidth(), sprite.getHeight());
-		// ��ゅ�����瀹�绮剧�电����╁舰杈规��������涓����绮剧�甸�����
+
 		if (playerRect.intersects(spriteRect)) {
 			return true;
 		}
