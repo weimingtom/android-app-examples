@@ -23,9 +23,9 @@ public class Hero extends Role {
 	private static final int[] EXP_TO_LEVEL = { -1, 50, 60, 70, 80, 90, 100,
 			110, 120 };
 	private int availablePoints;
-	
-	public final static int MAX_ITEMS = 12;
-	public Item[] items = new Item[MAX_ITEMS];
+
+	public Item[] inventoryItems = new Item[InventoryDialog.INV_BUTTON_NUM];
+	public Item hat, necklace, armor, weapon, hand, leg, sheild, ring1, ring2, foot;
 	public boolean isItemOverFlows = false;
 
 	public int getAvailablePoints() {
@@ -75,9 +75,9 @@ public class Hero extends Role {
 		element_set = 100;
 		dex = 20;
 		agi = 20;
-		
-		for (int i = 0; i < MAX_ITEMS - 1; i++)
-			items[i] = Item.getRandomItem();
+
+		for (int i = 0; i < InventoryDialog.INV_BUTTON_NUM - 1; i++)
+			inventoryItems[i] = Item.getRandomItem();
 	}
 
 	@Override
@@ -277,11 +277,11 @@ public class Hero extends Role {
 		}
 		return false;
 	}
-	
+
 	public void addItem(Item item) {
-		for (int i = 0; i < MAX_ITEMS; i++) {
-			if (items[i] == null) {
-				items[i] = item;
+		for (int i = 0; i < InventoryDialog.INV_BUTTON_NUM; i++) {
+			if (inventoryItems[i] == null) {
+				inventoryItems[i] = item;
 				InventoryDialog.instance.refreshCell(i);
 				return;
 			}

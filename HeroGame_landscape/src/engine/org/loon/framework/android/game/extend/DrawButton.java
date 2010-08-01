@@ -55,7 +55,9 @@ public class DrawButton {
 	private LImage selectImage;
 
 	private Screen screen;
-
+	
+	public String identity = "";
+	
 	public static void initialize(final Screen screen,
 			final DrawButton[] buttons, final int space, final LImage checked,
 			final LImage unchecked) {

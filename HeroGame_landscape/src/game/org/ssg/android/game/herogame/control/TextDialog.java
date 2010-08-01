@@ -46,6 +46,16 @@ public class TextDialog extends Dialog {
 				}
 				return false;
 			}
+			
+			@Override
+			public boolean onTouchUp(MotionEvent arg0) {
+				return false;
+			}
+			
+			@Override
+			public boolean onTouchMove(MotionEvent arg0) {
+				return false;
+			}
 		});
 	}
 

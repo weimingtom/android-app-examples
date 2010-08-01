@@ -21,7 +21,7 @@ public class InventoryDialog extends Dialog {
 	public CellButton extraButton, dropButton;
 	private Button closeBtn;
 
-	public static int INV_BUTTON_NUM = 12;
+	public static int INV_BUTTON_NUM = 15;
 	public static int EQP_BUTTON_NUM = 10;
 
 	private LImage bodyImage;
@@ -42,7 +42,7 @@ public class InventoryDialog extends Dialog {
 		colNum = 1;
 
 		img = (LImage) AndroidGlobalSession.get("dialog_472_312");
-//		img1 = (LImage) AndroidGlobalSession.get("dialog_310_310");
+		// img1 = (LImage) AndroidGlobalSession.get("dialog_310_310");
 
 		bodyImage = GraphicsUtils.loadImage("assets/images/body.png");
 
@@ -52,7 +52,7 @@ public class InventoryDialog extends Dialog {
 	}
 
 	public void refreshInvetory() {
-		Item[] items = MainScreen.instance.hero.items;
+		Item[] items = MainScreen.instance.hero.inventoryItems;
 		for (int i = 0; i < INV_BUTTON_NUM - 1; i++) {
 			inventoryButtons[i].item = items[i];
 			inventoryButtons[i].resetItemPos();
@@ -60,7 +60,7 @@ public class InventoryDialog extends Dialog {
 	}
 
 	public void refreshCell(int pos) {
-		Item[] items = MainScreen.instance.hero.items;
+		Item[] items = MainScreen.instance.hero.inventoryItems;
 		inventoryButtons[pos].item = items[pos];
 		inventoryButtons[pos].resetItemPos();
 	}
@@ -71,11 +71,15 @@ public class InventoryDialog extends Dialog {
 		if (!isShown())
 			return;
 
-		drawAbsoluteImageEx(g, bodyImage, 51, 45, 63, 216);
+		drawAbsoluteImageEx(g, bodyImage, 71, 45, 63, 216);
 		drawButtonEx(g, closeBtn, scaledWidth - 70, 10);
 
 		for (int i = 0; i < inventoryButtons.length; i++) {
 			drawButton(g, inventoryButtons[i]);
+		}
+		
+		for (int i = 0; i < equipButtons.length; i++) {
+			drawButton(g, equipButtons[i]);
 		}
 
 		if (extraButton.isVisible) {
@@ -87,8 +91,8 @@ public class InventoryDialog extends Dialog {
 			if (selectedButton.item != null) {
 				g.setAntiAlias(true);
 				LFont l = g.getFont();
-				g.setFont(12);
-				int x = 280;
+				g.setFont(14);
+				int x = 330;
 				int y = 70;
 				drawString(g, "att:" + selectedButton.item.attr.att, x + 5,
 						y + 5);
@@ -110,6 +114,7 @@ public class InventoryDialog extends Dialog {
 
 	private void initButtons() {
 		initInventoryButtons();
+		initEquipButtons();
 
 		// extraButton
 		LImage unchecked = GraphicsUtils.loadImage("assets/images/cell.png");
@@ -117,9 +122,38 @@ public class InventoryDialog extends Dialog {
 				false, unchecked, unchecked);
 		extraButton.setName("");
 		extraButton.setComplete(false);
-		extraButton.setDrawXY(156, 250);
+		extraButton.setDrawXY(196, 250);
 		extraButton.setOnTouchListener(new CellButtonOnTouchListener(
-				extraButton));
+				extraButton) {
+//			@Override
+//			public boolean onTouchUp(MotionEvent arg0) {
+//				CellButton button = (CellButton) getRef();
+//				if (!button.isVisible)
+//					return false;
+//				if (button.isDragged && !inOtherCells(button)) {
+//					button.resetItemPos();
+//					button.isDragged = false;
+//					draggedButton = null;
+//				} else {
+//					if (button.checkComplete() && draggedButton != null) {
+//						Item temp;
+//						temp = button.item;
+//						button.setItem(draggedButton.item);
+//						draggedButton.setItem(temp);
+//
+//						if (draggedButton.identity.equals("inventory"))
+//							hero.inventoryItems[draggedButton.getId()] = draggedButton.item;
+//						if (draggedButton.identity.equals("equip"))
+//							hero.inventoryItems[button.getId()] = button.item;
+//
+//						draggedButton.isDragged = false;
+//						draggedButton = null;
+//						selectedButton = button;
+//					}
+//				}
+//				return false;
+//			}
+		});
 		extraButton.isVisible = false;
 		addOnTouchListener(extraButton.getOnTouchListener());
 
@@ -128,7 +162,7 @@ public class InventoryDialog extends Dialog {
 				false, unchecked, unchecked);
 		dropButton.setName("");
 		dropButton.setComplete(false);
-		dropButton.setDrawXY(236, 250);
+		dropButton.setDrawXY(276, 250);
 		dropButton.setOnTouchListener(new DefaultOnTouchListener(dropButton) {
 			@Override
 			public boolean onTouchDown(MotionEvent arg0) {
@@ -145,7 +179,7 @@ public class InventoryDialog extends Dialog {
 				CellButton button = (CellButton) getRef();
 				if (button.checkComplete() && draggedButton != null) {
 					if (!draggedButton.equals(extraButton)) {
-						hero.items[draggedButton.getId()] = null;
+						hero.inventoryItems[draggedButton.getId()] = null;
 					}
 					draggedButton.setItem(null);
 					draggedButton.isDragged = false;
@@ -188,8 +222,9 @@ public class InventoryDialog extends Dialog {
 		for (int i = 0; i < inventoryButtons.length; i++) {
 			inventoryButtons[i].setName("");
 			inventoryButtons[i].setComplete(false);
-			int x = 156 + (i % 3) * 40;
-			int y = 70 + 40 * (i / 3);
+			inventoryButtons[i].identity = "inv";
+			int x = 196 + (i % 3) * 40;
+			int y = 30 + 40 * (i / 3);
 			inventoryButtons[i].setDrawXY(x, y);
 			inventoryButtons[i]
 					.setOnTouchListener(new CellButtonOnTouchListener(
@@ -200,29 +235,64 @@ public class InventoryDialog extends Dialog {
 
 	public void initEquipButtons() {
 		equipButtons = new CellButton[EQP_BUTTON_NUM];
-		LImage unchecked = GraphicsUtils.loadImage("assets/images/cell.png");
+		LImage unchecked = GraphicsUtils.loadImage("assets/images/cell_equip.png", true);
 		CellButton.initialize(MainScreen.instance, equipButtons, 0, unchecked,
 				unchecked);
 
-		int[][] pos = new int[][] { {} };
+		Position[] pos = new Position[] { new Position(85, 21),
+				new Position(33, 50), new Position(85, 92),
+				new Position(33, 127), new Position(131, 127),
+				new Position(85, 173), new Position(131, 173),
+				new Position(33, 218), new Position(85, 246),
+				new Position(131, 218) };
 		for (int i = 0; i < equipButtons.length; i++) {
 			equipButtons[i].setName("");
 			equipButtons[i].setComplete(false);
-			int x = 130 + (i % 3) * 40;
-			int y = 30 + 40 * (i / 3);
-			equipButtons[i].setDrawXY(x, y);
+			equipButtons[i].identity = "equip";
+			equipButtons[i].setDrawXY(pos[i].x, pos[i].y);
 			equipButtons[i].setOnTouchListener(new CellButtonOnTouchListener(
-					equipButtons[i]));
+					equipButtons[i]) {
+				@Override
+				public boolean onTouchUp(MotionEvent arg0) {
+					CellButton button = (CellButton) getRef();
+					if (!button.isVisible)
+						return false;
+					if (button.isDragged && !inOtherCells(button)) {
+						button.resetItemPos();
+						button.isDragged = false;
+						draggedButton = null;
+					} else {
+						if (button.checkComplete() && draggedButton != null) {
+							Item temp;
+							temp = button.item;
+							button.setItem(draggedButton.item);
+							draggedButton.setItem(temp);
+
+							if (draggedButton != extraButton)
+								hero.inventoryItems[draggedButton.getId()] = draggedButton.item;
+							if (button != extraButton)
+								hero.inventoryItems[button.getId()] = button.item;
+
+							draggedButton.isDragged = false;
+							draggedButton = null;
+							selectedButton = button;
+						}
+					}
+					return false;
+				}
+			});
 			addOnTouchListener(equipButtons[i].getOnTouchListener());
 		}
 	}
 
 	public boolean inOtherCells(CellButton cell) {
 		for (int i = 0; i < inventoryButtons.length; i++) {
-			// if (inventoryButtons[i] != cell) {
 			if (inventoryButtons[i].checkComplete())
 				return true;
-			// }
+		}
+		for (int i = 0; i < equipButtons.length; i++) {
+			if (equipButtons[i].checkComplete())
+				return true;
 		}
 		if (dropButton.checkComplete()
 				|| (extraButton.checkComplete() && extraButton.isVisible))
@@ -251,15 +321,11 @@ public class InventoryDialog extends Dialog {
 				return false;
 			if (button.checkComplete()) {
 				if (button.checkClick() != -1) {
-					// if (selectedButton == button) {
 					selectedButton = button;
 					button.isDragged = true;
 					button.itemX = (int) MainScreen.instance.touchX - 12;
 					button.itemY = (int) MainScreen.instance.touchY - 12;
 					draggedButton = button;
-					// } else {
-					// selectedButton = button;
-					// }
 				}
 			}
 			return false;
@@ -301,9 +367,9 @@ public class InventoryDialog extends Dialog {
 					draggedButton.setItem(temp);
 
 					if (draggedButton != extraButton)
-						hero.items[draggedButton.getId()] = draggedButton.item;
+						hero.inventoryItems[draggedButton.getId()] = draggedButton.item;
 					if (button != extraButton)
-						hero.items[button.getId()] = button.item;
+						hero.inventoryItems[button.getId()] = button.item;
 
 					draggedButton.isDragged = false;
 					draggedButton = null;

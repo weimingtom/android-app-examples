@@ -61,7 +61,7 @@ public class MainScreen extends Screen {
 	public boolean heroFighting = false;
 	public boolean enemyFighting = false;
 	private int step1 = MainScreen.CS / 10;
-	private Enemy enemyRef;
+	public Enemy enemyRef;
 	private boolean initDone = false;
 	public Enemy selectedEnemy;
 
@@ -86,6 +86,8 @@ public class MainScreen extends Screen {
 	public NPC actionNPC;
 
 	public static MainScreen instance;
+	
+	public Thread keyPressThread;
 
 	private static Object _lock = new Object();
 	private static volatile boolean _drawing;
@@ -353,21 +355,6 @@ public class MainScreen extends Screen {
 			if (x > level.firstTileX && x < level.lastTileX
 					&& y > level.firstTileY && y < level.lastTileY) {
 				sprite.draw(g, offsetX, offsetY);
-
-//				if (fightingHero == null && x == infoBox.getCurX()
-//						&& y == infoBox.getCurY() && sprite instanceof Enemy
-//						&& infoBox.isVisible()) {
-//					g.drawImage(sprite.getImg(), 150, 0, 150 + sprite.getImg()
-//							.getWidth() / 4, 32, 0, 0, sprite.getImg()
-//							.getWidth() / 4, 32);
-//
-//					enemyHPBar.setMaxValue(((Enemy) sprite).getMaxHP());
-//					enemyHPBar.setValue(((Enemy) sprite).getHp());
-//					enemyHPBar.setUpdate(((Enemy) sprite).getHp());
-//					enemyHPBar.createUI(g);
-//
-//					infoBox.draw(g, offsetX, offsetY);
-//				}
 				
 				if (sprite instanceof NPC) {
 					NPC npc = (NPC) sprite;
@@ -402,7 +389,15 @@ public class MainScreen extends Screen {
 		heroEXPBar.setUpdate(hero.getExp());
 		heroEXPBar.createUI(g);
 		
-		if (selectedEnemy != null) {
+		if (enemyRef != null) {
+			g.drawImage(enemyIcon, 150, 0, 150 + enemyIcon.getWidth() / 4, 32,
+					0, 0, enemyIcon.getWidth() / 4, 32);
+			enemyHPBar.setValue(enemyRef.getHp());
+			enemyHPBar.setUpdate(enemyRef.getHp());
+			enemyHPBar.createUI(g);
+		}
+		
+		if (selectedEnemy != null && !heroFighting) {
 			g.drawImage(selectedEnemy.getImg(), 150, 0, 150 + selectedEnemy.getImg()
 					.getWidth() / 4, 32, 0, 0, selectedEnemy.getImg()
 					.getWidth() / 4, 32);
@@ -411,15 +406,10 @@ public class MainScreen extends Screen {
 			enemyHPBar.setValue(selectedEnemy.getHp());
 			enemyHPBar.setUpdate(selectedEnemy.getHp());
 			enemyHPBar.createUI(g);
+			
+			infoBox.draw(g, offsetX, offsetY);
 		}
 
-		if (enemyRef != null) {
-			g.drawImage(enemyIcon, 150, 0, 150 + enemyIcon.getWidth() / 4, 32,
-					0, 0, enemyIcon.getWidth() / 4, 32);
-			enemyHPBar.setValue(enemyRef.getHp());
-			enemyHPBar.setUpdate(enemyRef.getHp());
-			enemyHPBar.createUI(g);
-		}
 		g.setColor(Color.WHITE);
 		g.setAntiAlias(true);
 		g.drawString("Level: ", 5, HEIGHT - 10);
@@ -463,6 +453,11 @@ public class MainScreen extends Screen {
 	}
 	
 	public void setTopDialog(Dialog dialog) {
+		if (keyPressThread != null) {
+			keyPressThread.interrupt();
+			keyPressThread = null;
+			leftPanel.resetKeys();
+		}
 		topDialog = dialog;
 	}
 	
@@ -518,6 +513,7 @@ public class MainScreen extends Screen {
 					&& (sprite instanceof Enemy) && !isDead) {
 				Enemy enemy = (Enemy) sprite;
 				enemyRef = enemy;
+				selectedEnemy = null;
 
 				if (fightingHero == null) {
 					fightingHero = (Hero) AndroidGlobalSession.get("hero_fight");
@@ -732,10 +728,11 @@ public class MainScreen extends Screen {
 							&& y == infoBox.getCurY() && sprite instanceof Enemy
 							&& infoBox.isVisible()) {
 						selectedEnemy = (Enemy) sprite;
+						return;
 					}
 				}
 			}
-			return;
+			selectedEnemy = null;
 		}
 	}
 
