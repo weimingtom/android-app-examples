@@ -17,6 +17,8 @@ public class DefaultOnTouchListener implements OnTouchListener{
 	@Override
 	public boolean onTouchDown(MotionEvent arg0) {
 		Button button = (Button) getRef();
+		if (!button.isVisible)
+			return false;
 		if (button.checkComplete()) {
 			return true;
 		}
@@ -34,6 +36,8 @@ public class DefaultOnTouchListener implements OnTouchListener{
 	@Override
 	public boolean onTouchMove(MotionEvent arg0) {
 		Button button = (Button) getRef();
+		if (!button.isVisible)
+			return false;
 		if (button.isComplete()) {
 			if (!button.checkComplete()) {
 				button.setComplete(false);

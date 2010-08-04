@@ -8,6 +8,7 @@ import org.loon.framework.android.game.utils.GraphicsUtils;
 public class Button extends DrawButton{
 
 	private OnTouchListener listener;
+	public boolean isVisible = true;
 	
 	public Button(Screen screen, int no, int space, boolean isRow,
 			LImage selectImage, LImage buttonImage) {

@@ -12,7 +12,6 @@ public class CellButton extends Button {
 	public Item item;
 	public int itemX, itemY;
 	public boolean isDragged = false;
-	public boolean isVisible = true;
 
 	public CellButton(Screen screen, int no, int space, boolean isRow,
 			LImage selectImage, LImage buttonImage) {
@@ -49,8 +48,18 @@ public class CellButton extends Button {
 
 	public void drawHighlight(LGraphics g) {
 		g.setColor(LColor.red);
+		g.setAntiAlias(true);
 		g.drawRect(getX(), getY(), getWidth(), getHeight());
 		g.setColor(LColor.white);
+		g.setAntiAlias(false);
+	}
+	
+	public void drawHighlightTarget(LGraphics g) {
+		g.setColor(LColor.white);
+		g.setAntiAlias(true);
+		g.drawRect(getX(), getY(), getWidth(), getHeight());
+		g.setColor(LColor.white);
+		g.setAntiAlias(false);
 	}
 	
 	public static void initialize(final Screen screen,

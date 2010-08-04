@@ -24,9 +24,9 @@ public class Hero extends Role {
 			110, 120 };
 	private int availablePoints;
 
-	public Item[] inventoryItems = new Item[InventoryDialog.INV_BUTTON_NUM];
-	public Item hat, necklace, armor, weapon, hand, leg, sheild, ring1, ring2, foot;
-	public boolean isItemOverFlows = false;
+//	public Item[] inventoryItems = new Item[InventoryDialog.INV_BUTTON_NUM];
+//	public Item[] equipItems = new Item[InventoryDialog.EQP_BUTTON_NUM];
+//	public boolean isItemOverFlows = false;
 
 	public int getAvailablePoints() {
 		return availablePoints;
@@ -76,8 +76,8 @@ public class Hero extends Role {
 		dex = 20;
 		agi = 20;
 
-		for (int i = 0; i < InventoryDialog.INV_BUTTON_NUM - 1; i++)
-			inventoryItems[i] = Item.getRandomItem();
+//		for (int i = 0; i < InventoryDialog.INV_BUTTON_NUM - 1; i++)
+//			inventoryItems[i] = Item.getRandomItem();
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public class Hero extends Role {
 				npc.item = Item.getRandomItem();
 				npc.item.setXs(npc.x);
 				npc.item.setYs(npc.y);
-				addItem(npc.item);
+				InventoryDialog.instance.addItem(npc.item);
 			}
 		}
 	}
@@ -276,18 +276,5 @@ public class Hero extends Role {
 			return true;
 		}
 		return false;
-	}
-
-	public void addItem(Item item) {
-		for (int i = 0; i < InventoryDialog.INV_BUTTON_NUM; i++) {
-			if (inventoryItems[i] == null) {
-				inventoryItems[i] = item;
-				InventoryDialog.instance.refreshCell(i);
-				return;
-			}
-		}
-		InventoryDialog.instance.extraButton.isVisible = true;
-		InventoryDialog.instance.extraButton.setItem(item);
-		isItemOverFlows = true;
 	}
 }

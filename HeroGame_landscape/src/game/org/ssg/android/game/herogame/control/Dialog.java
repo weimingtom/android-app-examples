@@ -60,7 +60,7 @@ public class Dialog extends DefaultTouchable {
 			if (fileName.contains(".9.")) {
 				ninePatchImg = new NinePatchImage(fileName);
 				img = ninePatchImg.createImage(scaledWidth, scaledHeight);
-//				img1 = ninePatchImg.createImage(320 - 8, 320 - 8);
+				// img1 = ninePatchImg.createImage(320 - 8, 320 - 8);
 			} else {
 				img = GraphicsUtils.loadImage(fileName, true);
 			}
@@ -71,13 +71,13 @@ public class Dialog extends DefaultTouchable {
 		if (!isShown)
 			return;
 		if (img != null) {
-//			if (!MainScreen.instance.isShownLeftPanel) {
-//				g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
-//						scaledWidth, scaledHeight);
-//			} else {
-//				g.drawImage(img1, x, y, x + scaledWidth, y + scaledHeight, 0,
-//						0, scaledWidth, scaledHeight);
-//			}
+			// if (!MainScreen.instance.isShownLeftPanel) {
+			// g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
+			// scaledWidth, scaledHeight);
+			// } else {
+			// g.drawImage(img1, x, y, x + scaledWidth, y + scaledHeight, 0,
+			// 0, scaledWidth, scaledHeight);
+			// }
 			g.drawImage(img, x, y, x + scaledWidth, y + scaledHeight, 0, 0,
 					scaledWidth, scaledHeight);
 		}
@@ -126,16 +126,18 @@ public class Dialog extends DefaultTouchable {
 
 	protected void drawButton(LGraphics g, Button button, int row, int col,
 			int rowNum, int colNum) {
-		int cellWidth = (scaledWidth - 2 * PADDING_X) / colNum;
-		int cellHeight = (scaledHeight - 2 * PADDING_Y) / rowNum;
-		int absoluteX = x + PADDING_X + col * cellWidth;
-		int absoluteY = y + PADDING_Y + row * cellHeight
-				+ (cellHeight - button.getHeight()) / 2;
-		if (getCurWidth(row) > 0)
-			absoluteX = getCurWidth(row) + 5;
-		button.setDrawXY(absoluteX, absoluteY);
-		button.draw(g);
-		setCurWidth(row, absoluteX + button.getWidth());
+		if (button.isVisible) {
+			int cellWidth = (scaledWidth - 2 * PADDING_X) / colNum;
+			int cellHeight = (scaledHeight - 2 * PADDING_Y) / rowNum;
+			int absoluteX = x + PADDING_X + col * cellWidth;
+			int absoluteY = y + PADDING_Y + row * cellHeight
+					+ (cellHeight - button.getHeight()) / 2;
+			if (getCurWidth(row) > 0)
+				absoluteX = getCurWidth(row) + 5;
+			button.setDrawXY(absoluteX, absoluteY);
+			button.draw(g);
+			setCurWidth(row, absoluteX + button.getWidth());
+		}
 	}
 
 	protected void drawAbsoluteImageEx(LGraphics g, LImage image, int x, int y,
@@ -149,22 +151,25 @@ public class Dialog extends DefaultTouchable {
 	}
 
 	protected void drawButtonEx(LGraphics g, Button button, int x, int y) {
-		button.setDrawXY(x + this.x, y + this.y);
-		button.draw(g);
+		if (button.isVisible) {
+			button.setDrawXY(x + this.x, y + this.y);
+			button.draw(g);
+		}
 	}
 
 	protected void drawButton(LGraphics g, Button button) {
-		button.draw(g);
+		if (button.isVisible)
+			button.draw(g);
 	}
 
 	protected void drawRect(LGraphics g, int x, int y, int w, int h) {
 		g.drawRect(x + this.x, y + this.y, w, h);
 	}
-	
+
 	protected void drawString(LGraphics g, String message, int x, int y) {
 		g.drawString(message, x + this.x, y + this.y + g.getFont().getSize());
 	}
-	
+
 	@Override
 	public boolean isTouched() {
 		if (((double) MainScreen.instance.getTouch().x > x

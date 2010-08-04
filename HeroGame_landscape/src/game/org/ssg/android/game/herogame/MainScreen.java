@@ -360,7 +360,7 @@ public class MainScreen extends Screen {
 					NPC npc = (NPC) sprite;
 					if (npc.racial.equals("box") && npc.isTriggered && npc.item != null) {
 						if (npc.isOpened) {
-							if (hero.isItemOverFlows) {
+							if (InventoryDialog.instance.isItemOverFlows) {
 								topDialog = InventoryDialog.instance;
 							}
 							npc.item = null;
@@ -679,7 +679,8 @@ public class MainScreen extends Screen {
 		if (topDialog != null && topDialog.isShown) {
 			for (OnTouchListener listener : topDialog
 					.getOnTouchListener()) {
-				listener.onTouchDown(arg0);
+				if (listener.onTouchDown(arg0))
+					return true;
 			}
 			return false;
 		}
@@ -741,7 +742,8 @@ public class MainScreen extends Screen {
 		if (topDialog != null && topDialog.isShown) {
 			for (OnTouchListener listener : topDialog
 					.getOnTouchListener()) {
-				listener.onTouchMove(arg0);
+				if (listener.onTouchMove(arg0))
+					return true;
 			}
 			return false;
 		}
@@ -765,7 +767,8 @@ public class MainScreen extends Screen {
 		if (topDialog != null && topDialog.isShown) {
 			for (OnTouchListener listener : topDialog
 					.getOnTouchListener()) {
-				listener.onTouchUp(arg0);
+				if (listener.onTouchUp(arg0))
+					return true;
 			}
 			return false;
 		}
