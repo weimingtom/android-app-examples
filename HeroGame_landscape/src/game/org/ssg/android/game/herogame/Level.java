@@ -109,10 +109,41 @@ public class Level {
                         break;
                     case 'n':
                     	NPC npc = new NPC(SHOP_IMAGE, j, i, 32, 32, this, "shop");
-                    	npc.addAction("你好，欢迎来到商店！");
-                    	npc.addAction("恩恩，快把东西给我瞧瞧！");
-                    	npc.addAction("呵呵，好的。");
-                    	npc.addAction("谢啦～");
+                    	switch (levelNo) {
+                    	case 1:
+                    		npc.addAction("你好，欢迎来到商店！");
+							npc.addAction("恩恩，快把东西给我瞧瞧！");
+							npc.addAction("呵呵，好的。");
+							npc.addAction("谢啦～");
+							break;
+                    	case 2:
+                    		npc.addAction("呦，你居然到第二层了，不错小伙子！");
+							npc.addAction("呵呵，一般一般，世界第三！");
+							npc.addAction("靠，这么牛X，这就世界第三了，那老子我排第几？");
+							npc.addAction("。。。");
+							break;
+                    	case 3:
+                    		npc.addAction("楼上有个老头是不是很讨厌啊？");
+							npc.addAction("额。。差点和他吵起来了。");
+							npc.addAction("对，他最臭屁了，天天说自己世界第三。");
+							npc.addAction("-_-!!!");
+							break;
+                    	case 4:
+                    		npc.addAction("你给我100块，我就透露你一个秘密。");
+							npc.addAction("啊。。好（100块小意思嘛。。）");
+							npc.addAction("（拿到100块）不错不错，我告诉你，这里是第三层！");
+							npc.addAction("我&*#@￥，这谁都知道！！！");
+							break;
+                    	case 5:
+                    		npc.addAction("小伙子，你给我1000大洋，我就告诉你一条机密。");
+							npc.addAction(">_<!!谁知道你是不是骗子！");
+							npc.addAction("额。。看样子你被楼上的家伙骗了。");
+							npc.addAction("哇，你和他一伙的，揍你。。");
+							break;
+						default:
+							break;
+                    	}
+
                         sprites.add(npc);
                         break;
                     case 'b':

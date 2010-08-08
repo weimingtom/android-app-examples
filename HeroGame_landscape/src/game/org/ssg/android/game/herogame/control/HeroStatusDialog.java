@@ -36,7 +36,7 @@ public class HeroStatusDialog extends Dialog {
 		colNum = 1;
 
 		img = (LImage) AndroidGlobalSession.get("dialog_472_312");
-		
+
 		initButtons();
 	}
 
@@ -92,22 +92,21 @@ public class HeroStatusDialog extends Dialog {
 						@Override
 						public boolean onTouchUp(MotionEvent arg0) {
 							Button button = (Button) getRef();
-							if (button.isComplete()) {
-								if (button.checkComplete()) {
+							if (button.isComplete() && button.checkComplete()) {
 									if (hero.getAvailablePoints() > 0) {
 										hero.setAttack(hero.getAttack() + 1);
 										hero.setAvailablePoints(hero
 												.getAvailablePoints() - 1);
 									}
-								}
 								button.setComplete(false);
+								return true;
 							}
-							return true;
+							return false;
 						}
 					});
 			addOnTouchListener(buttons[i].getOnTouchListener());
 		}
-		
+
 		unchecked = GraphicsUtils.loadImage("assets/images/close.png");
 		closeBtn = new Button(MainScreen.instance, 4, 0, false, unchecked,
 				unchecked);
@@ -117,18 +116,17 @@ public class HeroStatusDialog extends Dialog {
 			@Override
 			public boolean onTouchUp(MotionEvent arg0) {
 				Button button = (Button) getRef();
-				if (button.isComplete()) {
-					if (button.checkComplete()) {
-						close();
-					}
+				if (button.isComplete() && button.checkComplete()) {
+					close();
 					button.setComplete(false);
+					return true;
 				}
 				return true;
 			}
 		});
 		addOnTouchListener(closeBtn.getOnTouchListener());
 	}
-	
+
 	public void close() {
 		MainScreen.checkLock();
 		MainScreen.instance.setDefaultTopDialog();

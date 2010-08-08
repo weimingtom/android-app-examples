@@ -47,7 +47,7 @@ public class CellButton extends Button {
 	}
 
 	public void drawHighlight(LGraphics g) {
-		g.setColor(LColor.red);
+		g.setColor(LColor.yellow);
 		g.setAntiAlias(true);
 		g.drawRect(getX(), getY(), getWidth(), getHeight());
 		g.setColor(LColor.white);

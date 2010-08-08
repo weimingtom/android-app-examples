@@ -3,11 +3,14 @@ package org.ssg.android.game.herogame.control;
 import org.loon.framework.android.game.action.sprite.WaitAnimation;
 import org.loon.framework.android.game.core.graphics.LColor;
 import org.loon.framework.android.game.core.graphics.LGraphics;
+import org.loon.framework.android.game.core.graphics.LImage;
 import org.loon.framework.android.game.core.timer.LTimer;
+import org.loon.framework.android.game.utils.GraphicsUtils;
 
 public class LoadingAnimation extends WaitAnimation {
 
 	private LTimer timer;
+	private LImage backGroundImage;
 	
 	private static final String message0 = "Loading";
 	private static final String message1 = "Loading.";
@@ -23,6 +26,7 @@ public class LoadingAnimation extends WaitAnimation {
 	public LoadingAnimation(int width, int height) {
 		super(width, height);
 		timer = new LTimer(100);
+		backGroundImage = GraphicsUtils.loadImage("assets/images/start.jpg");
 	}
 
 	public void update(long elapsedTime) {
@@ -63,6 +67,7 @@ public class LoadingAnimation extends WaitAnimation {
 	
 	@Override
 	public void draw(LGraphics g, int x, int y, int w, int h) {
+		g.drawImage(backGroundImage, 0, 0);
 		super.draw(g, x, y, w, h);
 		g.setColor(LColor.white);
 		g.setAlpha(0.8f);

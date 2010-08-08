@@ -47,6 +47,7 @@ public class ToolBar extends Dialog {
 								button.setComplete(true);
 								button.setSelect(true);
 							}
+							return true;
 						}
 						return false;
 					}

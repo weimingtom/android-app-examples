@@ -20,8 +20,7 @@ public class Hero extends Role {
 	public static final int ANIM_FINAL_FRAME = 18;
 	private boolean isAnimating = false;
 	private int herolevel, exp;
-	private static final int[] EXP_TO_LEVEL = { -1, 50, 60, 70, 80, 90, 100,
-			110, 120 };
+	private static int[] EXP_TO_LEVEL;
 	private int availablePoints;
 
 //	public Item[] inventoryItems = new Item[InventoryDialog.INV_BUTTON_NUM];
@@ -76,6 +75,11 @@ public class Hero extends Role {
 		dex = 20;
 		agi = 20;
 
+		EXP_TO_LEVEL = new int[101];
+		EXP_TO_LEVEL[0] = -1;
+		for (int i = 0; i < 100; i++) {
+			EXP_TO_LEVEL[i] = 50 * i;
+		}
 //		for (int i = 0; i < InventoryDialog.INV_BUTTON_NUM - 1; i++)
 //			inventoryItems[i] = Item.getRandomItem();
 	}

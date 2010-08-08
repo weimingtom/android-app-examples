@@ -18,6 +18,7 @@ public class OpenDialogOnTouchListener extends DefaultOnTouchListener {
 		if (button.checkComplete()) {
 			button.setComplete(true);
 			button.setSelect(true);
+			return true;
 		}
 		return false;
 	}
@@ -28,9 +29,10 @@ public class OpenDialogOnTouchListener extends DefaultOnTouchListener {
 		if (button.isComplete() && button.checkComplete()
 				&& !dialog.equals(MainScreen.instance.getTopDialog())) {
 			MainScreen.instance.setTopDialog(dialog);
+			button.setComplete(false);
+			button.setSelect(false);
+			return true;
 		}
-		button.setComplete(false);
-		button.setSelect(false);
-		return true;
+		return false;
 	}
 }
