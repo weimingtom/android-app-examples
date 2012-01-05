@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="13" height="13" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="terrain" tilewidth="32" tileheight="32">
+  <image source="terrain.png" width="64" height="32"/>
+ </tileset>
+ <tileset firstgid="3" name="enemy" tilewidth="32" tileheight="32">
+  <image source="enemy.png" width="128" height="2048"/>
+ </tileset>
+ <tileset firstgid="259" name="door" tilewidth="32" tileheight="32">
+  <image source="door.png" width="128" height="128"/>
+ </tileset>
+ <tileset firstgid="275" name="item" tilewidth="32" tileheight="32">
+  <image source="item.png" width="128" height="512"/>
+ </tileset>
+ <layer name="floor" width="13" height="13">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NkYGBgHMWjeBBjANKfHWSkAgAA
+  </data>
+ </layer>
+ <layer name="wall" width="13" height="13">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC52QSQoAIAwDQ///aE+ChCzFQlGkY0YHwHw0nrUVM7x3d6sclbll3Fnim5vyUNX+kmdSDs8nX5ejmPSeLeN45dZ8bx/2At4GpAIAAA==
+  </data>
+ </layer>
+ <layer name="enemy" width="13" height="13">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgoD7QJ0JNMoV2SOOR4ybSDH4K3YANGNPATBh4TUOzcQFtIFaHstnxqFOmoRsAcOeOkKQCAAA=
+  </data>
+ </layer>
+ <layer name="door" width="13" height="13">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgoA5gYaSSQQMEWLG4H5ufmAeBPweDG3ABWrgNAHWj8sukAgAA
+  </data>
+ </layer>
+ <layer name="item" width="13" height="13">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgIA+IMEJofyDtzohdjTBQXIoRlU8MEMaiRxyLXpAczB0qWOSx6ZEEihkR6Q56AmzuhwFVRoi7QUAEizoJqJgyCf4Sx6IHxCbFDHyAGHP0ibQLAJM6iWekAgAA
+  </data>
+ </layer>
+ <objectgroup name="object" width="13" height="13">
+  <object name="npc0" type="npc" x="128" y="320" width="32" height="32">
+   <properties>
+    <property name="image" value="npc.png"/>
+    <property name="rectX" value="0"/>
+    <property name="rectY" value="0"/>
+   </properties>
+  </object>
+  <object type="teleport" x="192" y="32" width="32" height="32">
+   <properties>
+    <property name="heroTileCoordX" value="2"/>
+    <property name="heroTileCoordY" value="11"/>
+    <property name="image" value="down_floor.png"/>
+    <property name="targetMap" value="0"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
